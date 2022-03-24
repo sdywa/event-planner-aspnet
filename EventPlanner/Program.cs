@@ -1,11 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using EventPlanner.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorPages();
+
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<PlannerContext>(options => options
+    .UseMySql(connection, ServerVersion.AutoDetect(connection)));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
