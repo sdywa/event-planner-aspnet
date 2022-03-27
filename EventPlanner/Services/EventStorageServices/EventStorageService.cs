@@ -17,7 +17,7 @@ public class EventStorageService : IEventStorageService
 
     public async Task CreateAsync(Event entity, CancellationToken cancellationToken)
     {
-        await _context.Set<Event>().AddAsync(entity);
+        await _context.Events.AddAsync(entity);
         await _context.SaveChangesAsync();
     }
 
@@ -55,7 +55,7 @@ public class EventStorageService : IEventStorageService
     public async Task UpdateAsync(int id, Event entity, CancellationToken cancellationToken)
     {
         entity.EventId = id;
-        _context.Set<Event>().Update(entity);
+        _context.Events.Update(entity);
         await _context.SaveChangesAsync();
     }
 
@@ -64,7 +64,7 @@ public class EventStorageService : IEventStorageService
         var entity = await _context.Set<Event>().FirstOrDefaultAsync((e) => e.EventId == id);
         if (entity is null)
             throw new NullReferenceException();
-        _context.Set<Event>().Remove(entity);
+        _context.Events.Remove(entity);
         await _context.SaveChangesAsync();
     }
 }
