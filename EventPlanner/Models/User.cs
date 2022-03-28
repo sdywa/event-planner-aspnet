@@ -13,7 +13,7 @@ public class User
     public string? Email { get; set; }
     [StringLength(70)]
     public string? Password { get; set; }
-    public int RegTime { get; set; }
+    public long RegTime { get; set; }
     [StringLength(70)]
     public string? AvatarUrl { get; set; }
 
