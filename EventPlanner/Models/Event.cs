@@ -6,8 +6,8 @@ public class Event
 {
     public int EventId { get; set; }
     [StringLength(70)]
-    public string? Name { get; set; }
-    public string? Description { get; set; }
+    public string Name { get; set; } = null!;
+    public string Description { get; set; } = null!;
     public int CreationTime { get; set; }
     public int StartTime { get; set; }
     public int EndTime { get; set; }
@@ -15,11 +15,11 @@ public class Event
     public string? CoverUrl { get; set; }
 
     public int TypeId { get; set; }
-    public Type? Type { get; set; }
+    public EventType Type { get; set; } = null!;
 
     public int CreatorId { get; set; }
-    public User? Creator { get; set; }
+    public User Creator { get; set; } = null!;
 
     public int CategoryId { get; set; }
-    public Category? Category { get; set; }
+    public Category Category { get; set; } = null!;
 }

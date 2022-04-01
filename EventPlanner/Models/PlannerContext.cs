@@ -19,4 +19,22 @@ public class PlannerContext : DbContext
     {
         Database.EnsureCreated();
     }
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<EventRating>().HasKey(t => new {
+            t.EventId, t.UserId
+        });
+        builder.Entity<FavEvent>().HasKey(t => new {
+            t.UserId, t.EventId
+        });
+        builder.Entity<Participant>().HasKey(t => new {
+            t.EventId, t.UserId
+        });
+
+        builder.Entity<Role>().HasData(
+            new Role { RoleId = 1, Name = "Participant", Title = "Участник" },
+            new Role { RoleId = 2, Name = "Organizer", Title = "Организатор" });
+    }
 }
