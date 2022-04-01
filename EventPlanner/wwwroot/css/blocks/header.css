@@ -1,0 +1,33 @@
+.header {
+  background: var(--blue);
+  font-weight: 400;
+}
+
+.header a {
+  color: var(--white);
+}
+
+.navbar, .navbar-nav {
+  display: flex;
+  align-items: center;
+}
+
+.navbar {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.navbar-nav {
+  max-width: 600px;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.nav-item {
+  color: var(--white);
+}
+
+.navbar-main {
+  padding-left: 40px;
+  flex-grow: 2;
+}

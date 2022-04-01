@@ -1,0 +1,33 @@
+<header class="header">
+    <nav class="navbar">
+        <a class="navbar-logo" asp-area="" asp-page="/Index">EventPlanner</a>
+        <ul class="navbar-nav navbar-main">
+            <li class="nav-item">
+                <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <li class="nav-item">
+                    @User.FindFirst("FirstName")?.Value
+                </li>
+                <li class="nav-item">
+                    <a class="button button--nav" asp-page="/Auth/Logout">Выйти</a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="button button--nav" asp-page="/Auth/Login" asp-route-type="login">Вход</a>
+                </li>
+                <li class="nav-item">
+                    <a class="button button--nav" asp-page="/Auth/Signup" asp-route-type="signup">Регистрация</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</header>

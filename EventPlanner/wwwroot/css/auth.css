@@ -1,0 +1,67 @@
+@import url("common.css");
+@import url("blocks/button.css");
+
+.auth-container {
+  height: 100vh;
+  background: var(--white);
+}
+
+.auth-content {
+  padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-box {
+  margin-top: 50px;
+  max-width: 420px;
+}
+
+.tab-header {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  height: 60px;
+  overflow: hidden;
+}
+
+.tab-item {
+  min-width: 210px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fafafa;
+
+  font-size: 18px;
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 700;
+}
+
+.tab-item--active {
+  box-shadow: 0 6px 16px 0 rgb(0 0 0 / 20%);
+  background: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-list-content {
+  padding: 25px;
+  background: #ffffff;
+}
+
+.form-item {
+  margin-bottom: 10px;
+}
+
+.form-item input {
+  background: #fafafa;
+  font-size: 16px;
+  height: 30px;
+  width: 100%;
+  padding: 20px 15px;
+}
+
+.form-item .input-validation-error {
+  border-color: #c33131;
+}

@@ -1,0 +1,27 @@
+@import url("common.css");
+@import url("blocks/header.css");
+@import url("blocks/button.css");
+
+.main {
+  background: var(--white);
+}
+
+.main-container {
+  padding: 150px 0;
+  max-width: 1200px;
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 60px;
+}
+
+.main-title {
+  font-size: 54px;
+  font-family: 'Ubuntu', sans-serif;
+  line-height: 0;
+}
+
+.main-description {
+  font-size: 24px;
+}

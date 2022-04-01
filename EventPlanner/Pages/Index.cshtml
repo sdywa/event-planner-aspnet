@@ -4,7 +4,22 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="main">
+    <div class="container main-container">
+        <div class="main-image">
+            <img src="https://via.placeholder.com/520x480" alt="main">
+        </div>
+        <div class="main-content">
+            <h2 class="main-title">
+                title title title
+            </h2>
+            <div class="main-description">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Neque pariatur tempora eius, temporibus fugiat similique voluptatibus nostrum, earum inventore molestiae aliquid harum blanditiis? Mollitia unde ipsa eum dolore provident earum.
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+}

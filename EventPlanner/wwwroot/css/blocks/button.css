@@ -1,0 +1,35 @@
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+
+  border: 2px solid var(--white);
+  border-radius: 7px;
+
+  background: none;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.button--green {
+  border: 2px solid var(--green);
+  color: var(--green);
+}
+
+.button:hover {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--blue);
+  transition-duration: 0.2s;
+}
+
+.button--green:hover {
+  color: var(--white);
+}
+
+.button--form {
+  margin-top: 15px;
+  float: right;
+}
