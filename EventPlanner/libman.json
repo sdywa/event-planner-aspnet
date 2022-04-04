@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "particles.js@2.0.0",
+      "destination": "wwwroot/lib/particles.js"
+    }
+  ]
+}

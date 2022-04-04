@@ -1,0 +1,220 @@
+@page "{id:int}"
+@model EventPlanner.Pages.EventModel
+@using System.Globalization
+@using EventPlanner.Models;
+@{
+    ViewData["Header"] = null;
+    ViewData["Title"] = Model.CurrentEvent.Name;
+    var culture = new CultureInfo("ru-RU");
+}
+
+@functions {
+    public DateTime UnixTimeToDateTime(long unixtime)
+    {
+        var dateTime = new DateTime(1970, 1, 1);
+        dateTime = dateTime.AddSeconds(Model.CurrentEvent.StartTime);
+        return dateTime;
+    }
+
+    public string GetDate(DateTime datetime, CultureInfo culture) => 
+        datetime.ToString(culture.DateTimeFormat.LongDatePattern);
+
+    public string GetDayName(DateTime dateTime, CultureInfo culture) => 
+        culture.DateTimeFormat.GetDayName(dateTime.DayOfWeek);
+
+    public string GetTime(DateTime dateTime) => dateTime.ToString("HH:mm");
+
+    public string GetAddress(Address address) 
+    {
+        return $"{address.Country}, г. {address.City}, ул. {address.Street}, {address.Building}";
+    }
+}
+
+<div class="event">
+    <div class="container event-container">
+        <div class="cover">
+            <div class="cover-backgrounds">
+                <div class="cover-img">
+                    <img src="@Model.CurrentEvent.CoverUrl" alt="Обложка">
+                    <div class="cover-shadow"></div>
+                </div>
+            </div>
+        </div>
+        <div class="page">
+            <div class="page-wrapper">
+                <div class="page-content">
+                    <div class="event-main">
+                        <div class="desc-box">
+                            <div class="title">
+                                @Model.CurrentEvent.Name
+                            </div>
+                            <div class="tags-box">
+                                <i class="fa-solid fa-tags"></i>
+                                <ul class="tags">
+                                    <li class="tag">@Model.CurrentEvent.Category.Title</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-box">
+                            @Model.CurrentEvent.Description
+                        </div>
+                    </div>
+                    <div class="event-box">
+                        <div class="date">
+                            @{
+                                var startDateTime = UnixTimeToDateTime(Model.CurrentEvent.StartTime);
+                                var startDate = GetDate(startDateTime, culture);
+                                var startdayName = GetDayName(startDateTime, culture);
+                                var startTime = GetTime(startDateTime);
+                            }
+                            <div class="date-title">
+                                <i class="fa-solid fa-calendar"></i>
+                                @startDate
+                            </div>
+                            <div class="date-day event-subtext">@startdayName</div>
+                            <div class="date-time event-subtext">В @startTime</div>
+
+                        </div>
+                        @if (@Model.CurrentEvent.Address != null) 
+                        {
+                            <div class="location">
+                                <div class="location-title">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    @Model.CurrentEvent.Address.Title
+                                </div>
+                                <div class="location-address event-subtext">
+                                    @GetAddress(Model.CurrentEvent.Address)    
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="event-background">
+        <div id="particles-js">
+            <canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/event.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/lib/particles.js/particles.js"></script>
+    <script>
+        particlesJS("particles-js", {
+        "particles": {
+            "number": {
+                "value": 160,
+                "density": {
+                    "enable": true,
+                    "value_area": 800
+                }
+            },
+            "color": {
+                "value": "#ffffff"
+            },
+            "shape": {
+                "type": "circle",
+                "stroke": {
+                    "width": 0,
+                    "color": "#000000"
+                },
+                "polygon": {
+                    "nb_sides": 5
+                },
+                "image": {
+                    "src": "img/github.svg",
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            "opacity": {
+                "value": .3,
+                "random": true,
+                "anim": {
+                    "enable": true,
+                    "speed": 1,
+                    "opacity_min": 0,
+                    "sync": false
+                }
+            },
+            "size": {
+                "value": 3,
+                "random": true,
+                "anim": {
+                    "enable": false,
+                    "speed": 4,
+                    "size_min": 0.3,
+                    "sync": false
+                }
+            },
+            "line_linked": {
+                "enable": false,
+                "distance": 150,
+                "color": "#ffffff",
+                "opacity": 0.4,
+                "width": 1
+            },
+            "move": {
+                "enable": true,
+                "speed": 1,
+                "direction": "none",
+                "random": true,
+                "straight": false,
+                "out_mode": "out",
+                "bounce": false,
+                "attract": {
+                    "enable": false,
+                    "rotateX": 600,
+                    "rotateY": 600
+                }
+            }
+        },
+        "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+                "onhover": {
+                    "enable": true,
+                    "mode": "bubble"
+                },
+                "onclick": {
+                    "enable": true,
+                    "mode": "repulse"
+                },
+                "resize": true
+            },
+            "modes": {
+                "grab": {
+                    "distance": 400,
+                    "line_linked": {
+                        "opacity": 1
+                    }
+                },
+                "bubble": {
+                    "distance": 250,
+                    "size": 0,
+                    "duration": 2,
+                    "opacity": 0,
+                    "speed": 3
+                },
+                "repulse": {
+                    "distance": 400,
+                    "duration": 0.4
+                },
+                "push": {
+                    "particles_nb": 4
+                },
+                "remove": {
+                    "particles_nb": 2
+                }
+            }
+        },
+        "retina_detect": true
+        });
+    </script>
+}
