@@ -11,6 +11,7 @@ public class PlannerContext : DbContext
     public DbSet<EventType> EventTypes { get; set; } = null!;
     public DbSet<EventRating> EventRatings { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Address> Addresses { get; set; } = null!;
 
     public DbSet<Participant> Participants { get; set; } = null!;
     public DbSet<FavEvent> FavEvents { get; set; } = null!;
@@ -36,5 +37,13 @@ public class PlannerContext : DbContext
         builder.Entity<Role>().HasData(
             new Role { RoleId = 1, Name = "Participant", Title = "Участник" },
             new Role { RoleId = 2, Name = "Organizer", Title = "Организатор" });
+
+        builder.Entity<EventType>().HasData(
+            new EventType { TypeId = 1, Name = "Offline" },
+            new EventType { TypeId = 2, Name = "Online" });
+
+        builder.Entity<Category>().HasData(
+            new Category { CategoryId = 1, Name = "Other", Title = "Другое" },
+            new Category { CategoryId = 2, Name = "IT", Title = "ИТ и интернет" });
     }
 }

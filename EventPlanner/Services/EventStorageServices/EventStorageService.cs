@@ -27,6 +27,7 @@ public class EventStorageService : IEventStorageService
             .Include(e => e.Type)
             .Include(e => e.Creator)
             .Include(e => e.Category)
+            .Include(e => e.Address)
             .FirstOrDefaultAsync(e => e.EventId == id);
         return entity;
     }
@@ -37,6 +38,7 @@ public class EventStorageService : IEventStorageService
             .Include(e => e.Type)            
             .Include(e => e.Creator)
             .Include(e => e.Category)
+            .Include(e => e.Address)
             .ToListAsync();
         return entities;
     }
@@ -47,6 +49,7 @@ public class EventStorageService : IEventStorageService
             .Include(e => e.Type)
             .Include(e => e.Creator)
             .Include(e => e.Category)
+            .Include(e => e.Address)
             .Where(e => e.CreatorId == creatorId)
             .ToListAsync();
         return entities;

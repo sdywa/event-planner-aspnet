@@ -22,4 +22,7 @@ public class Event
 
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
+
+    public int? AddressId { get; set; }
+    public Address? Address { get; set; }
 }
