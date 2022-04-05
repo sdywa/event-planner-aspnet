@@ -1,0 +1,18 @@
+.background {
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(102,123,163);
+  background: linear-gradient(180deg, rgba(102,123,163,1) 0%, var(--blue) 100%);
+}
+
+#particles-js {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}

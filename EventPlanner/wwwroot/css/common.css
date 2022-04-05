@@ -50,6 +50,13 @@ a {
   margin-right: auto;
 }
 
+.title {
+  font-family: "Ubuntu", sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
 .logo {
   font-family: "Ubuntu", sans-serif;
   font-size: 48px;
