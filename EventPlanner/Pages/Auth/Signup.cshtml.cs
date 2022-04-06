@@ -36,7 +36,6 @@ public class SignupModel : PageModel
     {
         if (!ModelState.IsValid)
             return Page();
-        Console.WriteLine("Im here!");
         Signup.Email = Email;
         await _authenticationService.RegisterAsync(
             Signup.FirstName, 
@@ -54,4 +53,3 @@ public class SignupModel : PageModel
         return new JsonResult(_context.Users.SingleOrDefault(u => u.Email == Signup.Email) == null);
     }
 }
-

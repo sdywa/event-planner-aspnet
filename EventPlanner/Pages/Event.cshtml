@@ -2,7 +2,7 @@
 @model EventPlanner.Pages.EventModel
 @using System.Globalization
 @using EventPlanner.Models
-@using EventPlanner.HtmlHelpers
+@using EventPlanner.Helpers
 @{
     ViewData["Header"] = null;
     ViewData["Title"] = Model.CurrentEvent.Name;
@@ -41,13 +41,13 @@
                     <div class="date">
                         <div class="date-title">
                             <i class="fa-solid fa-calendar"></i>
-                            @Html.GetDate(Model.CurrentEvent.StartTime, culture);
+                            @DateHelper.GetDate(Model.CurrentEvent.StartTime, culture);
                         </div>
                         <div class="date-day event-subtext">
-                            @Html.GetDayName(Model.CurrentEvent.StartTime, culture);
+                            @DateHelper.GetDayName(Model.CurrentEvent.StartTime, culture);
                         </div>
                         <div class="date-time event-subtext">
-                            В @Html.GetTime(Model.CurrentEvent.StartTime)
+                            В @TimeHelper.GetTime(Model.CurrentEvent.StartTime)
                         </div>
                     </div>
                     @if (@Model.CurrentEvent.Address != null) 
@@ -58,7 +58,7 @@
                                 @Model.CurrentEvent.Address.Title
                             </div>
                             <div class="location-address event-subtext">
-                                @Html.GetAddress(Model.CurrentEvent.Address)    
+                                @AddressHelper.GetAddress(Model.CurrentEvent.Address)    
                             </div>
                         </div>
                     }
