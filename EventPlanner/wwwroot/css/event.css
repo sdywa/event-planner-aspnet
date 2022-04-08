@@ -73,7 +73,6 @@
   font-weight: 400;
 }
 
-.date-title i, 
-.location-title i {
+.event-box i {
   margin-right: 10px;
 }

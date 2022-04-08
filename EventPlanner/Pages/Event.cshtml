@@ -50,18 +50,25 @@
                             В @TimeHelper.GetTime(Model.CurrentEvent.StartTime)
                         </div>
                     </div>
-                    @if (@Model.CurrentEvent.Address != null) 
-                    {
-                        <div class="location">
+                    <div class="location">
+                        @if (Model.CurrentEvent.Type.Name == "Offline") 
+                        {
                             <div class="location-title">
                                 <i class="fa-solid fa-location-dot"></i>
-                                @Model.CurrentEvent.Address.Title
+                                @Model.CurrentEvent.Address?.Title
                             </div>
                             <div class="location-address event-subtext">
                                 @AddressHelper.GetAddress(Model.CurrentEvent.Address)    
                             </div>
-                        </div>
-                    }
+                        }
+                        else
+                        {
+                            <div class="event-subtext">
+                                <i class="fa-solid fa-desktop"></i>
+                                Мероприятие пройдёт онлайн
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
