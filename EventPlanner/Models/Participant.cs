@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class Participant
+public class Participant : CommonModel
 {
     public int EventId { get; set; }
     public Event Event { get; set; } = null!;

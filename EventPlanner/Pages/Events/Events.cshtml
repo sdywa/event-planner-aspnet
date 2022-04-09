@@ -1,4 +1,4 @@
-@page
+@page "/events"
 @model EventPlanner.Pages.EventsModel
 @using System.Globalization
 @using EventPlanner.Helpers
@@ -15,7 +15,7 @@
                 <div class="tiles">
                     @foreach (var item in Model.Events)
                     {
-                        <a class="tile" asp-page="/Event" asp-route-id="@item.EventId">
+                        <a class="tile" asp-page="Event" asp-route-id="@item.Id">
                             <div class="tile-cover">
                                 <img class="tile-cover-blur" src="@item.CoverUrl" alt="Обложка">
                                 <img src="@item.CoverUrl" alt="Обложка">

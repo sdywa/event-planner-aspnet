@@ -33,3 +33,15 @@
   margin-top: 15px;
   float: right;
 }
+
+.button--red {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
+}
+
+.button--red:hover {
+  background: var(--white);
+  border-color: var(--red);
+  color: var(--red);
+}

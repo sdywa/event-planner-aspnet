@@ -63,5 +63,5 @@
 }
 
 .form-item .input-validation-error {
-  border-color: #c33131;
+  border-color: var(--red);
 }

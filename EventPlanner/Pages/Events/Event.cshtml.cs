@@ -9,11 +9,15 @@ public class EventModel : PageModel
 {
     [BindProperty(SupportsGet = true)]
     public int Id { get; set; }
+    [BindProperty(SupportsGet = true)]
+    public bool IsValid { get; set; } = true;
     public Event CurrentEvent { get; set; } = null!;
+    private PlannerContext _context;
     private IEventStorageService _eventStorageService;
 
-    public EventModel(IEventStorageService eventStorageService)
+    public EventModel(PlannerContext context, IEventStorageService eventStorageService)
     {
+        _context = context;
         _eventStorageService = eventStorageService;
     }
 
@@ -24,6 +28,7 @@ public class EventModel : PageModel
             return NotFound();
 
         CurrentEvent = currentEvent;
+        await _context.Entry(CurrentEvent).Collection(e => e.Participants).LoadAsync();
         return Page();
     }
 }

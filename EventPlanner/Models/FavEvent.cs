@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class FavEvent
+public class FavEvent : CommonModel
 {
     public int UserId { get; set; }
     public User User { get; set; } = null!;

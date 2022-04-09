@@ -3,6 +3,7 @@
   --blue: #14274e;
   --green: #00b94f;
   --contrast: #263147;
+  --red: #c33131;
 }
 
 * {
@@ -22,7 +23,6 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;

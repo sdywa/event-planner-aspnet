@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class Address
+public class Address : CommonModel
 {
-    public int AddressId { get; set; }
     [StringLength(40)]
     public string Country { get; set; } = null!;
     [StringLength(100)]

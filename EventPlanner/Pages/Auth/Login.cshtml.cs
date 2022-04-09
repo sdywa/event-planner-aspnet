@@ -44,22 +44,23 @@ public class LoginModel : PageModel
         finally 
         {
             if (user != null)
-                await Authenticate(user.Email, user.FirstName, user.Role.Name);
+                await Authenticate(user.Id.ToString(), user.Email, user.FirstName, user.Role.Name);
         }
         return RedirectToPage("/Index");
     }
 
-    private async Task Authenticate(string email, string firstName, string role)
+    private async Task Authenticate(string id, string email, string firstName, string role)
     {
         var claims = new List<Claim>
         {
+            new Claim("Id", id),
             new Claim(ClaimsIdentity.DefaultNameClaimType, email),
             new Claim("FirstName", firstName),
             new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
         };
-        ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", 
+        ClaimsIdentity identity = new ClaimsIdentity(claims, "ApplicationCookie", 
             ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
     }
 }
 

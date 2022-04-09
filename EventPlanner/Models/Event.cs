@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class Event
+public class Event : CommonModel
 {
-    public int EventId { get; set; }
     [StringLength(70)]
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
@@ -25,4 +24,6 @@ public class Event
 
     public int? AddressId { get; set; }
     public Address? Address { get; set; }
+
+    public ICollection<Participant> Participants { get; set; } = null!;
 }

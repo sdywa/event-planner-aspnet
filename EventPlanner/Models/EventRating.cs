@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EventPlanner.Models;
 
-public class EventRating
+public class EventRating : CommonModel
 {
     [Key, Column(Order=0)]
     public int EventId { get; set; }

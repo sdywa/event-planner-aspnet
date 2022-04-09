@@ -2,11 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class EventType
+public class EventType : CommonModel
 {
-    [Key]
-    public int TypeId { get; set; }
-
     [StringLength(45)]
     public string Name { get; set; } = null!;
 }
