@@ -5,6 +5,7 @@ using EventPlanner.Models;
 using EventPlanner.Services.UserServices;
 using EventPlanner.Services.AuthenticationServices;
 using EventPlanner.Services.EventStorageServices;
+using EventPlanner.Services.EventOrganizationServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<EventPlanner.Services.AuthenticationServices.IAuthenticationService,
     EventPlanner.Services.AuthenticationServices.AuthenticationService>();
 builder.Services.AddTransient<IEventStorageService, EventStorageService>();
+builder.Services.AddTransient<IEventOrganizationService, EventOrganizationService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options => options.LoginPath = "/login");
 builder.Services.AddAuthorization();
