@@ -110,6 +110,5 @@
 }
 
 @section Scripts {
-    <script src="~/lib/particles.js/particles.js"></script>
-    <script src="~/js/particles.js"></script>
+    @{ await Html.RenderPartialAsync("_ParticlesScriptsPartial"); }
 }
