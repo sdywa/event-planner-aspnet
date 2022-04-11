@@ -95,7 +95,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background: #14274e30;
+  background: var(--gray);
 }
 
 .action-validation-error {

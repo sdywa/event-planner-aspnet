@@ -1,5 +1,6 @@
 @import url("common.css");
 @import url("blocks/button.css");
+@import url("blocks/form.css");
 
 .auth-container {
   height: 100vh;
@@ -48,20 +49,4 @@
 .tab-list-content {
   padding: 25px;
   background: #ffffff;
-}
-
-.form-item {
-  margin-bottom: 10px;
-}
-
-.form-item input {
-  background: #fafafa;
-  font-size: 16px;
-  height: 30px;
-  width: 100%;
-  padding: 20px 15px;
-}
-
-.form-item .input-validation-error {
-  border-color: var(--red);
 }

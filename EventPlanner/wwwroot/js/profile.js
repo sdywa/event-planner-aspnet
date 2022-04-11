@@ -1,0 +1,1 @@
+const handler = new InputHandler("form-info", "group", ["group-password"]);

@@ -1,0 +1,21 @@
+.form-item {
+  margin-bottom: 10px;
+}
+
+.form-item input {
+  background: #fafafa;
+  font-size: 16px;
+  height: 30px;
+  width: 100%;
+  padding: 20px 15px;
+}
+
+.input-validation-error {
+  border-color: var(--red);
+}
+
+.field-validation-error {
+  margin-bottom: 5px;
+  display: block;
+  color: var(--red);
+}

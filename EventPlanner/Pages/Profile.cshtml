@@ -1,0 +1,73 @@
+@page
+@model ProfileModel
+@{
+    ViewData["Title"] = "Профиль";
+}
+
+<div class="container">
+    <div class="page">
+        <div class="page-wrapper">
+            <div class="page-content">
+                <div class="title">Профиль</div>
+                <form method="post" asp-page-handler="" class="form-info">
+                    <div class="group">
+                        <div class="group-title">Имя</div>
+                        <div class="group-value">@Model.CurrentUser?.FirstName</div>
+                        <input class="group-input" asp-for="Profile.FirstName" type="text" placeholder="Введите имя">
+                        <span asp-validation-for="Profile.FirstName" class="form-error"></span>
+                    </div>
+                    <div class="group">
+                        <div class="group-title">Фамилия</div>
+                        <div class="group-value">@Model.CurrentUser?.LastName</div>
+                        <input class="group-input" asp-for="Profile.LastName" type="text" placeholder="Введите фамилию">
+                        <span asp-validation-for="Profile.LastName" class="form-error"></span>
+                    </div>
+                    <div class="group">
+                        <div class="group-title">E-mail</div>
+                        <div class="group-value">@Model.Email</div>
+                        <input class="group-input" asp-for="Email" type="text" placeholder="Введите почту">
+                        <span asp-validation-for="Email" class="form-error"></span>
+                    </div>
+                    <div class="group group-password">
+                        <div class="group-title">Пароль</div>
+                        <div class="group-value">Сменить пароль</div>
+                        <div class="group-inputs">
+                            <label>Введите пароль</label>
+                            <input class="group-input" minlength="8" asp-for="Profile.Password" type="password" placeholder="Введите пароль">
+                            <span asp-validation-for="Profile.Password" class="form-error"></span>
+                            <label>Введите ещё раз пароль</label>
+                            <input class="group-input" minlength="8" asp-for="Profile.PasswordConfirm" type="password" placeholder="Подтвердите пароль">
+                            <span asp-validation-for="Profile.PasswordConfirm" class="form-error"></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="button button--green button--form">Сохранить</button>
+                </form>
+                @if (Model.CurrentUser?.RoleId == 1)
+                {
+                    <form method="post" asp-page="Profile" asp-page-handler="ChangeRole">
+                        <button class="role">Хочу стать организатором</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="background">
+        <div id="particles-js">
+            <canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/input.js"></script>
+    <script src="~/js/profile.js"></script>
+    <script src="~/lib/particles.js/particles.js"></script>
+    <script src="~/js/particles.js"></script>
+}
