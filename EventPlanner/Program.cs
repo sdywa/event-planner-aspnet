@@ -20,7 +20,7 @@ builder.Services.AddTransient<EventPlanner.Services.AuthenticationServices.IAuth
 builder.Services.AddTransient<IEventStorageService, EventStorageService>();
 builder.Services.AddTransient<IEventOrganizationService, EventOrganizationService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => options.LoginPath = "/login");
+    .AddCookie(options => options.LoginPath = "/auth/login");
 builder.Services.AddAuthorization();
 
 builder.Services.Configure<RouteOptions>(option =>

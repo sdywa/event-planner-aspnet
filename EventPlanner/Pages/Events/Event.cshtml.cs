@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 using EventPlanner.Models;
 using EventPlanner.Services.EventStorageServices;
 
 namespace EventPlanner.Pages;
 
+[Authorize]
 public class EventModel : PageModel
 {
     [BindProperty(SupportsGet = true)]

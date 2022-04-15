@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using EventPlanner.Models;
 using EventPlanner.Services.EventOrganizationServices;
 
 namespace EventPlanner.Pages;
 
+[Authorize]
 public class ParticipantModel : PageModel
 {
     [BindProperty]

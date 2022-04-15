@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 using EventPlanner.Models;
 using EventPlanner.Services.EventStorageServices;
 
 namespace EventPlanner.Pages;
 
+[Authorize]
 public class EventsModel : PageModel
 {
     public List<Event> Events { get; set; } = null!;

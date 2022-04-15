@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 using EventPlanner.Models;
 using EventPlanner.Models.Profile;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Pages;
 
+[Authorize]
 public class ProfileModel : PageModel
 {
     [BindProperty]
