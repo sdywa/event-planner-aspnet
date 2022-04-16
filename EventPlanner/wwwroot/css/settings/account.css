@@ -1,9 +1,10 @@
-@import url("common.css");
-@import url("blocks/background.css");
-@import url("blocks/button.css");
-@import url("blocks/header.css");
-@import url("blocks/page.css");
-@import url("blocks/form.css");
+@import url("../common.css");
+@import url("../blocks/background.css");
+@import url("../blocks/button.css");
+@import url("../blocks/form.css");
+@import url("../blocks/header.css");
+@import url("../blocks/page.css");
+@import url("../blocks/tabs.css");
 
 .group-title {
   color: var(--darkgray);
@@ -63,4 +64,9 @@
   padding: 0;
   font-size: 14px;
   font-style: italic;
+}
+
+.page-content {
+  display: flex;
+  gap: 50px;
 }

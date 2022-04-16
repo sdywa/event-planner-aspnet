@@ -6,10 +6,12 @@
 @{
     ViewData["Header"] = null;
     ViewData["Title"] = Model.CurrentEvent.Name;
+    Layout = "_Page";
     var culture = new CultureInfo("ru-RU");
 }
 
-<div class="container event-container">
+@section PageCover 
+{
     <div class="cover">
         <div class="cover-backgrounds">
             <div class="cover-img">
@@ -18,97 +20,90 @@
             </div>
         </div>
     </div>
-    <div class="page">
-        <div class="page-wrapper">
-            <div class="page-content">
-                <div class="event-main">
-                    <div class="desc-box">
-                        <div class="title desc-title">
-                            @Model.CurrentEvent.Name
-                        </div>
-                        <div class="tags-box">
-                            <i class="fa-solid fa-tags"></i>
-                            <ul class="tags">
-                                <li class="tag">@Model.CurrentEvent.Category.Title</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="text-box">
-                        @Model.CurrentEvent.Description
-                    </div>
-                </div>
-                <div class="event-box">
-                    <div class="date">
-                        <div class="date-title">
-                            <i class="fa-solid fa-calendar"></i>
-                            @DateHelper.GetDate(Model.CurrentEvent.StartTime, culture);
-                        </div>
-                        <div class="date-day event-subtext">
-                            @DateHelper.GetDayName(Model.CurrentEvent.StartTime, culture);
-                        </div>
-                        <div class="date-time event-subtext">
-                            В @TimeHelper.GetTime(Model.CurrentEvent.StartTime)
-                        </div>
-                    </div>
-                    <div class="location">
-                        @if (Model.CurrentEvent.Type.Name == "Offline") 
-                        {
-                            <div class="location-title">
-                                <i class="fa-solid fa-location-dot"></i>
-                                @Model.CurrentEvent.Address?.Title
-                            </div>
-                            <div class="location-address event-subtext">
-                                @AddressHelper.GetAddress(Model.CurrentEvent.Address)    
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="event-subtext">
-                                <i class="fa-solid fa-desktop"></i>
-                                Мероприятие пройдёт онлайн
-                            </div>
-                        }
-                    </div>
-                    @{
-                        var id = User.FindFirst("Id")?.Value;
-                    }
-                    @if (id is not null)
-                    {
-                        var parsedId = int.Parse(id);
-                        var isParticipant = Model.CurrentEvent.Participants.FirstOrDefault(p => p.UserId == int.Parse(id)) is not null; 
-                        var getHandler = isParticipant ? "delete" : "";
-                        <div class="actions">
-                            <form method="post" asp-page="Participant" asp-page-handler="@getHandler" asp-route-id="@Model.CurrentEvent.Id" asp-route-userid="@parsedId">
-                                @if (!Model.IsValid)
-                                {
-                                    <div class="action-validation-error">Произошла ошибка</div>
-                                }
-                                @if (isParticipant)
-                                {
-                                    <button type="submit" class="button button--red">Отказаться от участия</button>
-                                }
-                                else
-                                {
-                                    <button type="submit" class="button button--green">Участвовать</button>
-                                }
-                            </form>
-                        </div>
-                    }
-                </div>
+}
+
+@section PageHeader 
+{
+    <h1 class="desc-title">
+        @Model.CurrentEvent.Name
+    </h1>
+}
+
+@section PageContent 
+{
+    <div class="event-main">
+        <div class="desc-box">
+            <div class="tags-box">
+                <i class="fa-solid fa-tags tag-icon"></i>
+                <ul class="tags">
+                    <li class="tag">@Model.CurrentEvent.Category.Title</li>
+                </ul>
             </div>
         </div>
-    </div>
-    <div class="background">
-        <div id="particles-js">
-            <canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;"></canvas>
+        <div class="text-box">
+            @Model.CurrentEvent.Description
         </div>
     </div>
-</div>
+    <div class="event-box">
+        <div class="date">
+            <div class="date-title">
+                <i class="fa-solid fa-calendar"></i>
+                @DateHelper.GetDate(Model.CurrentEvent.StartTime, culture)
+            </div>
+            <div class="date-day event-subtext">
+                @DateHelper.GetDayName(Model.CurrentEvent.StartTime, culture)
+            </div>
+            <div class="date-time event-subtext">
+                В @TimeHelper.GetTime(Model.CurrentEvent.StartTime)
+            </div>
+        </div>
+        <div class="location">
+            @if (Model.CurrentEvent.Type.Name == "Offline") 
+            {
+                <div class="location-title">
+                    <i class="fa-solid fa-location-dot"></i>
+                    @Model.CurrentEvent.Address?.Title
+                </div>
+                <div class="location-address event-subtext">
+                    @AddressHelper.GetAddress(Model.CurrentEvent.Address)    
+                </div>
+            }
+            else
+            {
+                <div class="event-subtext">
+                    <i class="fa-solid fa-desktop"></i>
+                    Мероприятие пройдёт онлайн
+                </div>
+            }
+        </div>
+        @{
+            var id = User.FindFirst("Id")?.Value;
+        }
+        @if (id is not null)
+        {
+            var parsedId = int.Parse(id);
+            var isParticipant = Model.CurrentEvent.Participants.FirstOrDefault(p => p.UserId == int.Parse(id)) is not null; 
+            var getHandler = isParticipant ? "delete" : "";
+            <div class="actions">
+                <form method="post" asp-page="Participant" asp-page-handler="@getHandler" asp-route-id="@Model.CurrentEvent.Id" asp-route-userid="@parsedId">
+                    @if (!Model.IsValid)
+                    {
+                        <div class="action-validation-error">Произошла ошибка</div>
+                    }
+                    @if (isParticipant)
+                    {
+                        <button type="submit" class="button button--red">Отказаться от участия</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="button button--green">Участвовать</button>
+                    }
+                </form>
+            </div>
+        }
+    </div>
+}
 
 @section Styles {
     <link rel="stylesheet" href="~/css/event.css" asp-append-version="true" />
-}
-
-@section Scripts {
-    @{ await Html.RenderPartialAsync("_ParticlesScriptsPartial"); }
 }

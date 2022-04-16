@@ -46,7 +46,7 @@ public class LoginModel : PageModel
             if (user != null)
                 await Authenticate(user.Id.ToString(), user.Email, user.FirstName, user.Role.Name);
         }
-        return RedirectToPage("/Index");
+        return RedirectToPage("/Events/Events");
     }
 
     private async Task Authenticate(string id, string email, string firstName, string role)

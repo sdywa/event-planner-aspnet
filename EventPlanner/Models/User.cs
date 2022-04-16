@@ -20,5 +20,7 @@ public class User : CommonModel
     public Role Role { get; set; } = null!;
 
 
-    public ICollection<Participant> Participants { get; set; } = null!;
+    public ICollection<FavEvent> FavEvents { get; set; } = null!;
+    public ICollection<Participant> PreviousEvents { get; set; } = null!;
+    public ICollection<Event> CreatedEvents { get; set; } = null!;
 }

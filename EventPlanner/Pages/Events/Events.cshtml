@@ -1,64 +1,48 @@
 @page "/events"
 @model EventPlanner.Pages.EventsModel
-@using System.Globalization
-@using EventPlanner.Helpers
+@using System.Security.Claims
+@using EventPlanner.HtmlHelpers
 @{
     ViewData["Title"] = "Мероприятия";
-    var culture = new CultureInfo("ru-RU");
+    Layout = "_Page";
 }
 
-<div class="container">
-    <div class="page">
-        <div class="page-wrapper">
-            <div class="page-content">
-                <div class="title">Мероприятия</div>
-                <div class="tiles">
-                    @foreach (var item in Model.Events)
-                    {
-                        <a class="tile" asp-page="Event" asp-route-id="@item.Id">
-                            <div class="tile-cover">
-                                <img class="tile-cover-blur" src="@item.CoverUrl" alt="Обложка">
-                                <img src="@item.CoverUrl" alt="Обложка">
-                            </div>
-                            <div class="tile-desc">
-                                <div class="tile-date">
-                                    @DateHelper.GetDate(item.StartTime, culture)
-                                </div>
-                                <div class="tile-title">@item.Name</div>
-                                
-                                <div class="tile-address">
-                                    @if (item.Type.Name == "Offline")
-                                    {
-                                        @AddressHelper.GetAddress(item.Address)
-                                    }
-                                    else
-                                    {
-                                        <text>Мероприятие пройдёт онлайн</text>
-                                    }
-                                </div>
-                                
-                                <div class="tags-box tile-tags">
-                                    <div class="tag">@item.Category.Title</div>
-                                </div>
-                            </div>
-                        </a>
-                    }
-                </div>
+@section PageHeader 
+{
+    <div class="page-header-wrapper">
+        <h1>Мероприятия</h1>
+        <div class="search">
+            <form method="get">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input class="search-input" type="text">
+            </form>
+        </div>
+            <div class="actions">
+                <form method="get">
+                    <select asp-for="Category">
+                        <option value="All">Все</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Name">@category.Title</option>
+                        }
+                    </select>
+                </form>
+                @if (User.FindFirst(ClaimTypes.Role)?.Value == "Organizer")
+                {
+                <a href="#" class="button button--icon button--green">
+                    <i class="fa-solid fa-plus"></i>
+                    Добавить
+                </a>
+                }
             </div>
-        </div>
     </div>
-    <div class="background">
-        <div id="particles-js">
-            <canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;"></canvas>
-        </div>
-    </div>
-</div>
+}
 
+@section PageContent
+{
+    @Html.CreateTiles(Url, Model.Events)
+}
 
 @section Styles {
     <link rel="stylesheet" href="~/css/events.css" asp-append-version="true" />
-}
-
-@section Scripts {
-    @{ await Html.RenderPartialAsync("_ParticlesScriptsPartial"); }
 }

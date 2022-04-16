@@ -8,9 +8,24 @@
   flex-direction: column;
 }
 
-.page-content {
+.page-container {
   z-index: 1;
   margin-top: 150px;
   padding: 40px 40px;
   background: var(--white);
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 50px;
+}
+
+.page-header .search {
+  flex-grow: 2;
 }

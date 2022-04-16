@@ -11,4 +11,6 @@ namespace EventPlanner.Services.UserServices;
 public interface IUserService : IDataService<User> 
 {
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken);
+    Task CreateFavEventAsync(FavEvent favEvent, CancellationToken cancellationToken);
+    Task DeleteFavEventAsync(int id, CancellationToken cancellationToken);
 }

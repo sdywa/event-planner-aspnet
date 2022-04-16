@@ -6,7 +6,6 @@ using EventPlanner.Services.EventStorageServices;
 
 namespace EventPlanner.Pages;
 
-[Authorize]
 public class EventModel : PageModel
 {
     [BindProperty(SupportsGet = true)]

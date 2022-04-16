@@ -18,8 +18,7 @@
 
 .main-title {
   font-size: 54px;
-  font-family: 'Ubuntu', sans-serif;
-  line-height: 0;
+  margin-bottom: 20px;
 }
 
 .main-description {
