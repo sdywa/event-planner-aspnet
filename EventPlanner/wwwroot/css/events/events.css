@@ -1,0 +1,15 @@
+@import url("../common.css");
+@import url("../blocks/background.css");
+@import url("../blocks/button.css");
+@import url("../blocks/header.css");
+@import url("../blocks/page.css");
+@import url("../blocks/search.css");
+@import url("../blocks/select.css");
+@import url("../blocks/tags.css");
+@import url("../blocks/tiles.css");
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}

@@ -72,7 +72,17 @@ public class AccountModel : PageModel
         if (Account.Password is not null)
             CurrentUser.Password = BCrypt.Net.BCrypt.HashPassword(Account.Password);
         await _userService.UpdateAsync(_id, CurrentUser, cancellationToken);
-        return Page();
+
+        var claims = new List<Claim>
+        {
+            new Claim("Id", id),
+            new Claim(ClaimsIdentity.DefaultNameClaimType, CurrentUser.Email),
+            new Claim("FirstName", CurrentUser.FirstName),
+            new Claim(ClaimsIdentity.DefaultRoleClaimType, CurrentUser.Role.Name)
+        };
+        await Reauthenticate(claims);
+
+        return RedirectToPage("Account");
     }
 
     public async Task<IActionResult> OnPostChangeRoleAsync(CancellationToken cancellationToken)

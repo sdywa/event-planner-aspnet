@@ -9,6 +9,7 @@
 .main-container {
   padding: 150px 0;
   max-width: 1200px;
+  height: calc(100vh - 60px);
 
   display: grid;
   grid-template-columns: auto 1fr;

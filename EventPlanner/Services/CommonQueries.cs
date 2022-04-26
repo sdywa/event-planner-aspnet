@@ -15,10 +15,12 @@ public class CommonQueries<T> where T : CommonModel
         _context = context;
     }
 
-    public async Task CreateAsync(T entity, CancellationToken cancellationToken)
+    public async Task<T> CreateAsync(T entity, CancellationToken cancellationToken)
     {
-        await _context.Set<T>().AddAsync(entity);
+        var created = await _context.Set<T>().AddAsync(entity);
         await _context.SaveChangesAsync();
+
+        return created.Entity;
     }
 
     public async Task<T?> GetAsync(

@@ -13,7 +13,7 @@ public interface IDataService<T>
     /// <param name="entity">Сущность</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task CreateAsync(T entity, CancellationToken cancellationToken);
+    Task<T> CreateAsync(T entity, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить сущность

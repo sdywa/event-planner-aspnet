@@ -24,30 +24,32 @@ public class ParticipantModel : PageModel
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
     {
-        if (await _eventOrganizationService.GetAsync(UserId, Id, cancellationToken) is not null)
+        var isValid = true;
+        if (await _eventOrganizationService.GetAsync(UserId, Id, cancellationToken) is null)
         {
-            return RedirectToPage("Event", new { id = Id, isValid = false });
+            var participant = new Participant() {
+                EventId = Id,
+                UserId = UserId
+            };
+            Console.WriteLine("aaaaaa");
+            await _eventOrganizationService.CreateAsync(participant, cancellationToken);
         }
 
-        var participant = new Participant() {
-            EventId = Id,
-            UserId = UserId
-        };
         
-        await _eventOrganizationService.CreateAsync(participant, cancellationToken);
-        return RedirectToPage("Event", new { id = Id });
+        return RedirectToPagePermanent("Event", new { id = Id, isValid = isValid });
     }
 
     public async Task<IActionResult> OnPostDeleteAsync(CancellationToken cancellationToken)
     {
+        var isValid = true;
         try 
         {
             await _eventOrganizationService.DeleteAsync(UserId, Id, cancellationToken);
         }
         catch (Exception)
         {
-            return RedirectToPage("Event", new { id = Id, isValid = false });
+            isValid = false;
         }
-        return RedirectToPage("Event", new { id = Id });
+        return RedirectToPagePermanent("Event", new { id = Id, isValid = isValid });
     }
 }

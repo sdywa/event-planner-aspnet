@@ -1,0 +1,142 @@
+@page "/event/edit/{id:int}"
+@model EventPlanner.Pages.EditEventModel
+@{
+    ViewData["Title"] = "Изменить мероприятие";
+    Layout = "_Page";
+}
+
+@section PageHeader 
+{
+    <div class="page-header-wrapper">
+        <h1>Изменить мероприятие</h1>
+    </div>
+}
+
+@section PageContent
+{
+    <div class="event-form">
+        <form method="post" asp-page-handler="" asp-antiforgery="true" enctype="multipart/form-data">
+            <div class="form-item">
+                <label asp-for="NewEvent.Name">Наименование:</label>
+                <input asp-for="NewEvent.Name" type="text" placeholder="Введите название">
+                <span asp-validation-for="NewEvent.Name" class="form-error"></span>
+            </div>
+            <div class="form-item">
+                
+                <label asp-for="NewEvent.Description">Описание:</label>
+                <textarea asp-for="NewEvent.Description" placeholder="Введите описание"></textarea>
+                <span asp-validation-for="NewEvent.Description" class="form-error"></span>
+            </div>
+            <div class="form-item">
+                <label asp-for="StartDate">Начальная дата:</label>
+                <input type="time">
+                <input asp-for="StartDate" type="date" placeholder="Введите начальная дата">
+                <span asp-validation-for="StartDate" class="form-error"></span>
+            </div>
+            <div class="form-item">
+                <label asp-for="EndDate">Конечная дата:</label>
+                <input type="time">
+                <input asp-for="EndDate" type="date" placeholder="Введите конечная дата">
+                <span asp-validation-for="EndDate" class="form-error"></span>
+            </div>
+            <div class="form-item">
+                <label asp-for="NewEvent.Cover">Обложка:</label>
+                <input asp-for="NewEvent.Cover" type="file" placeholder="Добавьте файл" accept="image/png, image/jpeg, image/jpg" value="@Model.CurrentEvent.CoverUrl">
+                <span asp-validation-for="NewEvent.Cover" class="form-error"></span>
+            </div>
+            <div class="form-item">
+                <label asp-for="NewEvent.CategoryId">Категория:</label>
+                <select asp-for="NewEvent.CategoryId">
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id">@category.Title</option>
+                    }
+                </select>
+                <span asp-validation-for="NewEvent.CategoryId" class="form-error"></span>
+            </div>
+            <div class="form-item">
+                <label asp-for="NewEvent.TypeId">Тип:</label>
+                <select asp-for="NewEvent.TypeId">
+                    @foreach (var eventType in Model.Types)
+                    {
+                        <option value="@eventType.Id">@eventType.Title</option>
+                    }
+                </select>
+                <span asp-validation-for="NewEvent.TypeId" class="form-error"></span>
+            </div>
+            <div class="address-group">
+                <div class="form-item">
+                    <label asp-for="Address.Country">Страна:</label>
+                    <input asp-for="Address.Country" type="text" placeholder="Введите страну">
+                    <span asp-validation-for="Address.Country" class="form-error"></span>
+                </div>
+                <div class="form-item">
+                    <label asp-for="Address.Region">Регион:</label>
+                    <input asp-for="Address.Region" type="text" placeholder="Введите регион">
+                    <span asp-validation-for="Address.Region" class="form-error"></span>
+                </div>
+                <div class="form-item">
+                    <label asp-for="Address.City">Город:</label>
+                    <input asp-for="Address.City" type="text" placeholder="Введите город">
+                    <span asp-validation-for="Address.City" class="form-error"></span>
+                </div>
+                <div class="form-item">
+                    <label asp-for="Address.Street">Улица:</label>
+                    <input asp-for="Address.Street" type="text" placeholder="Введите улицу">
+                    <span asp-validation-for="Address.Street" class="form-error"></span>
+                </div>
+                <div class="form-item">
+                    <label asp-for="Address.Building">Здание:</label>
+                    <input asp-for="Address.Building" type="text" placeholder="Введите здание">
+                    <span asp-validation-for="Address.Building" class="form-error"></span>
+                </div>
+                <div class="form-item">
+                    <label asp-for="Address.Title">Название:</label>
+                    <input asp-for="Address.Title" type="text" placeholder="Введите название">
+                    <span asp-validation-for="Address.Title" class="form-error"></span>
+                </div>
+            </div>
+            <button type="submit" class="button button--green">Изменить</button>
+        </form>
+    </div>
+    <form method="post" class="participants-form">
+            <h2>Участники</h2>
+            @if (Model.CurrentEvent.Participants.Count > 0)
+            {
+                <ul class="participants">
+                    @foreach (var participant in Model.CurrentEvent.Participants)
+                    {
+                        <li class="participant-item">
+                            <div class="participant-name">@participant.User.FirstName @participant.User.LastName</div>
+                            <button type="submit" class="button button--red" asp-page="participants" asp-page-handler="delete" asp-route-userid="@participant.UserId" asp-route-id="@Model.Id">Удалить</button>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div>Участников нет :(</div>
+            }
+        </form>
+}
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        const select = document.querySelector("#NewEvent_TypeId");
+        const addressGroup = document.querySelector(".address-group");
+        pick();
+        select.addEventListener("change", pick);
+
+        function pick() {
+            if (select.value == 1)
+                addressGroup.classList.remove("hidden");
+            else
+                addressGroup.classList.add("hidden");
+        }
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/events/editevent.css" asp-append-version="true" />
+}

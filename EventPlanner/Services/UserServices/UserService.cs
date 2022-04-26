@@ -19,7 +19,7 @@ public class UserService : IUserService
         _commonFavEvents = new CommonQueries<FavEvent>(_context);
     }
 
-    public async Task CreateAsync(User entity, CancellationToken cancellationToken) =>
+    public async Task<User> CreateAsync(User entity, CancellationToken cancellationToken) =>
         await _common.CreateAsync(entity, cancellationToken);
 
     public async Task<User?> GetAsync(int id, CancellationToken cancellationToken) =>
@@ -54,8 +54,7 @@ public class UserService : IUserService
 
     private IQueryable<User> IncludeValuesWithEvents(
         CancellationToken cancellationToken) =>
-        _context.Users
-            .Include(u => u.Role)
+        IncludeValues(cancellationToken)
             .Include(u => u.FavEvents)
                 .ThenInclude(f => f.Event)
                     .ThenInclude(e => e.Type)

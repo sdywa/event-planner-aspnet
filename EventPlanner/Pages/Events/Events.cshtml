@@ -17,24 +17,24 @@
                 <input class="search-input" type="text">
             </form>
         </div>
-            <div class="actions">
-                <form method="get">
-                    <select asp-for="Category">
-                        <option value="All">Все</option>
-                        @foreach (var category in Model.Categories)
-                        {
-                            <option value="@category.Name">@category.Title</option>
-                        }
-                    </select>
-                </form>
-                @if (User.FindFirst(ClaimTypes.Role)?.Value == "Organizer")
-                {
-                <a href="#" class="button button--icon button--green">
-                    <i class="fa-solid fa-plus"></i>
-                    Добавить
-                </a>
-                }
-            </div>
+        <div class="actions">
+            <form method="get">
+                <select asp-for="Category">
+                    <option value="All">Все</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Name">@category.Title</option>
+                    }
+                </select>
+            </form>
+            @if (User.FindFirst(ClaimTypes.Role)?.Value == "Organizer")
+            {
+            <a asp-page="NewEvent" class="button button--icon button--green">
+                <i class="fa-solid fa-plus"></i>
+                Добавить
+            </a>
+            }
+        </div>
     </div>
 }
 
@@ -44,5 +44,5 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/events.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/events/events.css" asp-append-version="true" />
 }

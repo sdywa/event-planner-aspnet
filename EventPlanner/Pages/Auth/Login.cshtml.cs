@@ -63,4 +63,3 @@ public class LoginModel : PageModel
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
     }
 }
-

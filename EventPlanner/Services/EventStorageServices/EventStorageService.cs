@@ -11,18 +11,20 @@ public class EventStorageService : IEventStorageService
 {
     private PlannerContext _context;
     private CommonQueries<Event> _common;
+    private CommonQueries<Address> _commonAddress;
 
     public EventStorageService(PlannerContext context)
     {
         _context = context;
         _common = new CommonQueries<Event>(_context);
+        _commonAddress = new CommonQueries<Address>(_context);
     }
 
-    public async Task CreateAsync(Event entity, CancellationToken cancellationToken) =>
+    public async Task<Event> CreateAsync(Event entity, CancellationToken cancellationToken) =>
         await _common.CreateAsync(entity, cancellationToken);
 
     public async Task<Event?> GetAsync(int id, CancellationToken cancellationToken) =>
-        await _common.GetAsync(id, IncludeValues(cancellationToken), cancellationToken);
+        await _common.GetAsync(id, IncludeValuesWithParticipants(cancellationToken), cancellationToken);
 
     public async Task<List<Event>> GetAllAsync(CancellationToken cancellationToken) =>
         await _common.GetAllAsync(IncludeValues(cancellationToken), cancellationToken);
@@ -41,6 +43,9 @@ public class EventStorageService : IEventStorageService
     public async Task DeleteAsync(int id, CancellationToken cancellationToken) => 
         await _common.DeleteAsync(id, cancellationToken);
 
+    public async Task<Address> AddAddressAsync(Address entity, CancellationToken cancellationToken) =>
+        await _commonAddress.CreateAsync(entity, cancellationToken);
+
     private IQueryable<Event> IncludeValues(
         CancellationToken cancellationToken) =>
         _context.Events
@@ -48,4 +53,10 @@ public class EventStorageService : IEventStorageService
             .Include(e => e.Creator)
             .Include(e => e.Category)
             .Include(e => e.Address);
+
+    private IQueryable<Event> IncludeValuesWithParticipants(
+        CancellationToken cancellationToken) =>
+        IncludeValues(cancellationToken)
+            .Include(e => e.Participants)
+                .ThenInclude(p => p.User);
 }

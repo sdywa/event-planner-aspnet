@@ -11,4 +11,5 @@ namespace EventPlanner.Services.EventStorageServices;
 public interface IEventStorageService : IDataService<Event>
 {
     Task<List<Event>> GetByCreatorAsync(int creatorId, CancellationToken cancellationToken);
+    Task<Address> AddAddressAsync(Address entity, CancellationToken cancellationToken);
 }

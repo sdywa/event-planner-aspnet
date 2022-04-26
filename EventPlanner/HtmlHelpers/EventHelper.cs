@@ -24,7 +24,15 @@ public static class EventHelper
                 </div>
                 <div class=""tile-desc"">
                     <div class=""tile-date"">");
-            builder.Append(DateHelper.GetDate(currentEvent.StartTime, culture));
+            if (currentEvent.StartTime > 0)
+                builder.Append(DateHelper.GetDate(currentEvent.StartTime, culture));
+            else if (currentEvent.EndTime > 0)
+            {
+                builder.Append("До ");
+                builder.Append(DateHelper.GetDate(currentEvent.EndTime, culture));
+            }
+            else
+                builder.Append("Даты неизвестны");
             builder.Append($@"</div>
                     <div class=""tile-title"">{currentEvent.Name}</div>
                     

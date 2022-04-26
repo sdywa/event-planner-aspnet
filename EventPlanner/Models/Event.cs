@@ -7,9 +7,9 @@ public class Event : CommonModel
     [StringLength(70)]
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public int CreationTime { get; set; }
-    public int StartTime { get; set; }
-    public int EndTime { get; set; }
+    public long CreationTime { get; set; }
+    public long StartTime { get; set; }
+    public long EndTime { get; set; }
     [StringLength(70)]
     public string? CoverUrl { get; set; }
 

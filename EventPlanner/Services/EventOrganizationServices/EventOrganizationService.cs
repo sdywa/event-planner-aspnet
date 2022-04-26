@@ -20,7 +20,7 @@ public class EventOrganizationService : IEventOrganizationService
         _common = new CommonQueries<Participant>(_context);
     }
 
-    public async Task CreateAsync(Participant entity, CancellationToken cancellationToken) =>
+    public async Task<Participant> CreateAsync(Participant entity, CancellationToken cancellationToken) =>
         await _common.CreateAsync(entity, cancellationToken);
 
     public async Task<Participant?> GetAsync(int id, CancellationToken cancellationToken) =>
@@ -41,14 +41,9 @@ public class EventOrganizationService : IEventOrganizationService
     public async Task DeleteAsync(int userId, int eventId, CancellationToken cancellationToken)
     {
         var entity = await GetAsync(userId, eventId, cancellationToken);
-        if (entity is not null)
-        {
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
+        if (entity is null)
             throw new NullReferenceException();
-        }
+        _context.Remove(entity);
+        await _context.SaveChangesAsync();
     }
 }

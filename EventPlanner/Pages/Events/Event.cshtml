@@ -46,16 +46,36 @@
     </div>
     <div class="event-box">
         <div class="date">
-            <div class="date-title">
-                <i class="fa-solid fa-calendar"></i>
-                @DateHelper.GetDate(Model.CurrentEvent.StartTime, culture)
-            </div>
-            <div class="date-day event-subtext">
-                @DateHelper.GetDayName(Model.CurrentEvent.StartTime, culture)
-            </div>
-            <div class="date-time event-subtext">
-                В @TimeHelper.GetTime(Model.CurrentEvent.StartTime)
-            </div>
+            @if (Model.CurrentEvent.StartTime > 0)
+            {
+                <div class="date-title">
+                    <i class="fa-solid fa-calendar"></i>
+                    @DateHelper.GetDate(Model.CurrentEvent.StartTime, culture)
+                </div>
+                <div class="date-day event-subtext">
+                    @DateHelper.GetDayName(Model.CurrentEvent.StartTime, culture)
+                </div>
+                <div class="date-time event-subtext">
+                    В @TimeHelper.GetTime(Model.CurrentEvent.StartTime)
+                </div>
+            }
+            else if (Model.CurrentEvent.EndTime > 0)
+            {
+                <div class="date-title">
+                    <i class="fa-solid fa-calendar"></i>
+                    До @DateHelper.GetDate(Model.CurrentEvent.EndTime, culture)
+                </div>
+                <div class="date-day event-subtext">
+                    @DateHelper.GetDayName(Model.CurrentEvent.EndTime, culture)
+                </div>
+            }
+            else
+            {
+                <div class="event-subtext">
+                    <i class="fa-solid fa-calendar"></i>
+                    Автор не указал дату
+                </div>
+            }
         </div>
         <div class="location">
             @if (Model.CurrentEvent.Type.Name == "Offline") 
@@ -82,28 +102,38 @@
         @if (id is not null)
         {
             var parsedId = int.Parse(id);
-            var isParticipant = Model.CurrentEvent.Participants.FirstOrDefault(p => p.UserId == int.Parse(id)) is not null; 
+            var isParticipant = Model.CurrentEvent.Participants.FirstOrDefault(p => p.UserId == parsedId) is not null; 
             var getHandler = isParticipant ? "delete" : "";
             <div class="actions">
-                <form method="post" asp-page="Participant" asp-page-handler="@getHandler" asp-route-id="@Model.CurrentEvent.Id" asp-route-userid="@parsedId">
-                    @if (!Model.IsValid)
-                    {
-                        <div class="action-validation-error">Произошла ошибка</div>
-                    }
-                    @if (isParticipant)
-                    {
-                        <button type="submit" class="button button--red">Отказаться от участия</button>
-                    }
-                    else
-                    {
-                        <button type="submit" class="button button--green">Участвовать</button>
-                    }
-                </form>
+                @if (Model.CurrentEvent.CreatorId != parsedId)
+                {
+                    <form method="post" asp-page="Participant" asp-page-handler="@getHandler" asp-route-id="@Model.CurrentEvent.Id" asp-route-userid="@parsedId">
+                        @if (!Model.IsValid)
+                        {
+                            <div class="action-validation-error">Произошла ошибка</div>
+                        }
+                        @if (isParticipant)
+                        {
+                            <button type="submit" class="button button--red">Отказаться от участия</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="button button--green">Участвовать</button>
+                        }
+                    </form>
+                }
+                else
+                {
+                    <a asp-page="EditEvent" asp-route-id="@Model.Id" class="button button--green">Редактировать</a>
+                    <form method="post">
+                        <button type="submit" class="button button--red">Удалить</button>
+                    </form>
+                }
             </div>
         }
     </div>
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/event.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/events/event.css" asp-append-version="true" />
 }

@@ -19,10 +19,13 @@ public static class DateHelper
     public static string GetDayName(long unixTime, CultureInfo culture) => 
         culture.DateTimeFormat.GetDayName(UnixTimeToDateTime(unixTime).DayOfWeek);
 
-    private static DateTime UnixTimeToDateTime(long unixTime)
+    public static DateTime UnixTimeToDateTime(long unixTime)
     {
         var dateTime = new DateTime(1970, 1, 1);
         dateTime = dateTime.AddSeconds(unixTime);
         return dateTime;
     }
+
+    public static long DateTimeToUnixTime(DateTime datetime) =>
+        ((DateTimeOffset) datetime).ToUnixTimeSeconds();
 }

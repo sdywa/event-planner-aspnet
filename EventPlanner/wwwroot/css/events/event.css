@@ -1,9 +1,10 @@
-@import url("common.css");
-@import url("blocks/background.css");
-@import url("blocks/button.css");
-@import url("blocks/header.css");
-@import url("blocks/page.css");
-@import url("blocks/tags.css");
+@import url("../common.css");
+@import url("../blocks/background.css");
+@import url("../blocks/button.css");
+@import url("../blocks/form.css");
+@import url("../blocks/header.css");
+@import url("../blocks/page.css");
+@import url("../blocks/tags.css");
 
 .container {
   min-height: 100vh;
@@ -86,6 +87,8 @@
 }
 
 .actions {
+  display: flex;
+  gap: 15px;
   position: relative;
   margin-top: 20px;
   padding-top: 20px;

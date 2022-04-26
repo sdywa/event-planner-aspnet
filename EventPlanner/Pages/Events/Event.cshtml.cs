@@ -32,4 +32,10 @@ public class EventModel : PageModel
         await _context.Entry(CurrentEvent).Collection(e => e.Participants).LoadAsync();
         return Page();
     }
+
+    public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
+    {
+        await _eventStorageService.DeleteAsync(Id, cancellationToken);
+        return RedirectToPage("Events");
+    }
 }
