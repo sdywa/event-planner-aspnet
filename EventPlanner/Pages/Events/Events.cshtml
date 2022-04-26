@@ -12,14 +12,10 @@
     <div class="page-header-wrapper">
         <h1>Мероприятия</h1>
         <div class="search">
-            <form method="get">
+            <form method="get" class="main-form">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input class="search-input" type="text">
-            </form>
-        </div>
-        <div class="actions">
-            <form method="get">
-                <select asp-for="Category">
+                <input asp-for="Search" class="search-input" type="text">
+                <select asp-for="Category" class="category-select">
                     <option value="All">Все</option>
                     @foreach (var category in Model.Categories)
                     {
@@ -27,6 +23,8 @@
                     }
                 </select>
             </form>
+        </div>
+        <div class="actions">
             @if (User.FindFirst(ClaimTypes.Role)?.Value == "Organizer")
             {
             <a asp-page="NewEvent" class="button button--icon button--green">
@@ -45,4 +43,12 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/events/events.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script>
+        const form = document.querySelector(".main-form");
+        const select = document.querySelector(".category-select");
+        select.addEventListener("change", () => { form.submit(); });
+    </script>
 }

@@ -8,6 +8,11 @@
 @import url("../blocks/tags.css");
 @import url("../blocks/tiles.css");
 
+.main-form {
+  display: flex;
+  justify-content: space-between;
+}
+
 .actions {
   display: flex;
   align-items: center;

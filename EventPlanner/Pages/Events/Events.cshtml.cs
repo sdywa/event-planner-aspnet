@@ -8,9 +8,12 @@ namespace EventPlanner.Pages;
 
 public class EventsModel : PageModel
 {
+    [BindProperty(SupportsGet = true)]
+    public string? Search { get; set; }
+    [BindProperty(SupportsGet = true)]
+    public string? Category { get; set; }
     public List<Event> Events { get; set; } = null!;
     public List<Category> Categories { get; set; } = null!;
-    public string Category { get; set; } = null!;
     private PlannerContext _context;
     private IEventStorageService _eventStorageService;
 
@@ -22,7 +25,22 @@ public class EventsModel : PageModel
 
     public async Task OnGet(CancellationToken cancellationToken)
     {
-        Events = await _eventStorageService.GetAllAsync(cancellationToken);
         Categories = _context.Categories.ToList();
+        Events = await _eventStorageService.GetAllAsync(cancellationToken);
+        if (Search is not null)
+        {
+            Search = Search.ToLower();
+            Events = Events
+                .Where(e => e.Name.ToLower().Contains(Search) || 
+                    e.Description.ToLower().Contains(Search))
+                .ToList();
+        }
+
+        Console.WriteLine(Category);
+
+        if (Category is not null && Category != "All")
+            Events = Events
+                .Where(e => e.Category.Name == Category)
+                .ToList();
     }
 }
