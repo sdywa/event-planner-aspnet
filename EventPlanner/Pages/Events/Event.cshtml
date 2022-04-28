@@ -4,10 +4,11 @@
 @using EventPlanner.Models
 @using EventPlanner.Helpers
 @{
-    ViewData["Header"] = null;
     ViewData["Title"] = Model.CurrentEvent.Name;
+    ViewData["IsFixed"] = true;
     Layout = "_Page";
     var culture = new CultureInfo("ru-RU");
+    var id = User.FindFirst("Id")?.Value;
 }
 
 @section PageCover 
@@ -27,6 +28,23 @@
     <h1 class="desc-title">
         @Model.CurrentEvent.Name
     </h1>
+    @if (id is not null)
+    {
+        <form method="post">
+            @if (!Model.IsFavorite)
+            {
+                <button class="action" asp-page-handler="addfav">
+                    <i class="fa-solid fa-bookmark bookmark"></i>
+                </button>
+            }
+            else
+            {
+                <button class="action" asp-page-handler="deletefav">
+                    <i class="fa-solid fa-bookmark bookmark bookmark--selected"></i>
+                </button>
+            }
+        </form>
+    }
 }
 
 @section PageContent 
@@ -96,9 +114,6 @@
                 </div>
             }
         </div>
-        @{
-            var id = User.FindFirst("Id")?.Value;
-        }
         @if (id is not null)
         {
             var parsedId = int.Parse(id);

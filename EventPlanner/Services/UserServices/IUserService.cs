@@ -12,5 +12,6 @@ public interface IUserService : IDataService<User>
 {
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken);
     Task CreateFavEventAsync(FavEvent favEvent, CancellationToken cancellationToken);
+    Task<FavEvent?> GetFavEventAsync(int userId, int eventId, CancellationToken cancellationToken);
     Task DeleteFavEventAsync(int id, CancellationToken cancellationToken);
 }

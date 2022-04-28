@@ -1,4 +1,9 @@
-<header class="header">
+@model bool
+
+@{
+    var headerClass = Model ? "header--fixed" : "";
+}
+<header class="header @headerClass">
     <nav class="navbar">
         <a class="navbar-logo" asp-area="" asp-page="/Index">EventPlanner</a>
         <ul class="navbar-nav navbar-main">
@@ -27,4 +32,5 @@
             }
         </ul>
     </nav>
+    <div class="header-background"></div>
 </header>

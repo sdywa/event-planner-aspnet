@@ -44,6 +44,9 @@ public class UserService : IUserService
     public async Task CreateFavEventAsync(FavEvent favEvent, CancellationToken cancellationToken) =>
         await _commonFavEvents.CreateAsync(favEvent, cancellationToken);
 
+    public async Task<FavEvent?> GetFavEventAsync(int userId, int eventId, CancellationToken cancellationToken) =>
+        await _context.FavEvents.FirstOrDefaultAsync(e => e.UserId == userId && e.EventId == eventId, cancellationToken);
+
     public async Task DeleteFavEventAsync(int id, CancellationToken cancellationToken) => 
         await _commonFavEvents.DeleteAsync(id, cancellationToken);
 

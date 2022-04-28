@@ -1,6 +1,31 @@
 .header {
-  background: var(--blue);
+  position: relative;
   font-weight: 400;
+  width: 100%;
+  z-index: 3;
+}
+
+.header--fixed {
+  position: fixed;
+  top: 0;
+}
+
+.header-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.header--fixed .header-background {
+  background: rgba(102,123,163, 0.75);
+  backdrop-filter: blur(10px);
+}
+
+.header:not(.header--fixed) .header-background {
+  background: var(--blue);
 }
 
 .header a {

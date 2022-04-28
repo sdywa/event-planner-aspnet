@@ -14,7 +14,7 @@
 <body>
     @if (ViewData["Header"] != null)
     {
-        await Html.RenderPartialAsync(string.Format("{0}", ViewData["Header"]));
+        await Html.RenderPartialAsync(string.Format("{0}", ViewData["Header"]), (bool?) ViewData["IsFixed"] == true);
     }
 
     <main role="main">
