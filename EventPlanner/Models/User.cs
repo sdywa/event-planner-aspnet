@@ -13,12 +13,9 @@ public class User : CommonModel
     [StringLength(70)]
     public string Password { get; set; } = null!;
     public long RegTime { get; set; }
-    [StringLength(70)]
-    public string? AvatarUrl { get; set; }
 
     public int RoleId { get; set; }
     public Role Role { get; set; } = null!;
-
 
     public ICollection<FavEvent> FavEvents { get; set; } = null!;
     public ICollection<Participant> PreviousEvents { get; set; } = null!;

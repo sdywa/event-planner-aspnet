@@ -24,15 +24,16 @@
                 </select>
             </form>
         </div>
+        @if (User.FindFirst(ClaimTypes.Role)?.Value == "Organizer")
+        {
         <div class="actions">
-            @if (User.FindFirst(ClaimTypes.Role)?.Value == "Organizer")
-            {
+            
             <a asp-page="NewEvent" class="button button--icon button--green">
                 <i class="fa-solid fa-plus"></i>
                 Добавить
             </a>
-            }
         </div>
+        }
     </div>
 }
 

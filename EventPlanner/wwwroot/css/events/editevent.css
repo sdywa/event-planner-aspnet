@@ -7,11 +7,15 @@
 @import url("../blocks/participants-list.css");
 @import url("../blocks/select.css");
 
+.container {
+  padding-bottom: 50px;
+}
+
 .page-content {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .participants-form {
-    width: 400px;
+  width: 400px;
 }

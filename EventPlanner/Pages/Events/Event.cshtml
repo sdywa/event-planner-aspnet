@@ -122,7 +122,7 @@
             <div class="actions">
                 @if (Model.CurrentEvent.CreatorId != parsedId)
                 {
-                    <form method="post" asp-page="Participant" asp-page-handler="@getHandler" asp-route-id="@Model.CurrentEvent.Id" asp-route-userid="@parsedId">
+                    <form method="post" asp-page="participant" asp-page-handler="@getHandler" asp-route-id="@Model.CurrentEvent.Id" asp-route-userid="@parsedId" asp-route-returnurl="Event">
                         @if (!Model.IsValid)
                         {
                             <div class="action-validation-error">Произошла ошибка</div>

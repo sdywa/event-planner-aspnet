@@ -8,6 +8,10 @@
 @import url("../blocks/tags.css");
 @import url("../blocks/tiles.css");
 
+.container {
+  padding-bottom: 50px;
+}
+
 .main-form {
   display: flex;
   justify-content: space-between;

@@ -39,7 +39,7 @@ public class ParticipantModel : PageModel
         return RedirectToPagePermanent("Event", new { id = Id, isValid = isValid });
     }
 
-    public async Task<IActionResult> OnPostDeleteAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> OnPostDeleteAsync(string returnUrl, CancellationToken cancellationToken)
     {
         var isValid = true;
         try 
@@ -50,6 +50,6 @@ public class ParticipantModel : PageModel
         {
             isValid = false;
         }
-        return RedirectToPagePermanent("Event", new { id = Id, isValid = isValid });
+        return RedirectToPagePermanent(returnUrl, new { id = Id, isValid = isValid });
     }
 }
