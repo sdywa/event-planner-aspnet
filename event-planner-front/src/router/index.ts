@@ -5,4 +5,4 @@ interface route {
     element: React.ReactNode;
 }
 
-export const routes : route[] = [];
+export const routes: route[] = [];
