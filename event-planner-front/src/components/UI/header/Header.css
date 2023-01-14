@@ -1,0 +1,33 @@
+.header {
+    display: flex;
+    justify-content: center;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 1rem 0;
+    min-width: 70rem;
+    width: 70%;
+    max-width: 100rem;
+}
+
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-controls--authenticated {
+    gap: 5px;
+}
+
+.header-controls--unauthenticated {
+    gap: 2rem;
+}
+
+.header-logo {
+    cursor: pointer;
+}
