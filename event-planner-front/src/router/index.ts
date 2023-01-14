@@ -10,8 +10,8 @@ interface route {
 }
 
 export const routes: route[] = [
-    { path: '/', component: Events },
-    { path: '/learn', component: Learn },
-    { path: '/login', component: Login },
-    { path: '/signup', component: Signup },
+    { path: "/", component: Events },
+    { path: "/learn", component: Learn },
+    { path: "/login", component: Login },
+    { path: "/signup", component: Signup },
 ];

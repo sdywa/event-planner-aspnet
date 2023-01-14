@@ -9,7 +9,7 @@ export interface IButtonProps {
 
 export const Button: FC<IButtonProps> = ({ children, link, classes }) => {
     return (
-        <Link className={ ["button", ...(classes || [])].join(' ') } to={ link }>
+        <Link className={ ["button", ...(classes || [])].join(" ") } to={ link }>
             { children }
         </Link>
     );
