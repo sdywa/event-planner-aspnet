@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { routes } from "../router";
 
 const AppRouter: FC = () => {
@@ -9,9 +9,10 @@ const AppRouter: FC = () => {
                 <Route
                     key={route.path}
                     path={route.path}
-                    element={route.element}
+                    element={<route.component />}
                 />
             ) }
+            <Route path="*" element={<Navigate replace to="/" />}></Route>
         </Routes>
     );
 }
