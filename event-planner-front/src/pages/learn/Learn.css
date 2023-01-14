@@ -1,0 +1,25 @@
+.section-intro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 60px);
+    min-height: 70rem;
+}
+
+.intro-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6.4rem;
+    width: 130rem;
+}
+
+.intro-text-box {
+    width: 60rem;
+}
+
+.intro-description {
+    font-size: 2rem;
+    line-height: 1.6;
+    width: 40rem;
+}
