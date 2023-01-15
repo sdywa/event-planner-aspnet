@@ -13,11 +13,7 @@ export const DropdownMenuItem: FC<IDropdownMenuItemProps> = ({label, link, icon=
         <li className="dropdown-menu-item">
             <Link to={link} className="menu-item-inner">
                 {
-                    icon
-                    ?
-                    <div className="menu-item-icon"><i className={icon}></i></div>
-                    :
-                    null
+                    icon && <div className="menu-item-icon"><i className={icon}></i></div>
                 }
                 <div className="menu-item-text">{label}</div>      
             </Link>
