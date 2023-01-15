@@ -5,7 +5,7 @@ import { DropdownMenu } from "../dropdown-menu/DropdownMenu";
 import "./Header.css";
 
 export const Header: FC = () => {
-    const isAuth = true;
+    const isAuth = false;
     const username = "Username";
 
     const navigate = useNavigate();
