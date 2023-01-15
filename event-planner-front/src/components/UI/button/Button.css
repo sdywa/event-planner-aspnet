@@ -9,12 +9,12 @@
     font-size: 1.4rem;
     font-weight: 700;
 
-    transition: all 0.3s;
+    transition: color 0.3s;
 }
 
 .button:hover,
 .button:active {
-    color: var(--gray);
+    color: var(--darkgray);
 }
 
 .button--primary:link,
@@ -26,5 +26,5 @@
 
 .button--primary:hover,
 .button--primary:active {
-    border-color: var(--gray);
+    border-color: var(--darkgray);
 }

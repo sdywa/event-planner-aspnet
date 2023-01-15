@@ -1,0 +1,29 @@
+.dropdown-menu-item {
+    width: 100%;
+    padding: 1rem;
+    border-bottom: 1px solid var(--lightgray);
+}
+
+.dropdown-menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item-inner {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+
+    color: var(--darkgray);
+    text-decoration: none;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+
+    transition: color 0.3s;
+}
+
+.menu-item-inner:hover,
+.menu-item-inner:active {
+    color: var(--gray);
+}

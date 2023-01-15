@@ -14,20 +14,20 @@
     max-width: 100rem;
 }
 
-.header-controls {
+.header-logo {
+    cursor: pointer;
+}
+
+.controls-inner {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.header-controls--authenticated {
+.controls--authenticated {
     gap: 5px;
 }
 
-.header-controls--unauthenticated {
+.controls--unauthenticated {
     gap: 2rem;
-}
-
-.header-logo {
-    cursor: pointer;
 }
