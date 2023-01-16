@@ -14,10 +14,6 @@
     max-width: 100rem;
 }
 
-.header-logo {
-    cursor: pointer;
-}
-
 .controls-inner {
     display: flex;
     justify-content: space-between;

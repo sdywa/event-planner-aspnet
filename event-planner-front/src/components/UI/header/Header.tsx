@@ -1,21 +1,17 @@
 import React, { FC } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "../button/Button";
 import { DropdownMenu } from "../dropdown-menu/DropdownMenu";
+import { Logo, LogoTypes } from "../logo/Logo";
 import "./Header.css";
 
 export const Header: FC = () => {
     const isAuth = false;
     const username = "Username";
 
-    const navigate = useNavigate();
-
     return (
         <header className="header">
             <div className="header-inner">
-                <div className="header-logo" onClick={() => navigate("/")}>
-                    <img className="header-logo-inner" src={require("../../../assets/img/logo/compact-logo.svg").default} alt="Логотип" />
-                </div>
+                <Logo logoType={LogoTypes.COMPACT_LOGO} />
                 {isAuth
                 ?
                     <DropdownMenu items={[
