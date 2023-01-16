@@ -9,7 +9,8 @@
     font-size: 1.4rem;
     font-weight: 700;
 
-    transition: color 0.3s;
+    transition-property: border, color;
+    transition-duration: 0.3s;
 }
 
 .button:hover,

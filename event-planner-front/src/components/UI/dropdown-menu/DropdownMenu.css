@@ -13,8 +13,6 @@
     justify-content: center;
     align-items: center;
 
-    list-style: none;
-
     width: 14rem;
     padding: 0.5rem 1rem;
     background-color: var(--white);
@@ -25,7 +23,9 @@
     opacity: 0;
     transform: scale(0.99) translateY(-0.5rem);
     transform-origin: top;
-    transition: opacity,transform ease-in 0.1s;
+    transition-property: opacity, transform;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in;
 }
 
 .dropdown-menu-container:hover .dropdown-menu, .dropdown-menu-container.open .dropdown-menu {
