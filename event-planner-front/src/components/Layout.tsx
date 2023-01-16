@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { Outlet, useLocation } from 'react-router-dom';
-import { Header } from './UI/header/Header';
+import { Outlet, useLocation } from "react-router-dom";
+import { Header } from "./UI/header/Header";
 
 interface ILayoutProps {
     hideHeaderPath: string[];
