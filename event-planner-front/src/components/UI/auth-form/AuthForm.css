@@ -1,0 +1,32 @@
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2.4rem;
+
+    width: 42rem;
+
+    background-color: var(--white);
+    border-radius: 10px;
+    padding: 4rem 4rem;
+}
+
+.auth-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0 3.2rem;
+    padding-bottom: 2.4rem;
+    width: 100%;
+}
+
+.submit-button-box {
+    width: 100%;
+    padding: 0 3.2rem;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
