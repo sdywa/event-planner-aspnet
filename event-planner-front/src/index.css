@@ -27,6 +27,10 @@ body {
     background-color: var(--background-white);
 }
 
+ul {
+    list-style: none;
+}
+
 .heading {
     font-family: 'Ubuntu', sans-serif;
     line-height: 1.05;

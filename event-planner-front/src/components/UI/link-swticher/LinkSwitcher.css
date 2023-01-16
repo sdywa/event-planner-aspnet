@@ -1,0 +1,56 @@
+.link-switcher {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.switcher-tab:not(:last-child) {
+    margin-right: -5px;
+    position: relative;
+    z-index: 1;
+}
+
+.switcher-tab--selected {
+    position: relative;
+    z-index: 2;
+}
+
+.switcher-tab-button:link, 
+.switcher-tab-button:visited {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 16.8rem;
+    font-size: 1.8rem;
+    padding: 1.5rem 0;
+    border: 2px solid var(--gray);
+    border-radius: 5px;
+}
+
+.switcher-tab:not(.switcher-tab--selected) .switcher-tab-button {
+    padding-left: 5px;
+}
+
+.switcher-tab:first-child:not(.switcher-tab--selected) .switcher-tab-button:link,
+.switcher-tab:first-child:not(.switcher-tab--selected) .switcher-tab-button:visited {
+    border-right: none;
+    border-radius: 5px 0 0 5px;
+}
+
+.switcher-tab:last-child:not(.switcher-tab--selected) .switcher-tab-button:link,
+.switcher-tab:last-child:not(.switcher-tab--selected) .switcher-tab-button:visited {
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+}
+
+.switcher-tab--selected .switcher-tab-button:link, 
+.switcher-tab--selected .switcher-tab-button:visited {
+    color: var(--green);
+    border: 2px solid var(--green);
+}
+
+.switcher-tab-button:active, 
+.switcher-tab-button:hover {
+    border-color: var(--lightgray);
+}
