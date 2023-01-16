@@ -6,12 +6,12 @@ export interface IButtonProps {
     link?: string;
     classes?: string[];
     children: React.ReactNode;
-    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+    [props:string]: any;
 };
 
-export const Button: FC<IButtonProps> = ({ children, link="#", onClick, classes=[] }) => {
+export const Button: FC<IButtonProps> = ({ children, link="#", classes=[], ...props }) => {
     return (
-        <Link onClick={ onClick } className={[ "button", ...classes ].join(" ") } to={ link }>
+        <Link className={[ "button", ...classes ].join(" ") } to={ link } {...props}>
             { children }
         </Link>
     );
