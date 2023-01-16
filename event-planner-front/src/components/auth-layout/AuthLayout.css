@@ -1,0 +1,17 @@
+.section-auth {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    min-height: 70rem;
+    padding-top: 6.4rem;
+}
+
+.auth-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3.2rem;
+    width: 130rem;
+}
