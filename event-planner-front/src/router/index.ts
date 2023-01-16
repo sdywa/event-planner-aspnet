@@ -12,6 +12,9 @@ interface route {
 export const routes: route[] = [
     { path: "/", component: Events },
     { path: "/learn", component: Learn },
+];
+
+export const authRoutes: route[] = [
     { path: "/login", component: Login },
-    { path: "/signup", component: Signup },
+    { path: "/signup", component: Signup }
 ];
