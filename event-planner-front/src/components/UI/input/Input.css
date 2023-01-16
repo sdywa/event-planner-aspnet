@@ -1,0 +1,87 @@
+.input-box {
+    width: inherit;
+    position: relative;
+    overflow: hidden;
+
+    color: var(--lightgray);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+}
+
+.text-input,
+.password-input {
+    padding: 1rem;
+    padding-top: 2.4rem;
+
+    width: 100%;
+    height: 100%;
+
+    color: var(--black);
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.4rem;
+
+    border: none;
+}
+
+.text-input:focus,
+.password-input:focus {
+    outline: none;
+}
+
+.text-input-label,
+.password-input-label {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    padding: 1rem 0;
+    pointer-events: none;
+    border-bottom: 2px solid var(--lightgray);
+}
+
+.text-input-label::after,
+.password-input-label::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom: 2px solid var(--green);
+    transform: translateX(-100%);
+    transition: all ease 0.3s;
+}
+
+.label-content {
+    position: absolute;
+    bottom: 0;
+    left: 0.5rem;
+    padding-bottom: 0.6rem;
+    transition: all ease 0.3s;
+}
+
+.text-input:focus + .text-input-label .label-content,
+.text-input.dirty + .text-input-label .label-content,
+.text-input.error + .text-input-label .label-content,
+.password-input:focus + .password-input-label .label-content,
+.password-input.dirty + .password-input-label .label-content,
+.password-input.error + .password-input-label .label-content {
+    transform: translateY(-150%);
+    font-size: 1.2rem;
+    left: 0;
+    color: var(--green);
+}
+
+.text-input.error + .text-input-label .label-content,
+.password-input.error + .password-input-label .label-content {
+    color: var(--red);
+}
+
+.text-input:focus + .text-input-label::after,
+.text-input.dirty + .text-input-label::after,
+.password-input:focus + .password-input-label::after,
+.password-input.dirty + .password-input-label::after {
+    transform: translate(0%);
+}
