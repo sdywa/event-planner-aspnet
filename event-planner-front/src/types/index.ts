@@ -11,3 +11,14 @@ export interface IFormInputData {
     autoComplete: string,
     validation: IValidation[]
 }
+
+export interface IFieldStatus {
+    name: string,
+    hasError: boolean,
+    isDirty: boolean,
+    removeDirty: () => void
+}
+
+export interface IServerError {
+    [key: string]: string
+}
