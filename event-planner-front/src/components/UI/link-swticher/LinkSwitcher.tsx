@@ -12,7 +12,7 @@ export const LinkSwitcher: FC<ILinkSwitcherProps> = ({tabs, activeTab}) => {
         <ul className="link-switcher">
             {
                 tabs.map(({title, link}) => 
-                    <li className={["switcher-tab", activeTab === title ? "switcher-tab--selected" : ""].join(" ")}>
+                    <li key={link} className={["switcher-tab", activeTab === title ? "switcher-tab--selected" : ""].join(" ")}>
                         <Button link={link} classes={["switcher-tab-button"]}>{title}</Button>
                     </li>
                 )
