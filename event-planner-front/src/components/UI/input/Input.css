@@ -1,5 +1,8 @@
 .input-box {
     width: inherit;
+}
+
+.input-box-inner {
     position: relative;
     overflow: hidden;
 
@@ -11,6 +14,7 @@
 
 .text-input,
 .password-input {
+    background-color: var(--white) !important;
     padding: 1rem;
     padding-top: 2.4rem;
 
@@ -22,6 +26,16 @@
     font-size: 1.4rem;
 
     border: none;
+}
+
+.text-input:-webkit-autofill,
+.text-input:-webkit-autofill:focus {
+    transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+.text-input.input-error ,
+.password-input.input-error {
+    padding-right: 3.6rem;
 }
 
 .text-input:focus,
@@ -41,8 +55,8 @@
     border-bottom: 2px solid var(--lightgray);
 }
 
-.text-input-label::after,
-.password-input-label::after {
+.text-input-label::before,
+.password-input-label::before {
     content: "";
     position: absolute;
     bottom: -2px;
@@ -62,26 +76,68 @@
     transition: all ease 0.3s;
 }
 
-.text-input:focus + .text-input-label .label-content,
 .text-input.dirty + .text-input-label .label-content,
-.text-input.error + .text-input-label .label-content,
-.password-input:focus + .password-input-label .label-content,
+.text-input:focus + .text-input-label .label-content,
+.text-input:not([value='']) + .text-input-label .label-content,
 .password-input.dirty + .password-input-label .label-content,
-.password-input.error + .password-input-label .label-content {
+.password-input:focus + .password-input-label .label-content,
+.password-input:not([value='']) + .password-input-label .label-content {
     transform: translateY(-150%);
     font-size: 1.2rem;
     left: 0;
     color: var(--green);
 }
 
-.text-input.error + .text-input-label .label-content,
-.password-input.error + .password-input-label .label-content {
+.text-input.dirty + .text-input-label::before,
+.text-input:focus + .text-input-label::before,
+.text-input:not([value='']) + .text-input-label::before,
+.password-input.dirty + .password-input-label::before,
+.password-input:focus + .password-input-label::before,
+.password-input:not([value='']) + .password-input-label::before {
+    transform: translate(0%);
+}
+
+.dirty.input-error + .text-input-label .label-content,
+.input-error:focus + .text-input-label .label-content,
+.dirty.input-error + .password-input-label .label-content, 
+.input-error:focus + .password-input-label .label-content {
     color: var(--red);
 }
 
-.text-input:focus + .text-input-label::after,
-.text-input.dirty + .text-input-label::after,
-.password-input:focus + .password-input-label::after,
-.password-input.dirty + .password-input-label::after {
-    transform: translate(0%);
+.input-error + .text-input-label,
+.input-error + .password-input-label,
+.input-error + .text-input-label::before,
+.input-error + .password-input-label::before {
+    border-color: var(--red);
+}
+
+.input-error + .text-input-label::after,
+.input-error + .password-input-label::after {
+    content: "!";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    width: 1.4rem;
+    height: 1.4rem;
+
+    color: var(--red);
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ 
+    border-radius: 50%;
+    border: 2px solid var(--red);
+}
+
+.error-text {
+    height: 2.4rem;
+    padding: 0.6rem 0 0 1rem;
+    color: var(--red);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
 }

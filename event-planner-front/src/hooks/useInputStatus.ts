@@ -9,6 +9,7 @@ const useInputStatus = (
     const {error, isDirty, removeDirty, ...props} = useInput("", data.validation);
 
     useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
         callBack(name, {
             name: name,
             hasError: Boolean(error),
