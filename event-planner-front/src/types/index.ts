@@ -14,6 +14,7 @@ export interface IFormInputData {
 
 export interface IFieldStatus {
     name: string,
+    value: string,
     hasError: boolean,
     isDirty: boolean,
     removeDirty: () => void

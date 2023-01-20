@@ -1,28 +1,33 @@
 import { useState, useEffect } from "react";
 import { IFieldStatus, IServerError } from "../types";
 
-const useErrors = (serverError: IServerError, statuses: {[key: string]: IFieldStatus}) => {
+const useFormErrors = (serverError: IServerError, statuses: {[key: string]: IFieldStatus}) => {
     const [hasErrors, setErrors] = useState(false);
     const [isDirty, setDirty] = useState(true);
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
-        setErrors(false);
-        setDirty(true);
+        let hasErrors = false;
+        let isDirty = true;
+        
         for (const key in statuses) {
             const status = statuses[key];
 
             if (status.hasError)
-                setErrors(true);
+                hasErrors = true;
 
             if (!status.isDirty)
-                setDirty(false);
+                isDirty = false;
 
             if (hasErrors && !isDirty)
                 break;
         }
+
+        setErrors(hasErrors);
+        setDirty(isDirty);
     }, [statuses]);
+
     return hasErrors || (Object.keys(serverError).length !== 0 && !isDirty);
 }
 
-export default useErrors;
+export default useFormErrors;

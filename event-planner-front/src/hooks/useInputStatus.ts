@@ -12,11 +12,12 @@ const useInputStatus = (
         /* eslint-disable react-hooks/exhaustive-deps */
         callBack(name, {
             name: name,
+            value: props.value,
             hasError: Boolean(error),
             isDirty: isDirty,
             removeDirty: removeDirty
         });
-    }, [error, isDirty]);
+    }, [error, isDirty, props.value]);
 
     return {error, isDirty, ...data, ...props};
 }
