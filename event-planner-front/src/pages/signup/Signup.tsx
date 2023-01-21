@@ -39,12 +39,17 @@ export const Signup: FC = () => {
 
     function sendFormData(data: {[key: string]: IFieldStatus}): IServerError {
         console.log("sended!");
+        console.log(data["password"], data["repeatPassword"]);
+
+        if (data["password"].value !== data["repeatPassword"].value)
+            return { repeatPassword: "Пароль не совпадает"};
+
         return {
             email: "Email занят"
         };
     }
 
     return (
-        <AuthForm selectedTabIndex={1} data={data} sendFormData={sendFormData} />
+        <AuthForm selectedTabIndex={1} data={data} sendFormData={sendFormData}  />
     );
 }
