@@ -6,7 +6,7 @@ const useInputStatus = (
     name: string,
     data: IFormInputData,
     callBack: (name: string, value: IFieldStatus) => void) => {
-    const {error, isDirty, removeDirty, ...props} = useInput("", data.validation);
+    const {error, isDirty, isActive, removeDirty, ...props} = useInput("", data.validation);
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
@@ -14,12 +14,13 @@ const useInputStatus = (
             name: name,
             value: props.value,
             hasError: Boolean(error),
+            isActive: isActive,
             isDirty: isDirty,
             removeDirty: removeDirty
         });
-    }, [error, isDirty, props.value]);
+    }, [error, isDirty, isActive, props.value]);
 
-    return {error, isDirty, ...data, ...props};
+    return {error, isDirty, isActive, ...data, ...props};
 }
 
 export default useInputStatus;

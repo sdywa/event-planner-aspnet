@@ -42,7 +42,7 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
     }
 
     return (
-        <form className="auth-form" onSubmit={submitHandler}>
+        <form className="auth-form" onSubmit={submitHandler} onChange={() => setSubmitted(false)}>
             <LinkSwitcher activeTab={activeTab} tabs={tabs}></LinkSwitcher>
             <div className="auth-content">
                 {
@@ -52,7 +52,7 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
                         name={k} 
                         data={v} 
                         serverError={serverErrors[k]} 
-                        isSubmitted={isSubmitted} 
+                        isSubmitted={isSubmitted}
                         callBack={updateFieldStatuses} />)
                 }
             </div>

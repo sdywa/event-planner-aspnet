@@ -21,7 +21,7 @@ export const Login: FC = () => {
 
     function sendFormData(data: {[key: string]: IFieldStatus}): IServerError {
         console.log("sended!");
-        return {};
+        return { email: "Пользователь не найден" };
     }
 
     return (

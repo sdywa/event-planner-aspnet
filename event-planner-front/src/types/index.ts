@@ -16,6 +16,7 @@ export interface IFieldStatus {
     name: string,
     value: string,
     hasError: boolean,
+    isActive: boolean,
     isDirty: boolean,
     removeDirty: () => void
 }
