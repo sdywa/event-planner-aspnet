@@ -1,0 +1,8 @@
+.page-section {
+    margin-top: 6.4rem;
+}
+
+.page-inner {
+    background-color: var(--white);
+    border-radius: 10px;
+}
