@@ -31,13 +31,36 @@ ul {
     list-style: none;
 }
 
-.heading {
+.heading--primary, .heading--secondary {
+    font-weight: 700;
     font-family: 'Ubuntu', sans-serif;
-    line-height: 1.05;
+    color: var(--black);
     letter-spacing: -0.5px;
 }
 
 .heading--primary {
     font-size: 4.8rem;
+    line-height: 1.05;
     margin-bottom: 3.2rem;
+}
+
+.heading--secondary {
+    font-size: 3.6rem;
+    line-height: 1.2;
+    margin-bottom: 2.2rem;
+}
+
+.container {
+    max-width: 112rem;
+    padding: 3.2rem;
+    margin: 0 auto;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex--centered {
+    justify-content: center;
+    align-items: center;
 }

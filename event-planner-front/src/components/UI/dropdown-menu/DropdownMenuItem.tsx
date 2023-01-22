@@ -11,7 +11,7 @@ interface IDropdownMenuItemProps {
 export const DropdownMenuItem: FC<IDropdownMenuItemProps> = ({label, link, icon=""}) => {
     return (
         <li className="dropdown-menu-item">
-            <Link to={link} className="menu-item-inner">
+            <Link to={link} className="menu-item-inner flex">
                 {
                     icon && <div className="menu-item-icon"><i className={icon}></i></div>
                 }

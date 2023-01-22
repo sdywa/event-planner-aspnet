@@ -8,7 +8,7 @@ import "./AuthForm.css";
 
 export interface IAuthFormProps {
     selectedTabIndex: 0 | 1;
-    data: { [key: string]: IFormInputData },
+    data: { [key: string]: IFormInputData };
     sendFormData: (data: {[key: string]: IFieldStatus}) => IServerError;
 };
 
@@ -42,9 +42,9 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
     }
 
     return (
-        <form className="auth-form" onSubmit={submitHandler} onChange={() => setSubmitted(false)}>
+        <form className="auth-form flex flex--centered" onSubmit={submitHandler} onChange={() => setSubmitted(false)}>
             <LinkSwitcher activeTab={activeTab} tabs={tabs}></LinkSwitcher>
-            <div className="auth-content">
+            <div className="auth-content flex flex--centered">
                 {
                     Object.entries(data).map(([k, v]) => 
                     <FormInput 
@@ -56,7 +56,7 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
                         callBack={updateFieldStatuses} />)
                 }
             </div>
-            <div className="submit-button-box">
+            <div className="submit-button-box flex">
                 <SubmitButton disabled={hasError && isSubmitted} 
                     classes={["button--primary", hasError && isSubmitted ? "button--red" : "button--green"]}
                 >

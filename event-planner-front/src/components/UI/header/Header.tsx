@@ -9,8 +9,8 @@ export const Header: FC = () => {
     const username = "Username";
 
     return (
-        <header className="header">
-            <div className="header-inner">
+        <header className="header flex flex--centered">
+            <div className="header-inner flex">
                 <Logo logoType={LogoTypes.COMPACT_LOGO} />
                 {isAuth
                 ?
@@ -19,7 +19,7 @@ export const Header: FC = () => {
                         {label: "Выход", link: "/logout", icon: "fa-solid fa-right-from-bracket"}
                         ]}>
                             <Button>
-                                <div className="controls-inner controls--authenticated">
+                                <div className="controls-inner controls--authenticated flex">
                                     <div className="controls-username">{username}</div>
                                     <div className="controls-indicator">
                                         <i className="fa-solid fa-caret-down"></i>
@@ -28,7 +28,7 @@ export const Header: FC = () => {
                             </Button>
                         </DropdownMenu>
                 :
-                <div className="controls-inner controls--unauthenticated">
+                <div className="controls-inner controls--unauthenticated flex">
                     <Button link="/login">Вход</Button>
                     <Button link="/signup" classes={["button--primary"]}>Регистрация</Button>
                 </div>

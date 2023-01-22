@@ -9,7 +9,7 @@ interface ILinkSwitcherProps {
 
 export const LinkSwitcher: FC<ILinkSwitcherProps> = ({tabs, activeTab}) => {
     return (
-        <ul className="link-switcher">
+        <ul className="link-switcher flex flex--centered">
             {
                 tabs.map(({title, link}) => 
                     <li key={link} className={["switcher-tab", activeTab === title ? "switcher-tab--selected" : ""].join(" ")}>

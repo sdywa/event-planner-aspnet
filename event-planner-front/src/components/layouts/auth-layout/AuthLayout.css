@@ -1,5 +1,4 @@
 .section-auth {
-    display: flex;
     justify-content: center;
     align-items: flex-start;
     height: 100vh;
@@ -8,10 +7,7 @@
 }
 
 .auth-inner {
-    display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 3.2rem;
     width: 130rem;
 }

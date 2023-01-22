@@ -11,7 +11,7 @@ export const DropdownMenu: FC<IDropdownMenuProps> = ({children, items}) => {
     return (
         <div className="dropdown-menu-container">
             {children}
-            <ul className="dropdown-menu">
+            <ul className="dropdown-menu flex flex--centered">
                 {
                     items.map((item, index) =>
                         <DropdownMenuItem 

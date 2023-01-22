@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { routes, authRoutes } from "../router";
-import { AuthLayout } from "./auth-layout/AuthLayout";
+import { AuthLayout } from "./layouts/auth-layout/AuthLayout";
 import { Layout } from "./Layout";
 
 const AppRouter: FC = () => {

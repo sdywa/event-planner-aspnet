@@ -39,7 +39,7 @@ export const EMAIL_ADDRESS: (errorText?: string) => IValidation = (errorText='')
     };
 };
 
-const useValidation = (value: string, validations: IValidation[] ) => {
+const useValidation = (value: string, validations: IValidation[]) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
