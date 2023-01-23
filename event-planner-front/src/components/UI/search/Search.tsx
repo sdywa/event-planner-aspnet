@@ -22,7 +22,8 @@ export const Search: FC<ISearchProps> = ({searchUrl: string}) => {
 
     return (
         <div className="search input-box-inner">
-            <Input type="text" name="search" value={value} onChange={onChange} placeholder="Поиск"/>
+            <Input type="text" name="search" value={value} onChange={onChange} 
+                icon={<i className="fa-solid fa-magnifying-glass"></i>} placeholder="Поиск"/>
         </div>
     );
 }

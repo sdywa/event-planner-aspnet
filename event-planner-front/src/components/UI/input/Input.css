@@ -26,7 +26,12 @@
     border: none;
 }
 
+.input-icon {
+    padding-left: 3.6rem;
+}
+
 .form-input::placeholder, .input::placeholder {
+    color: var(--lightgray);
     font-size: 1.6rem;
     font-weight: 700;
 }
@@ -71,6 +76,11 @@
     border-bottom: 2px solid var(--green);
     transform: translateX(-100%);
     transition: all ease 0.3s;
+}
+
+.label-icon {
+    position: absolute;
+    left: 0.8rem;
 }
 
 .label-content {
