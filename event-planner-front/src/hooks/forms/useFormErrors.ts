@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IFieldStatus, IServerError } from "../types";
+import { IFieldStatus, IServerError } from "../../types";
 
 const useFormErrors = (serverError: IServerError, statuses: {[key: string]: IFieldStatus}) => {
     const [hasErrors, setErrors] = useState(false);

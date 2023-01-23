@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { AuthForm } from "../../components/UI/auth-form/AuthForm";
+import { AuthForm } from "../../components/UI/forms/auth-form/AuthForm";
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH, EMAIL_ADDRESS } from "../../hooks/useValidation";
 import { IFormInputData, IFieldStatus, IServerError } from "../../types/index";
 

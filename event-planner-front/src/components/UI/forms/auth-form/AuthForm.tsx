@@ -1,9 +1,9 @@
 import React, { FC, useState } from "react";
-import { LinkSwitcher } from "../link-swticher/LinkSwitcher";
-import { SubmitButton } from '../button/SubmitButton';
-import { FormInput } from "../input/FormInput";
-import { IServerError, IFieldStatus, IFormInputData } from "../../../types";
-import useFormErrors from "../../../hooks/useFormErrors";
+import { LinkSwitcher } from "../../link-swticher/LinkSwitcher";
+import { SubmitButton } from '../../button/SubmitButton';
+import { FormInput } from "../form-input/FormInput";
+import { IServerError, IFieldStatus, IFormInputData } from "../../../../types";
+import useFormErrors from "../../../../hooks/forms/useFormErrors";
 import "./AuthForm.css";
 
 export interface IAuthFormProps {

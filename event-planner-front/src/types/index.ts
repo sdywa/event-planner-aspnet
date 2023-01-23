@@ -7,7 +7,7 @@ export interface IValidation {
 
 export interface IFormInputData {
     label: string,
-    type: string,
+    type: "text" | "password",
     autoComplete: string,
     validation: IValidation[]
 }

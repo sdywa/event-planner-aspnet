@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
-import { IFormInputData, IFieldStatus } from "../../../types";
-import { Input } from "./Input";
-import useInputStatus from "../../../hooks/useInputStatus";
+import { IFormInputData, IFieldStatus } from "../../../../types";
+import useFormInputStatus from "../../../../hooks/forms/useFormInputStatus";
+import "../../../UI/input/Input.css";
 
 interface IFormInputProps {
     name: string,
@@ -13,7 +13,7 @@ interface IFormInputProps {
 };
 
 export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmitted, callBack,...props}) => {
-    const {error, isDirty, isActive, validation, showingError, onChange, ...inputData} = useInputStatus(name, data, callBack);
+    const {error, isDirty, isActive, validation, showingError, onChange, value, ...inputData} = useFormInputStatus(name, data, callBack);
     const [isShowed, setShowed] = useState(true);
     const [inputError, setInputError] = useState("");
     
@@ -39,10 +39,30 @@ export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmi
         onChange(e);
     }
 
+    function getClassName() {
+        const className = ["form-input"];
+        if (isActive) 
+            className.push("form-input--active");
+
+        if (isDirty && value)
+            className.push("form-input--dirty");
+        
+        if (inputError)
+            className.push("form-input--error");
+
+        return className.join(" ");
+    }
+
     return (
-        <div className="input-box">
-            <Input {...props} name={name} isDirty={isDirty} isActive={isActive} 
-                onChange={onChangePrepared} {...inputData} error={inputError} />
+        <div className="form-input-box">
+            <div className="form-input-box-inner">
+                <input name={name} {...props} value={value} 
+                    onChange={onChangePrepared} {...inputData} className={getClassName()}
+                />
+                <label htmlFor={name} className="form-input-label">
+                    <span className="label-content">{data.label}</span>
+                </label>
+            </div>
             <div className="error-text">{inputError}</div>
         </div>
     );

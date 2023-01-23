@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { IValidation } from "../types";
-import useValidation from "./useValidation";
+import { IValidation } from "../../types";
+import useValidation from "../useValidation";
 
-const useInput = (initialValue: string, validations: IValidation[]) => {
+const useFormInput = (initialValue: string, validations: IValidation[]) => {
     const [value, setValue] = useState(initialValue);
     const [prevValue, setPrevValue] = useState(initialValue);
     
@@ -39,4 +39,4 @@ const useInput = (initialValue: string, validations: IValidation[]) => {
     return { value, onChange, onFocus, onBlur, isActive, isDirty, removeDirty, showingError, error };
 }
 
-export default useInput;
+export default useFormInput;
