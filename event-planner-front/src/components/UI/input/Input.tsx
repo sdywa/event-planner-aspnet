@@ -1,39 +1,19 @@
+import { ServerStreamFileResponseOptionsWithError } from "http2";
 import { FC } from "react";
 import "./Input.css";
 
 interface IInputProps  {
-    type: string;
-    label: string;
     name: string;
-    isActive: boolean;
-    isDirty: boolean;
-    error?: string;
     [props:string]: any;
 };
 
-export const Input: FC<IInputProps> = ({type, label, name, isActive, isDirty, error, value, ...props}) => {
-    function getClassName() {
-        const className = ["input"];
-        if (isActive) 
-            className.push("input--active");
-
-        if (isDirty && value)
-            className.push("input--dirty");
-        
-        if (error)
-            className.push("input--error");
-
-        return className.join(" ");
-    }
-
+export const Input: FC<IInputProps> = ({name, ...props}) => {
     return (
-        <div className="input-box-inner">
-            <input type={type} name={name} value={value} {...props}
-                className={getClassName()}
+        <div className="input-box">
+            <input type="text" name={name} {...props}
+                className="input"
             />
-            <label htmlFor={name} className="input-label">
-                <span className="label-content">{label}</span>
-            </label>
+            <label htmlFor={name} className="input-label"></label>
         </div>
     );
 }

@@ -1,8 +1,8 @@
-.input-box {
+.form-input-box, .input-box {
     width: inherit;
 }
 
-.input-box-inner {
+.form-input-box-inner, .input-box {
     position: relative;
     overflow: hidden;
 
@@ -12,10 +12,9 @@
     font-size: 1.6rem;
 }
 
-.input {
-    background-color: var(--white) !important;
+.form-input, .input {
+    background-color: var(--white);
     padding: 1rem;
-    padding-top: 2.4rem;
 
     width: 100%;
     height: 100%;
@@ -27,20 +26,31 @@
     border: none;
 }
 
+.form-input::placeholder, .input::placeholder {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.form-input {
+    padding-top: 2.4rem;
+}
+
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:focus,
 .input:-webkit-autofill,
 .input:-webkit-autofill:focus {
     transition: background-color 600000s 0s, color 600000s 0s;
 }
 
-.input--error {
+.form-input--error {
     padding-right: 3.6rem;
 }
 
-.input:focus {
+.form-input:focus, .input:focus {
     outline: none;
 }
 
-.input-label {
+.form-input-label, .input-label {
     position: absolute;
     bottom: 0px;
     left: 0;
@@ -51,7 +61,7 @@
     border-bottom: 2px solid var(--lightgray);
 }
 
-.input-label::before {
+.form-input-label::before, .input-label::before {
     content: "";
     position: absolute;
     bottom: -2px;
@@ -71,8 +81,10 @@
     transition: all ease 0.3s;
 }
 
-.input--dirty + .input-label .label-content,
-.input--active + .input-label .label-content,
+.form-input--dirty + .form-input-label .label-content,
+.form-input--active + .form-input-label .label-content,
+.form-input:not([value='']) + .form-input-label .label-content,
+.input:focus + .input-label .label-content,
 .input:not([value='']) + .input-label .label-content {
     transform: translateY(-150%);
     font-size: 1.2rem;
@@ -80,23 +92,25 @@
     color: var(--green);
 }
 
-.input--dirty + .input-label::before,
-.input--active + .input-label::before,
+.form-input--dirty + .form-input-label::before,
+.form-input--active + .form-input-label::before,
+.form-input:not([value='']) + .form-input-label::before,
+.input:focus + .input-label::before,
 .input:not([value='']) + .input-label::before {
     transform: translate(0%);
 }
 
-.input--error:not([value='']) + .input-label .label-content,
-.input--error.input--active + .input-label .label-content {
+.form-input--error:not([value='']) + .form-input-label .label-content,
+.form-input--error.form-input--active + .form-input-label .label-content {
     color: var(--red);
 }
 
-.input--error + .input-label,
-.input--error + .input-label::before {
+.form-input--error + .form-input-label,
+.form-input--error + .form-input-label::before {
     border-color: var(--red);
 }
 
-.input--error + .input-label::after {
+.form-input--error + .form-input-label::after {
     content: "!";
     position: absolute;
     right: 1rem;
