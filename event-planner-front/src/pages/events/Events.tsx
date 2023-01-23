@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { EventTile } from "../../components/UI/event-tile/EventTile";
+import { Search } from "../../components/UI/search/Search";
 import "./Events.css";
 
 export const Events: FC = () => {
@@ -52,7 +53,7 @@ export const Events: FC = () => {
     }];
 
     return (
-        <PageLayout title="Мероприятия">
+        <PageLayout title="Мероприятия" header={<Search searchUrl={""} />}>
             <div className="events-content grid grid--3-cols">
                 {
                     events.map((v, i) => <EventTile key={v.id} {...v} />)
