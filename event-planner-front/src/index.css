@@ -28,6 +28,10 @@ body {
     background-color: var(--background-white);
 }
 
+#root {
+    width: calc(100vw - 15px);
+}
+
 ul {
     list-style: none;
 }
