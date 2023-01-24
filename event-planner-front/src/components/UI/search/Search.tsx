@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import useDebounce from "../../../hooks/useDebounce";
 import { Input } from "../input/Input";
-import "./Search.css";
 
 interface ISearchProps {
     searchUrl: string;
@@ -21,7 +20,7 @@ export const Search: FC<ISearchProps> = ({searchUrl: string}) => {
     }
 
     return (
-        <div className="search input-box-inner">
+        <div className="w-[35rem]">
             <Input type="text" name="search" value={value} onChange={onChange} 
                 icon={<i className="fa-solid fa-magnifying-glass"></i>} placeholder="Поиск"/>
         </div>

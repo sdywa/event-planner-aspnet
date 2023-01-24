@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react";
 import { Link } from "react-router-dom";
-import "./EventTile.css";
 
 interface IEventTileProps {
     id: number;
@@ -26,48 +25,44 @@ export const EventTile: FC<IEventTileProps> = ({id, title, coverUrl="", category
     
     return (
         <Link to={`/events/${id}`}
-            className="event-tile flex flex--centered"
+            className="flex flex-col max-w-xs font-roboto text-base text-black"
         >
-            <div className="event-cover">
+            <div className="w-full h-44 relative bg-lightgray rounded-t-xl">
                 {
-                    coverUrl
-                    ?
-                    <img src={coverUrl} alt={title} />
-                    :
-                    <></>
+                    coverUrl && <img src={coverUrl} alt={title} />
                 }
-                <div onClick={onClick}
-                    className={["event-bookmark", isBookmarked ? "event-bookmark--active" : ""].filter(x => x).join(" ")}
-                >
+                <div onClick={onClick} 
+                    className={["bookmark", 
+                    isBookmarked ? "bookmark--active" : ""].filter(x => x).join(" ")}>
                     <i className="fa-solid fa-bookmark"></i>
                 </div>
             </div>
-            <div className="event-info flex">
-                <div className="event-info-main flex">
-                    <div className="event-info-secondary flex">
-                        <div className="event-category">{category}</div>
-                        <div className="event-date">{date}</div>
+            <div className="flex flex-col gap-1 h-[11.5rem] py-4 px-3">
+                <div className="flex flex-col">
+                    <div className="flex justify-between items-center text-sm font-light">
+                        <div>{category}</div>
+                        <div>{date}</div>
                     </div>
-                    <div className="event-title">
+                    <div className="max-w-full overflow-hidden text-ellipsis font-ubuntu text-xl font-bold whitespace-nowrap">
                         {title}
                     </div>
                 </div>
-                <div className="event-description">
+                <div className="max-w-full overflow-hidden text-ellipsis two-lines">
                     {description}
                 </div>
-                <div className="event-info-additional flex">
+                <div className="flex justify-between items-center flex-wrap">
                     {
                         type === "Offline"
                         ?
-                        <span className="event-location">
+                        <span>
                             <i className="fa-solid fa-location-dot"></i> {location}
                         </span>
                         :
-                        <span className="event-location">
+                        <span>
                             <i className="fa-solid fa-link"></i> Онлайн
                         </span>
                     }
-                    <div className="event-price">
+                    <div className="font-bold">
                         {
                             minPrice 
                             ?

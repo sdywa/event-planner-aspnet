@@ -1,5 +1,4 @@
 import { FC } from "react";
-import "./Button.css";
 
 interface ISubmitButtonProps {
     classes?: string[];

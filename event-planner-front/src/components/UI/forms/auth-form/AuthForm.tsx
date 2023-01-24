@@ -4,7 +4,6 @@ import { SubmitButton } from '../../button/SubmitButton';
 import { FormInput } from "../form-input/FormInput";
 import { IServerError, IFieldStatus, IFormInputData } from "../../../../types";
 import useFormErrors from "../../../../hooks/forms/useFormErrors";
-import "./AuthForm.css";
 
 export interface IAuthFormProps {
     selectedTabIndex: 0 | 1;
@@ -42,9 +41,9 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
     }
 
     return (
-        <form className="auth-form flex flex--centered" onSubmit={submitHandler} onChange={() => setSubmitted(false)}>
+        <form className="flex flex-col justify-center items-center gap-6 w-[26rem] bg-white rounded-lg p-10 shadow-lg" onSubmit={submitHandler} onChange={() => setSubmitted(false)}>
             <LinkSwitcher activeTab={activeTab} tabs={tabs}></LinkSwitcher>
-            <div className="auth-content flex flex--centered">
+            <div className="flex flex-col justify-content items-center px-8 w-full">
                 {
                     Object.entries(data).map(([k, v]) => 
                     <FormInput 
@@ -56,7 +55,7 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
                         callBack={updateFieldStatuses} />)
                 }
             </div>
-            <div className="submit-button-box flex">
+            <div className="flex justify-end w-full px-8">
                 <SubmitButton disabled={hasError && isSubmitted} 
                     classes={["button--primary", hasError && isSubmitted ? "button--red" : "button--green"]}
                 >

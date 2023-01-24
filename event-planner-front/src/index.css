@@ -1,78 +1,141 @@
-:root {
-    --white: #FFFFFF;
-    --background-white: #F1F6F9;
-    --black: #263147;
-    --lightgray: #b4bbca;
-    --gray: #858fa4;
-    --darkgray: #656e82;
-    --green: #00B94F;
-    --red: #E02B4C;
-    --yellow: #EBB428;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+@layer components {
+    .two-lines {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
 
-html {
-    font-size: 62.5%;
+    .button {
+        @apply inline-block p-3 text-black bg-transparent font-ubuntu text-sm font-bold cursor-pointer transition-all duration-300 ease-in hover:text-darkgray;
+    }
+
+    .button--primary {
+        @apply py-2 px-5 border-2 border-black rounded-md hover:border-darkgray;
+    }
+
+    .button--green {
+        @apply text-green border-green hover:text-white hover:bg-green;
+    }
+
+    .button-red {
+        @apply text-red border-red hover:text-white hover:bg-red;
+    }
+
+    .heading--primary {
+        @apply font-bold font-ubuntu text-5xl text-black tracking-tighter mb-8;
+    }
+
+    .heading--secondary {
+        @apply font-bold font-ubuntu text-4xl text-black tracking-tighter;
+    }
+
+    .container {
+        @apply max-w-6xl p-8 mx-auto;
+    }
+
+    .bookmark {
+        @apply absolute top-4 right-4 text-2xl text-gray;
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: #FFFFFF;
+    }
+
+    .bookmark--active {
+        @apply text-yellow;
+    }
+
+    .input-box {
+        @apply w-full relative overflow-hidden text-lightgray font-roboto text-base font-semibold;
+    }
+
+    .input {
+        @apply bg-white p-3 w-full h-full text-black text-sm font-bold focus:outline-none;
+        @apply placeholder:text-base placeholder:text-lightgray;
+    }
+
+    .input:-webkit-autofill,
+    .input:-webkit-autofill:focus {
+        transition: background-color 600000s 0s, color 600000s 0s;
+    }
+
+    .input-label {
+        @apply absolute bottom-0 left-0 h-full w-full py-2 pointer-events-none border-b-2 border-b-lightgray;
+        @apply before:absolute before:-bottom-[2px] before:left-0 before:w-full before:h-full before:border-b-2 before:border-b-green before:-translate-x-full before:transition-all before:ease-in before:duration-300;
+    }
+
+    .input--dirty + .input-label .label-content,
+    .input--active + .input-label .label-content,
+    .input:not([value='']) + .input-label .label-content {
+        @apply -translate-y-[150%] left-0 text-xs text-green;
+    }
+
+    .input--dirty + .input-label::before,
+    .input--active + .input-label::before,
+    .input:focus + .input-label::before,
+    .input:not([value='']) + .input-label::before {
+        @apply translate-x-0;
+    }
+
+    .input--error:not([value='']) + .input-label .label-content,
+    .input--error.input--active + .input-label .label-content {
+        @apply text-red;
+    }
+
+    .input--error + .input-label,
+    .input--error + .input-label::before {
+        @apply border-red;
+    }
+
+    .input--error {
+        @apply pr-9;
+    }
+
+    .input--error + .input-label::after {
+        @apply content-['!'] absolute right-2 bottom-2 w-5 h-5 text-red font-ubuntu font-bold text-sm flex justify-center items-center rounded-full border-2 border-red;
+    }
+
+    .error-text {
+        @apply text-red font-roboto font-bold text-xs;
+    }
+
+    .switcher-tab {
+        @apply relative z-10 -m-1;
+        @apply last:m-0;
+    }
+
+    .switcher-tab--selected {
+        @apply z-20;
+    }
+
+    .switcher-tab-button {
+        @apply flex justify-center items-center w-40 text-lg py-3 border-2 border-gray rounded-md;
+        @apply hover:border-lightgray;
+    }
+
+    .switcher-tab:not(.switcher-tab--selected) .switcher-tab-button {
+        @apply pl-3;
+    }
+
+    .switcher-tab:first-child:not(.switcher-tab--selected) .switcher-tab-button {
+        @apply border-r-0 rounded-none rounded-l-md;
+    }
+
+    .switcher-tab:last-child:not(.switcher-tab--selected) .switcher-tab-button {
+        @apply border-l-0 rounded-none rounded-r-md;
+    }
+
+    .switcher-tab--selected .switcher-tab-button {
+        @apply text-green border-2 border-green;
+    }
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    line-height: 1;
-    color: var(--black);
-    background-color: var(--background-white);
+    background-color: #F1F6F9;
 }
 
 #root {
     width: calc(100vw - 15px);
-}
-
-ul {
-    list-style: none;
-}
-
-.heading--primary, .heading--secondary {
-    font-weight: 700;
-    font-family: 'Ubuntu', sans-serif;
-    color: var(--black);
-    letter-spacing: -0.5px;
-}
-
-.heading--primary {
-    font-size: 4.8rem;
-    line-height: 1.05;
-    margin-bottom: 3.2rem;
-}
-
-.heading--secondary {
-    font-size: 3.6rem;
-    line-height: 1.2;
-}
-
-.container {
-    max-width: 112rem;
-    padding: 3.2rem;
-    margin: 0 auto;
-}
-
-.flex {
-    display: flex;
-}
-
-.flex--centered {
-    justify-content: center;
-    align-items: center;
-}
-
-.grid {
-    display: grid;
-}
-
-.grid--3-cols {
-    grid-template-columns: repeat(3, 1fr);
 }

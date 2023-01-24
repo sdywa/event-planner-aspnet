@@ -1,16 +1,13 @@
 import { FC } from "react";
-import "./Learn.css";
 
 const Learn: FC = () => {
     return (
-        <section className="section-intro flex flex--centered">
-            <div className="intro-inner flex flex--centered">
-                <div className="intro-image-box">
-                    <img src={require("../../assets/img/intro.png")} alt="Интро" />
-                </div>
-                <div className="intro-text-box">
+        <section className="flex justify-center items-center h-[calc(100vh-60px)] min-h-[40rem]">
+            <div className="flex justify-center items-center gap-16 max-w-7xl">
+                <img src={require("../../assets/img/intro.png")} alt="Интро" />
+                <div>
                     <h1 className="heading--primary">Простота организации мероприятий</h1>
-                    <p className="intro-description">
+                    <p className="text-xl w-96">
                         Текст текст текст Текст текст текст Текст текст текст Текст текст текст Текст текст текст Текст текст текст Текст текст текст
                     </p>
                 </div>

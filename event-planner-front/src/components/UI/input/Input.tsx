@@ -1,6 +1,4 @@
-import { ServerStreamFileResponseOptionsWithError } from "http2";
 import { FC } from "react";
-import "./Input.css";
 
 interface IInputProps  {
     name: string;
@@ -11,18 +9,13 @@ interface IInputProps  {
 export const Input: FC<IInputProps> = ({name, icon, ...props}) => {
     return (
         <div className="input-box">
-            <input type="text" name={name} {...props}
-                className={["input", icon ? "input-icon" : ""].filter(x => x).join(" ")}
-            />
+            <input className={["input", icon ? "pl-8" : ""].filter(x => x).join(" ")} type="text" name={name} {...props}/>
             <label htmlFor={name} className="input-label">
                 {
-                    icon
-                    ?
-                    <div className="label-icon">
+                    icon &&
+                    <div className="absolute top-1/2 left-1.5 -translate-y-1/2 pt-0.5">
                         {icon}
                     </div>
-                    :
-                    <></>
                 }
             </label>
         </div>

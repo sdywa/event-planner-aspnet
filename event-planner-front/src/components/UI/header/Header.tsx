@@ -2,15 +2,14 @@ import React, { FC } from "react";
 import { Button } from "../button/Button";
 import { DropdownMenu } from "../dropdown-menu/DropdownMenu";
 import { Logo, LogoTypes } from "../logo/Logo";
-import "./Header.css";
 
 export const Header: FC = () => {
     const isAuth = false;
     const username = "Username";
 
     return (
-        <header className="header flex flex--centered">
-            <div className="header-inner flex">
+        <header className="flex justify-center items-center">
+            <div className="flex justify-between items-center h-[3.75rem] min-w-[48rem] max-w-6xl w-9/12">
                 <Logo logoType={LogoTypes.COMPACT_LOGO} />
                 {isAuth
                 ?
@@ -19,16 +18,14 @@ export const Header: FC = () => {
                         {label: "Выход", link: "/logout", icon: "fa-solid fa-right-from-bracket"}
                         ]}>
                             <Button>
-                                <div className="controls-inner controls--authenticated flex">
-                                    <div className="controls-username">{username}</div>
-                                    <div className="controls-indicator">
-                                        <i className="fa-solid fa-caret-down"></i>
-                                    </div>
+                                <div className="flex justify-between items-center gap-2 text-lg">
+                                    <div>{username}</div>
+                                    <i className="fa-solid fa-caret-down"></i>
                                 </div>
                             </Button>
                         </DropdownMenu>
                 :
-                <div className="controls-inner controls--unauthenticated flex">
+                <div className="flex justify-between items-center gap-1">
                     <Button link="/login">Вход</Button>
                     <Button link="/signup" classes={["button--primary"]}>Регистрация</Button>
                 </div>

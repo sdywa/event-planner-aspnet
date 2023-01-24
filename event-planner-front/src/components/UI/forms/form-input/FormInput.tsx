@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { IFormInputData, IFieldStatus } from "../../../../types";
 import useFormInputStatus from "../../../../hooks/forms/useFormInputStatus";
-import "../../../UI/input/Input.css";
 
 interface IFormInputProps {
     name: string,
@@ -40,30 +39,30 @@ export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmi
     }
 
     function getClassName() {
-        const className = ["form-input"];
+        const className = ["input pt-6"];
         if (isActive) 
-            className.push("form-input--active");
+            className.push("input--active");
 
         if (isDirty && value)
-            className.push("form-input--dirty");
+            className.push("input--dirty");
         
         if (inputError)
-            className.push("form-input--error");
+            className.push("input--error");
 
         return className.join(" ");
     }
 
     return (
-        <div className="form-input-box">
-            <div className="form-input-box-inner">
+        <div className="w-full">
+            <div className="input-box">
                 <input name={name} {...props} value={value} 
                     onChange={onChangePrepared} {...inputData} className={getClassName()}
                 />
-                <label htmlFor={name} className="form-input-label">
-                    <span className="label-content">{data.label}</span>
+                <label htmlFor={name} className="input-label">
+                    <span className="label-content absolute bottom-0 left-1.5 pb-1 transition-all duration-300 ease-in">{data.label}</span>
                 </label>
             </div>
-            <div className="error-text">{inputError}</div>
+            <div className="error-text h-6 pt-1 pb-2">{inputError}</div>
         </div>
     );
 }

@@ -1,5 +1,4 @@
 import { FC } from "react";
-import "./PageLayout.css";
 
 interface IPageLayoutProps {
     title: string;
@@ -9,17 +8,11 @@ interface IPageLayoutProps {
 
 export const PageLayout: FC<IPageLayoutProps> = ({title, header, children}) => {
     return (
-        <section className="page-section">
-            <div className="page-inner container">
-                <div className="page-header flex">
+        <section className="my-16">
+            <div className="container bg-white rounded-lg shadow-lg">
+                <div className="flex items-center gap-8 mb-6">
                     <h2 className="heading--secondary">{title}</h2>
-                    {
-                        header
-                        ?
-                        header
-                        :
-                        <></>
-                    }
+                    {header}
                 </div>
                 {children}
             </div>
