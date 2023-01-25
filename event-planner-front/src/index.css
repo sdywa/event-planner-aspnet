@@ -28,10 +28,14 @@
     }
 
     .button--green {
-        @apply text-green border-green hover:text-white hover:bg-green hover:border-green;
+        @apply text-green border-green hover:text-darkgreen hover:border-darkgreen;
     }
 
-    .button-red {
+    .button--primary.button--green {
+        @apply hover:text-white hover:border-green hover:bg-green;
+    }
+
+    .button--red {
         @apply text-red border-red hover:text-white hover:bg-red hover:border-red;
     }
 

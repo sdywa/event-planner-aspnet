@@ -37,10 +37,10 @@ export const Search: FC<ISearchProps> = ({searchUrl: string}) => {
             <Input type="text" name="search" value={value} onChange={onChange} 
                 icon={<i className="fa-solid fa-magnifying-glass"></i>} placeholder="Поиск" autocomplete="off"/>
             <div className="flex justify-center items-center gap-2">
-                <Button classes={["button--primary w-8 h-8 p-0 flex justify-center items-center text-lg", showingFilter ? "button--green" : "text-gray border-gray"]} onClick={onFilterClick}>
+                <Button classes={["w-8 h-8 p-0 flex justify-center items-center text-lg border-2 rounded-md", showingFilter ? "button--green" : "text-gray border-gray hover:border-darkgray"]} onClick={onFilterClick}>
                     <i className="fa-solid fa-filter"></i>
                 </Button>
-                <Button classes={["button--primary w-8 h-8 p-0 flex justify-center items-center text-lg", showingFavorite ? "button--green" : "text-gray border-gray"]} onClick={onFavoriteClick}>
+                <Button classes={["w-8 h-8 p-0 flex justify-center items-center text-lg border-2 rounded-md", showingFavorite ? "button--green" : "text-gray border-gray hover:border-darkgray"]} onClick={onFavoriteClick}>
                     <i className="fa-solid fa-bookmark"></i>
                 </Button>
             </div>
