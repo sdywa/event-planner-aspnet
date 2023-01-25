@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { clsx } from "clsx";
 import { Link } from "react-router-dom";
 
 export interface IButtonProps {
@@ -10,7 +11,7 @@ export interface IButtonProps {
 
 export const Button: FC<IButtonProps> = ({ children, link="#", classes=[], ...props }) => {
     return (
-        <Link className={[ "button", ...classes ].join(" ") } to={ link } {...props}>
+        <Link className={clsx(["button", classes])} to={ link } {...props}>
             { children }
         </Link>
     );

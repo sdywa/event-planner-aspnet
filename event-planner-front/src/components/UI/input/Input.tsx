@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { clsx } from "clsx";
 
 interface IInputProps  {
     name: string;
@@ -9,7 +10,7 @@ interface IInputProps  {
 export const Input: FC<IInputProps> = ({name, icon, ...props}) => {
     return (
         <div className="input-box">
-            <input className={["input", icon ? "pl-8" : ""].filter(x => x).join(" ")} type="text" name={name} {...props}/>
+            <input className={clsx(["input", icon && "pl-8"])} type="text" name={name} {...props}/>
             <label htmlFor={name} className="input-label">
                 {
                     icon &&

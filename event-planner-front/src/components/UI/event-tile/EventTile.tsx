@@ -1,4 +1,5 @@
 import React, { FC, useState } from "react";
+import { clsx } from "clsx";
 import { Link } from "react-router-dom";
 
 interface IEventTileProps {
@@ -32,8 +33,7 @@ export const EventTile: FC<IEventTileProps> = ({id, title, coverUrl="", category
                     coverUrl && <img src={coverUrl} alt={title} />
                 }
                 <div onClick={onClick} 
-                    className={["bookmark", 
-                    isBookmarked ? "bookmark--active" : ""].filter(x => x).join(" ")}>
+                    className={clsx(["bookmark", isBookmarked && "bookmark--active"])}>
                     <i className="fa-solid fa-bookmark"></i>
                 </div>
             </div>

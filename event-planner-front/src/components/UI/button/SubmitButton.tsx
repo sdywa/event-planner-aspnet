@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { clsx } from "clsx";
 
 interface ISubmitButtonProps {
     classes?: string[];
@@ -8,7 +9,7 @@ interface ISubmitButtonProps {
 
 export const SubmitButton: FC<ISubmitButtonProps> = ({children, classes=[], ...props}) => {
     return (
-        <button type="submit" className={[ "button", ...classes ].join(" ") } {...props}>
+        <button type="submit" className={clsx(["button", classes])} {...props}>
             {children}
         </button>
     );
