@@ -1,7 +1,8 @@
 import React, { FC, useState } from "react";
+import { clsx } from "clsx";
 import useDebounce from "../../../hooks/useDebounce";
 import { Input } from "../input/Input";
-import { Button } from "../button/Button";
+import { Button, ButtonStyles } from "../button/Button";
 
 interface ISearchProps {
     searchUrl: string;
@@ -37,10 +38,10 @@ export const Search: FC<ISearchProps> = ({searchUrl: string}) => {
             <Input type="text" name="search" value={value} onChange={onChange} 
                 icon={<i className="fa-solid fa-magnifying-glass"></i>} placeholder="Поиск" autocomplete="off"/>
             <div className="flex justify-center items-center gap-2">
-                <Button classes={["w-8 h-8 p-0 flex justify-center items-center text-lg border-2 rounded-md", showingFilter ? "button--green" : "text-gray border-gray hover:border-darkgray"]} onClick={onFilterClick}>
+                <Button className={["button w-8 h-8 p-0 flex justify-center items-center text-lg border-2 rounded-md", showingFilter ? "button--green" : "text-gray border-gray hover:border-darkgray"]} onClick={onFilterClick}>
                     <i className="fa-solid fa-filter"></i>
                 </Button>
-                <Button classes={["w-8 h-8 p-0 flex justify-center items-center text-lg border-2 rounded-md", showingFavorite ? "button--green" : "text-gray border-gray hover:border-darkgray"]} onClick={onFavoriteClick}>
+                <Button className={["button w-8 h-8 p-0 flex justify-center items-center text-lg border-2 rounded-md", showingFavorite ? "button--green" : "text-gray border-gray hover:border-darkgray"]} onClick={onFavoriteClick}>
                     <i className="fa-solid fa-bookmark"></i>
                 </Button>
             </div>

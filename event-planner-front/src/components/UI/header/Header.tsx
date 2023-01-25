@@ -27,7 +27,7 @@ export const Header: FC = () => {
                 :
                 <div className="flex justify-between items-center gap-1">
                     <Button link="/login">Вход</Button>
-                    <Button link="/signup" classes={["button--primary"]}>Регистрация</Button>
+                    <Button link="/signup" isPrimary={true}>Регистрация</Button>
                 </div>
                 }
             </div>

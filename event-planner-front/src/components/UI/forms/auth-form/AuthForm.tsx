@@ -56,8 +56,8 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
                 }
             </div>
             <div className="flex justify-end w-full px-8">
-                <SubmitButton disabled={hasError && isSubmitted} 
-                    classes={["button--primary", hasError && isSubmitted ? "button--red" : "button--green"]}
+                <SubmitButton disabled={hasError && isSubmitted} isPrimary={true}
+                    className={[ hasError && isSubmitted ? "button--red" : "button--green"]}
                 >
                     Войти 
                 </SubmitButton>
