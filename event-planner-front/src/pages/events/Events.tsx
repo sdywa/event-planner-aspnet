@@ -1,5 +1,6 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
+import { Button, ButtonStyles } from "../../components/UI/button/Button";
 import { EventTile } from "../../components/UI/event-tile/EventTile";
 import { Search } from "../../components/UI/search/Search";
 
@@ -50,9 +51,19 @@ export const Events: FC = () => {
         minPrice: 0,
         isFavorite: false
     }];
+    const isCreator = false;
 
     return (
-        <PageLayout title="Мероприятия" header={<Search searchUrl={""} />}>
+        <PageLayout title="Мероприятия" header={
+            <div className="w-full flex justify-between items-center">
+                <Search searchUrl={""} />
+                { 
+                    isCreator && <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new" className={["flex justify-center items-center gap-2"]}>
+                        <i className="fa-solid fa-plus"></i>
+                        Добавить
+                    </Button>
+                }  
+            </div>}>
             <div className="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center content-center">
                 {
                     events.map((v, i) => <EventTile key={v.id} {...v} />)
