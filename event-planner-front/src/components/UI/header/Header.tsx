@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Button } from "../button/Button";
 import { DropdownMenu } from "../dropdown-menu/DropdownMenu";
 import { Logo, LogoTypes } from "../logo/Logo";
@@ -14,8 +14,8 @@ export const Header: FC = () => {
                 {isAuth
                 ?
                     <DropdownMenu items={[
-                        {label: "Настройки", link: "/account/settings", icon: "fa-solid fa-gear"}, 
-                        {label: "Выход", link: "/logout", icon: "fa-solid fa-right-from-bracket"}
+                        {label: "Настройки", link: "/account/settings", icon: <i className="fa-solid fa-gear"></i>}, 
+                        {label: "Выход", link: "/logout", icon: <i className="fa-solid fa-right-from-bracket"></i>}
                         ]}>
                             <Button>
                                 <div className="flex justify-between items-center gap-2 text-lg">

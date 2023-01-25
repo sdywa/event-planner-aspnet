@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    body {
+        background-color: #F1F6F9;
+    }
+    
+    #root {
+        width: calc(100vw - 15px);
+    }
+}
+
 @layer components {
     .two-lines {
         display: -webkit-box;
@@ -130,12 +140,4 @@
     .switcher-tab--selected .switcher-tab-button {
         @apply text-green border-2 border-green;
     }
-}
-
-body {
-    background-color: #F1F6F9;
-}
-
-#root {
-    width: calc(100vw - 15px);
 }

@@ -25,7 +25,7 @@ export const EventTile: FC<IEventTileProps> = ({id, title, coverUrl="", category
     
     return (
         <Link to={`/events/${id}`}
-            className="flex flex-col max-w-xs font-roboto text-base text-black"
+            className="flex flex-col max-w-[21.5rem] font-roboto text-base text-black"
         >
             <div className="w-full h-44 relative bg-lightgray rounded-t-xl">
                 {

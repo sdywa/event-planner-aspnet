@@ -1,9 +1,9 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { DropdownMenuItem } from "./DropdownMenuItem";
 
 interface IDropdownMenuProps {
     children: React.ReactNode;
-    items: {label: string, link: string, icon?: string}[];
+    items: {label: string, link: string, icon?: React.ReactNode}[];
 };
 
 export const DropdownMenu: FC<IDropdownMenuProps> = ({children, items}) => {
