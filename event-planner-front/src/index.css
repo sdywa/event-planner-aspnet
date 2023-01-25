@@ -28,11 +28,11 @@
     }
 
     .button--green {
-        @apply text-green border-green hover:text-white hover:bg-green;
+        @apply text-green border-green hover:text-white hover:bg-green hover:border-green;
     }
 
     .button-red {
-        @apply text-red border-red hover:text-white hover:bg-red;
+        @apply text-red border-red hover:text-white hover:bg-red hover:border-red;
     }
 
     .heading--primary {
