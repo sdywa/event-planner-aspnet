@@ -52,7 +52,7 @@
     }
 
     .bookmark {
-        @apply absolute top-4 right-4 text-2xl text-gray;
+        @apply text-2xl text-gray;
         -webkit-text-stroke-width: 1px;
         -webkit-text-stroke-color: #FFFFFF;
     }

@@ -75,7 +75,7 @@ export const Events: FC = () => {
 
     return (
         <PageLayout title="Мероприятия" header={
-            <div className="w-full flex justify-between items-center">
+            <div className="w-full flex justify-between items-center ml-10">
                 <EventSearch searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
                 { 
                     isCreator && <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new" className={["flex justify-center items-center gap-2"]}>

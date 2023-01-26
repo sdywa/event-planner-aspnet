@@ -25,7 +25,7 @@ export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
                     event.coverUrl && <img src={event.coverUrl} alt={event.title} />
                 }
                 <div onClick={onClick} 
-                    className={clsx(["bookmark", event.isFavorite && "bookmark--active"])}>
+                    className={clsx(["bookmark absolute top-4 right-4", event.isFavorite && "bookmark--active"])}>
                     <i className="fa-solid fa-bookmark"></i>
                 </div>
             </div>
