@@ -134,11 +134,11 @@
     }
 
     .switcher-tab:first-child:not(.switcher-tab--selected) .switcher-tab-button {
-        @apply border-r-0 rounded-none rounded-l-md;
+        @apply border-r-transparent rounded-none rounded-l-md;
     }
 
     .switcher-tab:last-child:not(.switcher-tab--selected) .switcher-tab-button {
-        @apply border-l-0 rounded-none rounded-r-md;
+        @apply border-l-transparent rounded-none rounded-r-md;
     }
 
     .switcher-tab--selected .switcher-tab-button {
