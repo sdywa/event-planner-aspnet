@@ -1,11 +1,15 @@
 import { FC, useState } from "react";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Button, ButtonStyles } from "../../components/UI/button/Button";
-import { EventTile } from "../../components/UI/event-tile/EventTile";
-import { Search } from "../../components/UI/search/Search";
+import { EventTile } from "../../components/UI/events/event-tile/EventTile";
+import { EventSearch } from "../../components/UI/events/event-search/EventSearch";
+import { EventFilter } from "../../components/UI/events/event-filter/EventFilter";
+import { IEvent } from "../../types";
+import useFilter from "../../hooks/useFilter";
+import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
 
 export const Events: FC = () => {
-    const events = [{
+    const [events, setEvents] = useState<IEvent[]>([{
         id: 1,
         title: "Заголовок",
         coverUrl: "",
@@ -50,25 +54,51 @@ export const Events: FC = () => {
         date: "12 декабря",
         minPrice: 0,
         isFavorite: false
-    }];
-    const isCreator = false;
+    }]);
+    const {filteredItems, toggleFilter} = useFilter<IEvent>(events);
+    const [showingFilter, setShowingFilter] = useState(false);
+    const isCreator = true;
+
+    function toggleFavorite(eventId: number) {
+        const nextEvents = events.map((event) => {
+            if (event.id === eventId) {
+                console.log(event.id);
+                return {
+                    ...event,
+                    isFavorite: !event.isFavorite
+                };
+            }
+            return event;
+        });
+        setEvents(nextEvents);
+    }
 
     return (
         <PageLayout title="Мероприятия" header={
             <div className="w-full flex justify-between items-center">
-                <Search searchUrl={""} />
+                <EventSearch searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
                 { 
                     isCreator && <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new" className={["flex justify-center items-center gap-2"]}>
                         <i className="fa-solid fa-plus"></i>
                         Добавить
                     </Button>
                 }  
-            </div>}>
-            <div className="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center content-center">
-                {
-                    events.map((v, i) => <EventTile key={v.id} {...v} />)
-                }
             </div>
+        }>
+            {
+                showingFilter && <EventFilter filtersCallback={toggleFilter} /> 
+            }
+            {
+                filteredItems.length
+                ?
+                <div className="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center content-center">
+                    {
+                        filteredItems.map((v) => <EventTile key={v.id} event={v} favoriteCallback={toggleFavorite} />)
+                    }
+                </div>
+                :
+                <EmptyPlaceholder text="Мероприятия не найдены" />
+            }
         </PageLayout>
     );
 }

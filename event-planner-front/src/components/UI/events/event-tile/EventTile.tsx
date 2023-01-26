@@ -1,61 +1,53 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { clsx } from "clsx";
 import { Link } from "react-router-dom";
+import { IEvent } from "../../../../types";
 
 interface IEventTileProps {
-    id: number;
-    title: string;
-    coverUrl?: string;
-    description: string;
-    category: string;
-    type: string;
-    date: string;
-    location?: string;
-    minPrice: number;
-    isFavorite: boolean;
+    event: IEvent,
+    favoriteCallback: (value: number) => void;
 };
 
-export const EventTile: FC<IEventTileProps> = ({id, title, coverUrl="", category, type, date, description, minPrice, location="", isFavorite}) => {
-    const [isBookmarked, setBookmark] = useState(isFavorite);
+export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
 
     function onClick(e: React.MouseEvent<HTMLDivElement>) {
         e.preventDefault();
         e.stopPropagation();
-        setBookmark(!isBookmarked);
+        favoriteCallback(event.id);
     }
     
     return (
-        <Link to={`/events/${id}`}
+        <Link to={`/events/${event.id}`}
             className="flex flex-col max-w-[21.5rem] font-roboto text-base text-black"
         >
             <div className="w-full h-44 relative bg-lightgray rounded-t-xl">
                 {
-                    coverUrl && <img src={coverUrl} alt={title} />
+                    event.coverUrl && <img src={event.coverUrl} alt={event.title} />
                 }
                 <div onClick={onClick} 
-                    className={clsx(["bookmark", isBookmarked && "bookmark--active"])}>
+                    className={clsx(["bookmark", event.isFavorite && "bookmark--active"])}>
                     <i className="fa-solid fa-bookmark"></i>
                 </div>
             </div>
             <div className="flex flex-col gap-1 h-[11.5rem] py-4 px-3">
                 <div className="flex flex-col">
                     <div className="flex justify-between items-center text-sm font-light">
-                        <div>{category}</div>
-                        <div>{date}</div>
+                        <div>{event.category}</div>
+                        <div>{event.date}</div>
                     </div>
                     <div className="max-w-full overflow-hidden text-ellipsis font-ubuntu text-xl font-bold whitespace-nowrap">
-                        {title}
+                        {event.title}
                     </div>
                 </div>
                 <div className="max-w-full overflow-hidden text-ellipsis two-lines">
-                    {description}
+                    {event.description}
                 </div>
                 <div className="flex justify-between items-center flex-wrap">
                     {
-                        type === "Offline"
+                        event.type === "Offline"
                         ?
                         <span>
-                            <i className="fa-solid fa-location-dot"></i> {location}
+                            <i className="fa-solid fa-location-dot"></i> {event.location}
                         </span>
                         :
                         <span>
@@ -64,9 +56,9 @@ export const EventTile: FC<IEventTileProps> = ({id, title, coverUrl="", category
                     }
                     <div className="font-bold">
                         {
-                            minPrice 
+                            event.minPrice 
                             ?
-                            `от ${minPrice} руб.`
+                            `от ${event.minPrice} руб.`
                             :
                             "Бесплатно"
                         }

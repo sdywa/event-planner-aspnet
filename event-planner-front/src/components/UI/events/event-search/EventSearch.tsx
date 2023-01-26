@@ -1,14 +1,18 @@
 import React, { FC, useState } from "react";
-import { clsx } from "clsx";
-import useDebounce from "../../../hooks/useDebounce";
-import { Input } from "../input/Input";
-import { Button, ButtonStyles } from "../button/Button";
+import useDebounce from "../../../../hooks/useDebounce";
+import { Input } from "../../input/Input";
+import { Button } from "../../button/Button";
+import { IEvent, IFilter } from "../../../../types";
+import { IS_FAVORITE } from "../../../../hooks/useFilter";
 
-interface ISearchProps {
+interface IEventSearchProps {
     searchUrl: string;
+    events: IEvent[];
+    showingFilterCallback: (value: boolean) => void;
+    filtersCallback: (value: IFilter<IEvent>) => void;
 };
 
-export const Search: FC<ISearchProps> = ({searchUrl: string}) => {
+export const EventSearch: FC<IEventSearchProps> = ({searchUrl, events, showingFilterCallback, filtersCallback}) => {
     const [value, setValue] = useState("");
     const [showingFilter, setFilter] = useState(false);
     const [showingFavorite, setFavorite] = useState(false);
@@ -25,18 +29,20 @@ export const Search: FC<ISearchProps> = ({searchUrl: string}) => {
 
     function onFilterClick(e: React.MouseEvent<HTMLAnchorElement>) {
         e.preventDefault();
+        showingFilterCallback(!showingFilter);
         setFilter(!showingFilter);
     }
 
     function onFavoriteClick(e: React.MouseEvent<HTMLAnchorElement>) {
         e.preventDefault();
+        filtersCallback(IS_FAVORITE);
         setFavorite(!showingFavorite);
     }
 
     return (
         <div className="w-[35rem] flex justify-center items-center gap-4">
             <Input type="text" name="search" value={value} onChange={onChange} 
-                icon={<i className="fa-solid fa-magnifying-glass"></i>} placeholder="Поиск" autocomplete="off"/>
+                icon={<i className="fa-solid fa-magnifying-glass"></i>} placeholder="Поиск" autoComplete="off"/>
             <div className="flex justify-center items-center gap-2">
                 <Button className={["button w-8 h-8 p-0 flex justify-center items-center text-lg border-2 rounded-md", showingFilter ? "button--green" : "text-gray border-gray hover:border-darkgray"]} onClick={onFilterClick}>
                     <i className="fa-solid fa-filter"></i>
