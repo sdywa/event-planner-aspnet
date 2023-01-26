@@ -5,6 +5,11 @@ export interface IValidation {
     func: (value: string) => boolean;
 }
 
+export interface IFilter<T> {
+    name: string;
+    func: (value: T) => boolean;
+}
+
 export interface IFormInputData {
     label: string,
     type: "text" | "password",
@@ -23,4 +28,17 @@ export interface IFieldStatus {
 
 export interface IServerError {
     [key: string]: string
+}
+
+export interface IEvent {
+    id: number,
+    title: string,
+    coverUrl?: string,
+    description: string,
+    category: string,
+    type: "Offline" | "Online",
+    date: string,
+    location?: string,
+    minPrice: number,
+    isFavorite: boolean
 }
