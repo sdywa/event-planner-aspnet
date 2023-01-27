@@ -2,14 +2,14 @@ import React, { FC } from "react";
 import { clsx } from "clsx";
 import { Link } from "react-router-dom";
 import { IEvent } from "../../../../types";
+import { Location } from "../location/Location";
 
 interface IEventTileProps {
-    event: IEvent,
+    event: IEvent;
     favoriteCallback: (value: number) => void;
 };
 
 export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
-
     function onClick(e: React.MouseEvent<HTMLDivElement>) {
         e.preventDefault();
         e.stopPropagation();
@@ -43,17 +43,7 @@ export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
                     {event.description}
                 </div>
                 <div className="flex justify-between items-center flex-wrap">
-                    {
-                        event.type === "Offline"
-                        ?
-                        <span>
-                            <i className="fa-solid fa-location-dot"></i> {event.location}
-                        </span>
-                        :
-                        <span>
-                            <i className="fa-solid fa-link"></i> Онлайн
-                        </span>
-                    }
+                    <Location type={event.type} location={event.location} />
                     <div className="font-bold">
                         {
                             event.minPrice 
