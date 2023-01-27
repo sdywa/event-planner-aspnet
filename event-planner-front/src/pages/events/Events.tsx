@@ -60,13 +60,12 @@ export const Events: FC = () => {
     const [showingFilter, setShowingFilter] = useState(false);
     const isCreator = true;
 
-    function toggleFavorite(eventId: number) {
+    function setFavorite(eventId: number, value: boolean) {
         const nextEvents = events.map((event) => {
             if (event.id === eventId) {
-                console.log(event.id);
                 return {
                     ...event,
-                    isFavorite: !event.isFavorite
+                    isFavorite: value
                 };
             }
             return event;
@@ -96,7 +95,7 @@ export const Events: FC = () => {
                 ?
                 <div className="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center content-center">
                     {
-                        filteredItems.map((v) => <EventTile key={v.id} event={v} favoriteCallback={toggleFavorite} />)
+                        filteredItems.map((v) => <EventTile key={v.id} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
                     }
                 </div>
                 :

@@ -1,21 +1,15 @@
-import React, { FC } from "react";
-import { clsx } from "clsx";
+import { FC } from "react";
 import { Link } from "react-router-dom";
 import { IEvent } from "../../../../types";
+import { Bookmark } from "../../bookmark/Bookmark";
 import { Location } from "../location/Location";
 
 interface IEventTileProps {
     event: IEvent;
-    favoriteCallback: (value: number) => void;
+    favoriteCallback: (value: boolean) => void;
 };
 
-export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
-    function onClick(e: React.MouseEvent<HTMLDivElement>) {
-        e.preventDefault();
-        e.stopPropagation();
-        favoriteCallback(event.id);
-    }
-    
+export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {  
     return (
         <Link to={`/events/${event.id}`}
             className="flex flex-col max-w-[21.5rem] font-roboto text-base text-black"
@@ -24,10 +18,7 @@ export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
                 {
                     event.coverUrl && <img src={event.coverUrl} alt={event.title} />
                 }
-                <div onClick={onClick} 
-                    className={clsx(["bookmark absolute top-4 right-4", event.isFavorite && "bookmark--active"])}>
-                    <i className="fa-solid fa-bookmark"></i>
-                </div>
+                <Bookmark isFavorite={event.isFavorite} className={["absolute top-4 right-4"]} favoriteCallback={favoriteCallback} />
             </div>
             <div className="flex flex-col gap-1 h-[11.5rem] py-4 px-3">
                 <div className="flex flex-col">
