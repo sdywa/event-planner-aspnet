@@ -4,7 +4,7 @@ import { DropdownMenu } from "../dropdown-menu/DropdownMenu";
 import { Logo, LogoTypes } from "../logo/Logo";
 
 export const Header: FC = () => {
-    const isAuth = false;
+    const isAuth = true;
     const username = "Username";
 
     return (

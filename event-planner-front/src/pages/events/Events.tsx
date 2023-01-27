@@ -5,6 +5,7 @@ import { EventTile } from "../../components/UI/events/event-tile/EventTile";
 import { EventSearch } from "../../components/UI/events/event-search/EventSearch";
 import { EventFilter } from "../../components/UI/events/event-filter/EventFilter";
 import { IEvent } from "../../types";
+import { WithIcon } from "../../components/UI/with-icon/WithIcon";
 import useFilter from "../../hooks/useFilter";
 import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
 
@@ -78,9 +79,11 @@ export const Events: FC = () => {
             <div className="w-full flex justify-between items-center ml-10">
                 <EventSearch searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
                 { 
-                    isCreator && <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new" className={["flex justify-center items-center gap-2"]}>
-                        <i className="fa-solid fa-plus"></i>
-                        Добавить
+                    isCreator && 
+                    <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new">
+                        <WithIcon icon={<i className="fa-solid fa-plus"></i>}>
+                            Добавить
+                        </WithIcon>
                     </Button>
                 }  
             </div>
