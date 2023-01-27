@@ -42,3 +42,11 @@ export interface IEvent {
     minPrice: number,
     isFavorite: boolean
 }
+
+export interface IExtendedEvent extends IEvent {
+    creator: {
+        name: string,
+        eventsCount: number,
+        rating: number
+    }
+}

@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 
 export enum ButtonStyles {
     BUTTON_GREEN = "button--green",
-    BUTTON_RED = "button--red"
+    BUTTON_RED = "button--red",
+    BUTTON_BLUE = "button--blue"
 }
 
 export interface IButtonProps {

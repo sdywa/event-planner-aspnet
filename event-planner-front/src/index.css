@@ -4,11 +4,16 @@
 
 @layer base {
     body {
+        @apply font-roboto;
         background-color: #F1F6F9;
     }
     
     #root {
         width: calc(100vw - 15px);
+    }
+
+    h1, h2, h3 {
+        @apply font-bold font-ubuntu text-black tracking-tighter;
     }
 }
 
@@ -31,6 +36,10 @@
         @apply text-green border-green hover:text-darkgreen hover:border-darkgreen;
     }
 
+    .button--blue {
+        @apply text-blue border-blue hover:text-darkblue hover:border-darkblue;
+    }
+
     .button--primary.button--green {
         @apply hover:text-white hover:border-green hover:bg-green;
     }
@@ -40,11 +49,15 @@
     }
 
     .heading--primary {
-        @apply font-bold font-ubuntu text-5xl text-black tracking-tighter mb-8;
+        @apply text-5xl mb-8;
     }
 
     .heading--secondary {
-        @apply font-bold font-ubuntu text-4xl text-black tracking-tighter;
+        @apply text-4xl;
+    }
+
+    .heading--tertiary {
+        @apply text-3xl;
     }
 
     .container {
