@@ -17,7 +17,7 @@ export const Event: FC = () => {
         category: "Бизнес",
         type: "Offline",
         date: "Понедельник, 12 декабря",
-        location: "г. Москва, очень длинный адрес который может не поместиться в этот маленький блок",
+        location: "г. Москва, очень длинный адрес который может не",
         minPrice: 0,
         isFavorite: false,
         creator: {
@@ -37,7 +37,7 @@ export const Event: FC = () => {
 
     return (
         <PageLayout title={event.title} isCentered={true} header={
-            <Bookmark isFavorite={event.isFavorite} className={["text-lg"]} favoriteCallback={setFavorite} />
+            <Bookmark isFavorite={event.isFavorite} size={"text-lg"} favoriteCallback={setFavorite} />
         }>
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-3 mt-2">
                 <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>

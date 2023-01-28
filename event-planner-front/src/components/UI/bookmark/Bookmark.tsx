@@ -4,10 +4,11 @@ import { clsx } from "clsx";
 interface IBookmarkProps {
     isFavorite: boolean;
     className?: string[];
+    size?: string;
     favoriteCallback: (value: boolean) => void;
 };
 
-export const Bookmark: FC<IBookmarkProps> = ({isFavorite, className, favoriteCallback}) => {
+export const Bookmark: FC<IBookmarkProps> = ({isFavorite, className, size="text-2xl", favoriteCallback}) => {
     function onClick(e: React.MouseEvent<HTMLDivElement>) {
         e.preventDefault();
         e.stopPropagation();
@@ -16,7 +17,7 @@ export const Bookmark: FC<IBookmarkProps> = ({isFavorite, className, favoriteCal
 
     return (
         <div onClick={onClick} 
-            className={clsx(["bookmark text-2xl cursor-pointer", isFavorite && "bookmark--active", className])}>
+            className={clsx(["bookmark cursor-pointer", isFavorite && "bookmark--active", size, className])}>
             <i className="fa-solid fa-bookmark"></i>
         </div>
     );
