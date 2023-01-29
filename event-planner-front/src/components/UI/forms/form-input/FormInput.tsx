@@ -22,7 +22,6 @@ export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmi
     }, [isSubmitted]);
 
     useEffect(() => {
-        console.log(showingError, !isShowed, !isDirty);
         setInputError("");
 
         if (!isShowed)

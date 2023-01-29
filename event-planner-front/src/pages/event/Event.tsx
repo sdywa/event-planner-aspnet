@@ -1,19 +1,30 @@
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 // import { useParams } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Bookmark } from "../../components/UI/bookmark/Bookmark";
 import { Button, ButtonStyles } from "../../components/UI/button/Button";
+import { SubmitButton } from "../../components/UI/button/SubmitButton";
 import { Location } from "../../components/UI/events/location/Location";
 import { WithIcon } from "../../components/UI/with-icon/WithIcon";
-import { IExtendedEvent } from "../../types";
+import { FormInput } from "../../components/UI/forms/form-input/FormInput";
+import { RadioButton } from "../../components/UI/radio-button/RadioButton";
+import { IS_NOT_EMPTY } from "../../hooks/useValidation";
+import useForm from "../../hooks/forms/useForm";
+import { IExtendedEvent, IFieldStatus, IServerError } from "../../types";
 
 export const Event: FC = () => {
     // const params = useParams();
+    const isAuth = false;
     const [event, setEvent] = useState<IExtendedEvent>({
         id: 1,
         title: "Заголовок",
         coverUrl: "",
         description: "Описание мероприятия описание описание описание описание",
+        fullDescription: `    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet convallis velit. Curabitur varius bibendum ornare. Vestibulum vitae vestibulum lorem. Duis molestie nunc vel mollis molestie. Nullam feugiat tortor eu lacus molestie, nec efficitur lectus finibus. Cras neque ipsum, tempus eget mi a, imperdiet tempus turpis. Vestibulum ac nisi vitae est volutpat finibus. Fusce sagittis magna in ipsum egestas vehicula. Sed mollis tincidunt felis vel mollis. Aliquam ut lectus vel dui auctor congue quis vitae tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+
+    Maecenas viverra, lacus a pellentesque aliquet, lacus justo pretium nunc, et rutrum turpis justo et lorem. Morbi sem risus, feugiat eu interdum ac, sollicitudin quis libero. Duis et maximus lectus. Cras porta fringilla nisl, a euismod tortor imperdiet at. Nullam posuere dapibus velit. Praesent at risus sit amet magna pellentesque sollicitudin eu nec justo. Pellentesque sit amet eros at mauris consequat cursus. Curabitur at odio et quam hendrerit accumsan sed ultrices purus. Vestibulum sagittis rutrum efficitur. Vivamus pharetra vel mi ut scelerisque. Phasellus sagittis laoreet erat, sed faucibus purus lacinia at. Sed convallis facilisis eros ac vehicula. Curabitur sit amet accumsan neque, ac viverra lectus. Duis ut libero nec eros scelerisque bibendum tincidunt non lorem. Nullam sed neque tortor.
+        
+    Nulla faucibus et mauris vitae pharetra. Vestibulum aliquam pulvinar augue, eu molestie sapien finibus vel. Proin consequat, massa et vestibulum tempus, velit leo tincidunt ante, eu aliquet erat lectus id nibh. Cras magna leo, convallis et mauris ut, ullamcorper porttitor augue. Nullam vitae est sed sem porttitor pharetra sed eget odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris ut quam eu orci feugiat pellentesque et sed neque. In hac habitasse platea dictumst. Praesent dapibus non purus condimentum iaculis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed iaculis varius placerat. Ut nulla erat, eleifend vitae diam et, porttitor tempor nunc.`,
         category: "Бизнес",
         type: "Offline",
         date: "Понедельник, 12 декабря",
@@ -24,8 +35,30 @@ export const Event: FC = () => {
             name: "Создатель Создальевич",
             eventsCount: 20,
             rating: 4.5
-        }
+        },
+        questions: [
+            {id: "1", name: "Email"},
+            {id: "2", name: "Имя"},
+            {id: "3", name: "Фамилия"},
+            {id: "4", name: "Ваш Возраст"}
+        ],
+        tickets: [
+            {id: "1", name: "Входной билет", until: "12.12.2022", price: 0},
+            {id: "2", name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
+        ]
     });
+    const [ticket, setTicket] = useState(event.tickets[0].id.toString());
+    const {serverErrors, isSubmitted, updateFieldStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
+
+    function onTicketChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setTicket(e.target.value);
+        console.log(e.target.value);
+    }
+
+    function sendFormData(data: {[key: string]: IFieldStatus}): IServerError {
+        console.log("sended!");
+        return {};
+    }
 
     function setFavorite(value: boolean) {
         const nextEvent = {
@@ -57,15 +90,15 @@ export const Event: FC = () => {
                     </WithIcon>
                 </div>
                 <div className="w-full h-full flex flex-col justify-center items-center gap-2">
-                    <div className="relative p-4 pt-16 w-72 flex flex-col justify-center items-center gap-1 border-2 border-lightgray rounded-md">
+                    <div className="relative px-4 pt-[4.25rem] pb-6 w-72 flex flex-col justify-center items-center border-2 border-lightgray rounded-md">
                         <div className="absolute -top-1/2 translate-y-1/2 w-28 h-28 bg-lightgray rounded-full border-4 border-white"></div>
-                        <h3 className="heading--tertiary text-center">
+                        <h3 className="text-2xl text-center">
                             {event.creator.name}
                         </h3>
-                        <div className="text-xl">
+                        <div className="text-base">
                             {event.creator.eventsCount} мероприятий
                         </div>
-                        <div className="flex justify-center items-center gap-1 text-xl">
+                        <div className="flex justify-center items-center gap-1 text-base">
                             <span className="font-medium">{event.creator.rating}</span>
                             <i className="fa-solid fa-star text-yellow"></i>
                         </div>
@@ -76,6 +109,77 @@ export const Event: FC = () => {
                         </WithIcon>
                     </Button>
                 </div>
+            </div>
+            <div className="flex flex-col gap-8">
+                <div className="text-base whitespace-pre-wrap">
+                    {event.fullDescription}
+                </div>
+                {
+                    isAuth &&
+                    <div className="m-auto">
+                        <h3 className="heading--tertiary mb-2">Регистрация</h3>
+                        <form onSubmit={onSubmit} onChange={onChange}>
+                            <div className="flex gap-8 pb-2">
+                                <div className="w-80 max-w-xs">
+                                    {
+                                        event.questions.map(({name: text}) => <FormInput
+                                            key={text} 
+                                            name={text}
+                                            data={{
+                                                label: text,
+                                                type: "text",
+                                                autoComplete: "off",
+                                                validation: [IS_NOT_EMPTY()]
+                                            }}
+                                            serverError={serverErrors[text]}
+                                            isSubmitted={isSubmitted}
+                                            callBack={updateFieldStatuses}
+                                        />)
+                                    }
+                                </div>
+                                <div className="min-w-[20rem] max-w-sm">
+                                    <div className="flex justify-between font-bold pb-5">
+                                        <div>Название билета</div>
+                                        <div className="w-24 text-center">Цена</div>
+                                    </div>
+                                    <ul>
+                                        {
+                                            event.tickets.map(({id, name, until, price}, i) => 
+                                                <RadioButton key={name} name="tickets" id={name} value={id} defaultChecked={i === 0} onChange={onTicketChange}>
+                                                    <div className="flex justify-between gap-4">
+                                                        <div className="w-60">
+                                                                <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>
+                                                                <div className="text-sm">до {until}</div>
+                                                            </div>
+                                                            <div className="w-24 text-center">
+                                                                {
+                                                                    price
+                                                                    ?
+                                                                        <div><span className="font-bold">{price}</span> руб.</div>
+                                                                    :
+                                                                    <span className="font-bold">Бесплатно</span>
+                                                                }
+                                                            </div>
+                                                    </div>
+                                                </RadioButton>
+                                            )
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            <SubmitButton disabled={hasError} isPrimary={true} 
+                                buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
+                                {
+                                    event.tickets.find((t) => t.id === ticket)?.price
+                                    ?
+                                    "Купить билет"
+                                    :
+                                    "Зарегистрироваться"
+                                }
+                            </SubmitButton>
+                        </form>
+                    </div>
+                }
             </div>
         </PageLayout>
     );

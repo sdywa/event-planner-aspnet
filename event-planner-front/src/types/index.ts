@@ -44,9 +44,20 @@ export interface IEvent {
 }
 
 export interface IExtendedEvent extends IEvent {
+    fullDescription: string,
     creator: {
         name: string,
         eventsCount: number,
         rating: number
     }
+    questions: {
+        id: string,
+        name: string
+    }[],
+    tickets: {
+        id: string,
+        name: string,
+        until: string,
+        price: number
+    }[]
 }
