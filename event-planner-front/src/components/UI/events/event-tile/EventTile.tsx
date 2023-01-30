@@ -21,12 +21,12 @@ export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
                 <Bookmark isFavorite={event.isFavorite} className={"absolute top-4 right-4 text-2xl"} favoriteCallback={favoriteCallback} />
             </div>
             <div className="flex flex-col gap-1 h-[11.5rem] py-4 px-3">
-                <div className="flex flex-col w-[18.5rem]">
+                <div className="flex flex-col">
                     <div className="flex justify-between items-center text-sm font-light">
                         <div>{event.category}</div>
                         <div>{event.date}</div>
                     </div>
-                    <div className="max-w-full overflow-hidden text-ellipsis font-ubuntu text-xl font-bold whitespace-nowrap">
+                    <div className="max-w-full w-[18.5rem] overflow-hidden text-ellipsis font-ubuntu text-xl font-bold whitespace-nowrap">
                         {event.title}
                     </div>
                 </div>
