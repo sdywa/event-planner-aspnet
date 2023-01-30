@@ -10,6 +10,8 @@ import useFilter from "../../hooks/useFilter";
 import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
 
 export const Events: FC = () => {
+    const isAuth = true;
+    const isCreator = true;
     const [events, setEvents] = useState<IEvent[]>([{
         id: 1,
         title: "Заголовок",
@@ -58,7 +60,6 @@ export const Events: FC = () => {
     }]);
     const {filteredItems, toggleFilter} = useFilter<IEvent>(events);
     const [showingFilter, setShowingFilter] = useState(false);
-    const isCreator = true;
 
     function setFavorite(eventId: number, value: boolean) {
         const nextEvents = events.map((event) => {
@@ -76,7 +77,7 @@ export const Events: FC = () => {
     return (
         <PageLayout title="Мероприятия" header={
             <div className="w-full flex justify-between items-center ml-10">
-                <EventSearch searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
+                <EventSearch isAuth={isAuth} searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
                 { 
                     isCreator && 
                     <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new">

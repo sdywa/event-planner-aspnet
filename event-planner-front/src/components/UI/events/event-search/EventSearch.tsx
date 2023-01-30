@@ -6,13 +6,14 @@ import { IEvent, IFilter } from "../../../../types";
 import { IS_FAVORITE } from "../../../../hooks/useFilter";
 
 interface IEventSearchProps {
+    isAuth: boolean;
     searchUrl: string;
     events: IEvent[];
     showingFilterCallback: (value: boolean) => void;
     filtersCallback: (value: IFilter<IEvent>) => void;
 };
 
-export const EventSearch: FC<IEventSearchProps> = ({searchUrl, events, showingFilterCallback, filtersCallback}) => {
+export const EventSearch: FC<IEventSearchProps> = ({isAuth, searchUrl, events, showingFilterCallback, filtersCallback}) => {
     const [value, setValue] = useState("");
     const [showingFilter, setFilter] = useState(false);
     const [showingFavorite, setFavorite] = useState(false);
@@ -47,9 +48,12 @@ export const EventSearch: FC<IEventSearchProps> = ({searchUrl, events, showingFi
                 <ActionButton isShowing={showingFilter} onClick={onFilterClick}>
                     <i className="fa-solid fa-filter"></i>
                 </ActionButton>
-                <ActionButton isShowing={showingFavorite} onClick={onFavoriteClick}>
-                    <i className="fa-solid fa-bookmark"></i>
-                </ActionButton>
+                {
+                    isAuth &&
+                    <ActionButton isShowing={showingFavorite} onClick={onFavoriteClick}>
+                        <i className="fa-solid fa-bookmark"></i>
+                    </ActionButton>
+                }
             </div>
         </div>
     );
