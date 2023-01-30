@@ -10,6 +10,7 @@ import { FormInput } from "../../components/UI/forms/form-input/FormInput";
 import { RadioButton } from "../../components/UI/radio-button/RadioButton";
 import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
+import { Modal } from "../../components/UI/modal/Modal";
 import { IExtendedEvent, IFieldStatus, IServerError } from "../../types";
 
 export const Event: FC = () => {
@@ -49,6 +50,7 @@ export const Event: FC = () => {
     });
     const [ticket, setTicket] = useState(event.tickets[0].id.toString());
     const {serverErrors, isSubmitted, updateFieldStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
+    const [modalActive, setActive] = useState(false);
 
     function onTicketChange(e: React.ChangeEvent<HTMLInputElement>) {
         setTicket(e.target.value);
@@ -68,10 +70,19 @@ export const Event: FC = () => {
         setEvent(nextEvent);
     }
 
+    function setModal(value: boolean) {
+        setActive(value);
+        if (value)
+            document.body.classList.add("overflow-hidden");
+        else
+            document.body.classList.remove("overflow-hidden");
+    }
+
     return (
         <PageLayout title={event.title} isCentered={true} header={
             <Bookmark isFavorite={event.isFavorite} className={"text-lg"} favoriteCallback={setFavorite} />
         }>
+            <Modal active={modalActive} setActive={setModal}>текст</Modal>
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-3 mt-2">
                 <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>
                     {event.date}
@@ -103,7 +114,7 @@ export const Event: FC = () => {
                             <i className="fa-solid fa-star text-yellow"></i>
                         </div>
                     </div>
-                    <Button buttonStyle={ButtonStyles.BUTTON_BLUE}>
+                    <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
                         <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
                             <span className="text-base">Связаться с организатором</span>
                         </WithIcon>
