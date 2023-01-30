@@ -61,7 +61,7 @@ export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmi
                     <span className="label-content absolute bottom-0 left-1.5 pb-1 transition-all duration-300 ease-in">{data.label}</span>
                 </label>
             </div>
-            <div className="error-text h-6 pt-1 pb-2">{inputError}</div>
+            <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{inputError}</div>
         </div>
     );
 }

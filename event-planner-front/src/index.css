@@ -24,28 +24,12 @@
         -webkit-box-orient: vertical;
     }
 
-    .button {
-        @apply inline-block p-3 text-black bg-transparent font-ubuntu text-sm font-bold cursor-pointer transition-all duration-300 ease-in hover:text-darkgray;
+    .text-stroke-1 {
+        -webkit-text-stroke-color: #FFFFFF;
     }
 
-    .button--primary {
-        @apply py-2 px-5 border-2 border-black rounded-md hover:border-darkgray;
-    }
-
-    .button--green {
-        @apply text-green border-green hover:text-darkgreen hover:border-darkgreen;
-    }
-
-    .button--blue {
-        @apply text-blue border-blue hover:text-darkblue hover:border-darkblue;
-    }
-
-    .button--primary.button--green {
-        @apply hover:text-white hover:border-green hover:bg-green;
-    }
-
-    .button--red {
-        @apply text-red border-red hover:text-white hover:bg-red hover:border-red;
+    .text-stroke-white {
+        -webkit-text-stroke-width: 1px;
     }
 
     .heading--primary {
@@ -62,16 +46,6 @@
 
     .container {
         @apply max-w-6xl p-8 mx-auto;
-    }
-
-    .bookmark {
-        @apply text-gray;
-        -webkit-text-stroke-width: 1px;
-        -webkit-text-stroke-color: #FFFFFF;
-    }
-
-    .bookmark--active {
-        @apply text-yellow;
     }
 
     .input-box {
@@ -138,7 +112,7 @@
     }
 
     .switcher-tab-button {
-        @apply flex justify-center items-center w-40 text-lg py-3 border-2 border-gray rounded-md;
+        @apply w-40 border-2 border-gray rounded-md;
         @apply hover:border-lightgray;
     }
 
@@ -152,9 +126,5 @@
 
     .switcher-tab:last-child:not(.switcher-tab--selected) .switcher-tab-button {
         @apply border-l-transparent rounded-none rounded-r-md;
-    }
-
-    .switcher-tab--selected .switcher-tab-button {
-        @apply text-green border-2 border-green;
     }
 }

@@ -12,8 +12,10 @@ export const LinkSwitcher: FC<ILinkSwitcherProps> = ({tabs, activeTab}) => {
         <ul className="flex justify-center items-center">
             {
                 tabs.map(({title, link}) => 
-                    <li key={link} className={clsx(["switcher-tab", activeTab === title && "switcher-tab--selected"])}>
-                        <Button link={link} className={["button switcher-tab-button"]}>{title}</Button>
+                    <li key={link} className={clsx(["switcher-tab group", activeTab === title && "switcher-tab--selected"])}>
+                        <Button link={link} className={"switcher-tab-button group-[.switcher-tab--selected]:border-green"}>
+                            <span className="text-lg group-[.switcher-tab--selected]:text-green">{title}</span>
+                        </Button>
                     </li>
                 )
             }

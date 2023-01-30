@@ -18,10 +18,10 @@ export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
                 {
                     event.coverUrl && <img src={event.coverUrl} alt={event.title} />
                 }
-                <Bookmark isFavorite={event.isFavorite} className={["absolute top-4 right-4"]} favoriteCallback={favoriteCallback} />
+                <Bookmark isFavorite={event.isFavorite} className={"absolute top-4 right-4 text-2xl"} favoriteCallback={favoriteCallback} />
             </div>
             <div className="flex flex-col gap-1 h-[11.5rem] py-4 px-3">
-                <div className="flex flex-col">
+                <div className="flex flex-col w-[18.5rem]">
                     <div className="flex justify-between items-center text-sm font-light">
                         <div>{event.category}</div>
                         <div>{event.date}</div>

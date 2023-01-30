@@ -14,7 +14,7 @@ import { IExtendedEvent, IFieldStatus, IServerError } from "../../types";
 
 export const Event: FC = () => {
     // const params = useParams();
-    const isAuth = false;
+    const isAuth = true;
     const [event, setEvent] = useState<IExtendedEvent>({
         id: 1,
         title: "Заголовок",
@@ -70,7 +70,7 @@ export const Event: FC = () => {
 
     return (
         <PageLayout title={event.title} isCentered={true} header={
-            <Bookmark isFavorite={event.isFavorite} size={"text-lg"} favoriteCallback={setFavorite} />
+            <Bookmark isFavorite={event.isFavorite} className={"text-lg"} favoriteCallback={setFavorite} />
         }>
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-3 mt-2">
                 <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>
@@ -103,9 +103,9 @@ export const Event: FC = () => {
                             <i className="fa-solid fa-star text-yellow"></i>
                         </div>
                     </div>
-                    <Button buttonStyle={ButtonStyles.BUTTON_BLUE} className={["text-base"]}>
+                    <Button buttonStyle={ButtonStyles.BUTTON_BLUE}>
                         <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
-                            Связаться с организатором
+                            <span className="text-base">Связаться с организатором</span>
                         </WithIcon>
                     </Button>
                 </div>

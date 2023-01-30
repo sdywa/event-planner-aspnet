@@ -9,9 +9,7 @@ export const WithIcon: FC<IWithIconProps> = ({children, icon}) => {
     return (
         <div className="flex justify-center items-center gap-2">
             {icon}
-            <span>
-                {children}
-            </span>
+            {children}
         </div>
     );
 }
