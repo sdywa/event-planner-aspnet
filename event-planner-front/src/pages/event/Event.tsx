@@ -11,7 +11,8 @@ import { RadioButton } from "../../components/UI/radio-button/RadioButton";
 import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
-import { IExtendedEvent, IFieldStatus, IServerError } from "../../types";
+import { IExtendedEvent, IFieldStatus, IFormInputData, IServerError } from "../../types";
+import { Textarea } from "../../components/UI/textarea/Textarea";
 
 export const Event: FC = () => {
     // const params = useParams();
@@ -50,7 +51,16 @@ export const Event: FC = () => {
     });
     const [ticket, setTicket] = useState(event.tickets[0].id.toString());
     const {serverErrors, isSubmitted, updateFieldStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
+    const questionForm = useForm(sendQuestionFormData);
     const [modalActive, setActive] = useState(false);
+    const defaultFormInputData = (label: string): IFormInputData => {
+        return {
+            label: label,
+            type: "text",
+            autoComplete: "off",
+            validation: [IS_NOT_EMPTY()]
+        };
+    };
 
     function onTicketChange(e: React.ChangeEvent<HTMLInputElement>) {
         setTicket(e.target.value);
@@ -59,6 +69,11 @@ export const Event: FC = () => {
 
     function sendFormData(data: {[key: string]: IFieldStatus}): IServerError {
         console.log("sended!");
+        return {};
+    }
+
+    function sendQuestionFormData(data: {[key: string]: IFieldStatus}): IServerError {
+        console.log("question sended!");
         return {};
     }
 
@@ -82,7 +97,29 @@ export const Event: FC = () => {
         <PageLayout title={event.title} isCentered={true} header={
             <Bookmark isFavorite={event.isFavorite} className={"text-lg"} favoriteCallback={setFavorite} />
         }>
-            <Modal active={modalActive} setActive={setModal}>текст</Modal>
+            {
+                isAuth &&
+                    <Modal active={modalActive} setActive={setModal}>
+                        <div className="flex justify-between items-center">
+                            <h3 className="heading--tertiary">Связаться с организатором</h3>
+                            <Button className="text-gray p-0" onClick={() => setModal(false)}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></Button>
+                        </div>
+                        <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange}>
+                            <FormInput name="name" data={defaultFormInputData("Ваше имя")} serverError={questionForm.serverErrors["name"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
+                            <FormInput name="email" data={defaultFormInputData("Ваш email")} serverError={questionForm.serverErrors["email"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
+                            <Textarea name="question" data={defaultFormInputData("Текст сообщения")} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
+                            <div className="flex justify-end items-center gap-2">
+                                <Button onClick={() => setModal(false)}>
+                                    <div className="text-gray">Отмена</div>
+                                </Button>
+                                <SubmitButton disabled={questionForm.hasError} isPrimary={true} 
+                                    buttonStyle={questionForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
+                                    Отправить
+                                </SubmitButton>
+                            </div>
+                        </form>
+                    </Modal>
+            }
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-3 mt-2">
                 <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>
                     {event.date}
@@ -114,11 +151,14 @@ export const Event: FC = () => {
                             <i className="fa-solid fa-star text-yellow"></i>
                         </div>
                     </div>
-                    <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
-                        <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
-                            <span className="text-base">Связаться с организатором</span>
-                        </WithIcon>
-                    </Button>
+                    {
+                        isAuth &&
+                            <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
+                                <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
+                                    <span className="text-base">Связаться с организатором</span>
+                                </WithIcon>
+                            </Button>
+                    }
                 </div>
             </div>
             <div className="flex flex-col gap-8">
@@ -136,12 +176,7 @@ export const Event: FC = () => {
                                         event.questions.map(({name: text}) => <FormInput
                                             key={text} 
                                             name={text}
-                                            data={{
-                                                label: text,
-                                                type: "text",
-                                                autoComplete: "off",
-                                                validation: [IS_NOT_EMPTY()]
-                                            }}
+                                            data={defaultFormInputData(text)}
                                             serverError={serverErrors[text]}
                                             isSubmitted={isSubmitted}
                                             callBack={updateFieldStatuses}
