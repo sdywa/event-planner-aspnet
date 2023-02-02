@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import useDebounce from "../../../../hooks/useDebounce";
-import { Input } from "../../input/Input";
+import { Input, InputStyle } from "../../input/Input";
 import { ActionButton } from "../../button/ActionButton";
 import { IEvent, IFilter } from "../../../../types";
 import { IS_FAVORITE } from "../../../../hooks/useFilter";
@@ -42,8 +42,9 @@ export const EventSearch: FC<IEventSearchProps> = ({isAuth, searchUrl, events, s
 
     return (
         <div className="w-[35rem] flex justify-center items-center gap-4">
-            <Input type="text" name="search" value={value} onChange={onChange} 
-                icon={<i className="fa-solid fa-magnifying-glass"></i>} placeholder="Поиск" autoComplete="off"/>
+            <Input type="text" name="search" className={"pl-8"} value={value} style={InputStyle.WITH_ICON} onChange={onChange} placeholder="Поиск" autoComplete="off">
+                <i className="fa-solid fa-magnifying-glass"></i>    
+            </Input>
             <div className="flex justify-center items-center gap-2">
                 <ActionButton isShowing={showingFilter} onClick={onFilterClick}>
                     <i className="fa-solid fa-filter"></i>

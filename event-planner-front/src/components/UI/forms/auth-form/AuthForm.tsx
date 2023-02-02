@@ -2,14 +2,14 @@ import { FC } from "react";
 import { LinkSwitcher } from "../../link-swticher/LinkSwitcher";
 import { SubmitButton } from '../../button/SubmitButton';
 import { FormInput } from "../form-input/FormInput";
-import { IServerError, IFieldStatus, IFormInputData } from "../../../../types";
+import { IServerError, IFormInputStatus, IFormInputData } from "../../../../types";
 import { ButtonStyles } from "../../button/Button";
 import useForm from "../../../../hooks/forms/useForm";
 
 export interface IAuthFormProps {
     selectedTabIndex: 0 | 1;
     data: { [key: string]: IFormInputData };
-    sendFormData: (data: {[key: string]: IFieldStatus}) => IServerError;
+    sendFormData: (data: {[key: string]: IFormInputStatus}) => IServerError;
 };
 
 export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormData}) => {

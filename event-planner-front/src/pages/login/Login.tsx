@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { AuthForm } from "../../components/UI/forms/auth-form/AuthForm";
 import { IS_NOT_EMPTY, MAX_LENGTH, EMAIL_ADDRESS } from "../../hooks/useValidation";
-import { IFormInputData, IFieldStatus, IServerError } from "../../types/index";
+import { IFormInputData, IFormInputStatus, IServerError } from "../../types/index";
 
 export const Login: FC = () => {
     const data: { [key: string]: IFormInputData } = {
@@ -19,7 +19,7 @@ export const Login: FC = () => {
         }
     };
 
-    function sendFormData(data: {[key: string]: IFieldStatus}): IServerError {
+    function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sended!");
         return { email: "Пользователь не найден" };
     }

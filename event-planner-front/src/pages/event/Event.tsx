@@ -11,7 +11,7 @@ import { RadioButton } from "../../components/UI/radio-button/RadioButton";
 import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
-import { IExtendedEvent, IFieldStatus, IFormInputData, IServerError } from "../../types";
+import { IExtendedEvent, IFormInputStatus, IFormInputData, IServerError } from "../../types";
 import { Textarea } from "../../components/UI/textarea/Textarea";
 
 export const Event: FC = () => {
@@ -67,12 +67,12 @@ export const Event: FC = () => {
         console.log(e.target.value);
     }
 
-    function sendFormData(data: {[key: string]: IFieldStatus}): IServerError {
+    function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sended!");
         return {};
     }
 
-    function sendQuestionFormData(data: {[key: string]: IFieldStatus}): IServerError {
+    function sendQuestionFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("question sended!");
         return {};
     }
@@ -107,7 +107,7 @@ export const Event: FC = () => {
                         <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange}>
                             <FormInput name="name" data={defaultFormInputData("Ваше имя")} serverError={questionForm.serverErrors["name"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
                             <FormInput name="email" data={defaultFormInputData("Ваш email")} serverError={questionForm.serverErrors["email"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
-                            <Textarea name="question" data={defaultFormInputData("Текст сообщения")} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
+                            <Textarea name="question" label="Текст сообщения" validation={[IS_NOT_EMPTY()]} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
                             <div className="flex justify-end items-center gap-2">
                                 <Button onClick={() => setModal(false)}>
                                     <div className="text-gray">Отмена</div>

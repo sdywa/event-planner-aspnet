@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { AuthForm } from "../../components/UI/forms/auth-form/AuthForm";
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH, EMAIL_ADDRESS } from "../../hooks/useValidation";
-import { IFormInputData, IFieldStatus, IServerError } from "../../types/index";
+import { IFormInputData, IFormInputStatus, IServerError } from "../../types/index";
 
 export const Signup: FC = () => {
     const data: { [key: string]: IFormInputData } = {
@@ -37,10 +37,8 @@ export const Signup: FC = () => {
         },
     };
 
-    function sendFormData(data: {[key: string]: IFieldStatus}): IServerError {
+    function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sended!");
-        console.log(data["password"], data["repeatPassword"]);
-
         if (data["password"].value !== data["repeatPassword"].value)
             return { repeatPassword: "Пароль не совпадает"};
 

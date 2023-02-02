@@ -17,7 +17,7 @@ export interface IFormInputData {
     validation: IValidation[]
 }
 
-export interface IFieldStatus {
+export interface IFormInputStatus {
     name: string,
     value: string,
     hasError: boolean,

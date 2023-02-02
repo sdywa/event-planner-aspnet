@@ -1,22 +1,38 @@
-import { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import { clsx } from "clsx";
 
+export enum InputStyle {
+    CLASSIC,
+    WITH_ICON
+}
+
 interface IInputProps  {
+    type: string;
     name: string;
-    icon?: React.ReactNode;
+    className?: string | string[];
+    children: ReactNode;
+    style?: InputStyle;
     [props:string]: any;
 };
 
-export const Input: FC<IInputProps> = ({name, icon, ...props}) => {
+export const Input: FC<IInputProps> = ({type, name, className, children, style=InputStyle.CLASSIC, ...props}) => {
+    const renders = {
+        [InputStyle.CLASSIC]: (node: ReactNode) => node,
+        [InputStyle.WITH_ICON]: (node: ReactNode) => {
+            return (
+                <div className="absolute top-1/2 left-1.5 -translate-y-1/2 pt-0.5">
+                    {node}
+                </div>
+            )
+        }
+    }
+
     return (
         <div className="input-box">
-            <input className={clsx(["input", icon && "pl-8"])} type="text" name={name} {...props}/>
+            <input className={clsx(["input", className])} type={type} name={name} {...props}/>
             <label htmlFor={name} className="input-label">
                 {
-                    icon &&
-                    <div className="absolute top-1/2 left-1.5 -translate-y-1/2 pt-0.5">
-                        {icon}
-                    </div>
+                    renders[style](children)
                 }
             </label>
         </div>
