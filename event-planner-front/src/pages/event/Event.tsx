@@ -68,12 +68,12 @@ export const Event: FC = () => {
     }
 
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
-        console.log("sended!");
+        console.log("sent!");
         return {};
     }
 
     function sendQuestionFormData(data: {[key: string]: IFormInputStatus}): IServerError {
-        console.log("question sended!");
+        console.log("question sent!");
         return {};
     }
 

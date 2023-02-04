@@ -23,10 +23,19 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
     const [isActive, setActive] = useState(false);
     const [isDirty, setDirty] = useState(false);
 
-    const [isShowedError, setShowedError] = useState(true);
-    const [hasError, setError] = useState(false);
+    const [hasError, setError] = useState(true);
     const [errorText, setErrorText] = useState("");
     const validationError = useValidation(value, [...validations].sort((a, b) => a.order - b.order));
+
+    const getError = (isDirty: Boolean) => {
+        let error = "";
+        if (validationError)
+            error = validationError;
+        else if (!isDirty)
+            error = serverError;
+        setError(Boolean(error));
+        return error;
+    }
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
@@ -41,20 +50,10 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
     }, [hasError, isDirty, isActive, value]);
 
     useEffect(() => {
-        if (isFormSubmitted)
-            setShowedError(false);
+        if (isFormSubmitted) {
+            setErrorText(getError(false));
+        }
     }, [isFormSubmitted]);
-
-    useEffect(() => {
-        setErrorText("");
-
-        if (!isShowedError)
-            setErrorText(validationError ? validationError : serverError)
-        else if (hasError)
-            setErrorText(validationError);
-        else if (!isDirty && !isActive)
-            setErrorText(serverError);
-    }, [hasError, isDirty, isActive, serverError, validationError, isShowedError]);
 
     function getClassName() {
         const className = [classes.default];
@@ -73,7 +72,7 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
     const onChange = (e: React.ChangeEvent<T>) => {
         setValue(e.target.value);
         setError(false);
-        setShowedError(true);
+        setErrorText("");
     }
 
     const onFocus = (e: React.FocusEvent<T>) => {
@@ -82,16 +81,14 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
 
     const onBlur = (e: React.FocusEvent<T>) => {
         setActive(false);
-        setError(Boolean(validationError));
-        if (value !== prevValue)
-            setDirty(true);
-        else
-            setDirty(false);
+        const isDirty = value !== prevValue;
+        setDirty(isDirty);
+        setErrorText(getError(isDirty));
     }
 
     const resetInput = () => {
         setDirty(false);
-        setError(true);
+        setErrorText(getError(false));
         setPrevValue(value);
     }
 

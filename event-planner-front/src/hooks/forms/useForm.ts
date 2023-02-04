@@ -1,25 +1,25 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IFormInputStatus, IServerError } from "../../types";
 
 const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => IServerError) => {
     const [serverErrors, setServerErrors] = useState<IServerError>({});
+    const [usedSubmit, setUsedSubmit] = useState(false);
     const [isSubmitted, setSubmitted] = useState(false);
-    const [fieldStatuses, setFieldStatuses] = useState<{[key: string]: IFormInputStatus}>({});
+    const [inputStatuses, setInputStatuses] = useState<{[key: string]: IFormInputStatus}>({});
 
-    const updateFieldStatuses = (name: string, value: IFormInputStatus) => setFieldStatuses((currValue) => {
+    const updateFieldStatuses = (name: string, value: IFormInputStatus) => setInputStatuses((currValue) => {
         const result = {...currValue};
         result[name] = value;
         return result;
     });
     const [hasError, setErrors] = useState(false);
 
-    useEffect(() => {
-        /* eslint-disable react-hooks/exhaustive-deps */
+    const checkErrors = () => {
         let hasError = false;
         let isDirty = true;
         
-        for (const key in fieldStatuses) {
-            const status = fieldStatuses[key];
+        for (const key in inputStatuses) {
+            const status = inputStatuses[key];
 
             if (status.hasError)
                 hasError = true;
@@ -30,24 +30,31 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
             if (hasError && !isDirty)
                 break;
         }
+        return hasError;
+    };
 
-        // Если есть ошибка в поле, либо от сервера были получены ошибки и форма не была изменена
-        const shouldShowError = hasError || (Object.keys(serverErrors).length !== 0 && !isDirty);
-        setErrors(shouldShowError && isSubmitted);
-    }, [fieldStatuses]);
+    useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        setErrors(checkErrors() && usedSubmit);
+    }, [inputStatuses]);
 
     const onChange = () => setSubmitted(false);
     const onSubmit = (e: React.SyntheticEvent) => {
-        e.preventDefault();             
+        e.preventDefault();
+        const hasErrors = checkErrors();
+        setErrors(hasErrors);
         setSubmitted(true);
+        setUsedSubmit(true);
         setServerErrors({});
-        if (!hasError) {
-            const errors = sendFormData(fieldStatuses);
+        console.log("submitted", hasErrors);
+        if (!hasErrors && Object.keys(inputStatuses).length > 0) {
+            const errors = sendFormData(inputStatuses);
+            console.log("sent");
             if (!errors)
                 return; 
             setServerErrors(errors);
             for (const key in errors) {
-                fieldStatuses[key].removeDirty();
+                inputStatuses[key].removeDirty();
             }
         }
     }

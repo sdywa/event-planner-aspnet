@@ -20,7 +20,7 @@ export const Login: FC = () => {
     };
 
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
-        console.log("sended!");
+        console.log("sent!");
         return { email: "Пользователь не найден" };
     }
 

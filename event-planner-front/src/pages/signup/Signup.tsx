@@ -38,7 +38,7 @@ export const Signup: FC = () => {
     };
 
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
-        console.log("sended!");
+        console.log("sent!");
         if (data["password"].value !== data["repeatPassword"].value)
             return { repeatPassword: "Пароль не совпадает"};
 
