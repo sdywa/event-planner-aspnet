@@ -1,18 +1,28 @@
 import { FC } from "react";
-import { IFormInputStatus, IValidation } from "../../../types";
+import { IFormInputStatus } from "../../../types";
+import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../../hooks/useValidation";
 import useFormInput from "../../../hooks/forms/useFormInput";
+import clsx from "clsx";
 
 interface ITextareaProps {
     name: string;
     label: string;
-    validation: IValidation[];
     serverError: string;
+    minLength?: number;
+    maxLength?: number;
+    className?: string;
     isSubmitted: boolean;
     callBack: (name: string, value: IFormInputStatus) => void;
     [key: string]: any
 };
 
-export const Textarea: FC<ITextareaProps> = ({name, label, validation, serverError, isSubmitted, callBack,...props}) => {
+export const Textarea: FC<ITextareaProps> = ({name, label, serverError, isSubmitted, callBack, minLength=0, maxLength=0, className, ...props}) => {
+    const validation = [ IS_NOT_EMPTY() ];
+    if (minLength > 0)
+        validation.push(MIN_LENGTH(minLength));
+
+    if (maxLength > 0 && maxLength > minLength)
+        validation.push(MAX_LENGTH(maxLength));
     const {value, errorText, getClassName, ...inputData} = useFormInput<HTMLTextAreaElement>(
         "", 
         name, 
@@ -20,22 +30,22 @@ export const Textarea: FC<ITextareaProps> = ({name, label, validation, serverErr
         isSubmitted, 
         serverError, 
         {
-            default: "w-full h-full py-2 px-4 rounded-md border-2 border-lightgray focus:outline-none focus:border-green",
-            active: "input--active",
-            dirty: "input--dirty",
-            error: "border-red"
+            default: "textarea",
+            active: "textarea--active",
+            dirty: "textarea--dirty",
+            error: "textarea--error"
         },
         callBack);
 
     return (
-        <div>
-            <div className="w-[44rem]">
-                <label htmlFor={name} className="">
+        <div className="h-full">
+            <div className="w-[44rem] h-full">
+                <label htmlFor={name} className="font-medium">
                     {label}
                 </label>
-                <textarea name={name} {...props} value={value} {...inputData} className={getClassName()} />
+                <textarea name={name} {...props} value={value} {...inputData} className={clsx(getClassName(), className)} />
             </div>
-            <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
+            <div className="text-red font-roboto font-bold text-xs h-6 pb-2">{errorText}</div>
         </div>
     );
 }

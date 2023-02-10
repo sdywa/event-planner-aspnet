@@ -84,6 +84,22 @@
         @apply content-['!'] absolute right-2 bottom-2 w-5 h-5 text-red font-ubuntu font-bold text-sm flex justify-center items-center rounded-full border-2 border-red;
     }
 
+    .textarea {
+        @apply w-full h-full py-1 px-2 rounded-md border-2 border-lightgray text-sm transition-colors ease-in duration-150 resize-none focus:outline-none focus:border-green;
+    }
+
+    .textarea--active {
+        @apply border-green;
+    }
+
+    .textarea--dirty {
+        @apply border-lightgray;
+    }
+
+    .textarea--error {
+        @apply border-red;
+    }
+
     .error-text {
         @apply text-red font-roboto font-bold text-xs;
     }
