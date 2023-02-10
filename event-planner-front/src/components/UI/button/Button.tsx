@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 export enum ButtonStyles {
     BUTTON_GREEN = "green",
     BUTTON_RED = "red",
-    BUTTON_BLUE = "blue"
+    BUTTON_BLUE = "blue",
+    BUTTON_GRAY = "gray"
 }
 
 export const getStyles = (isPrimary: boolean, style?: ButtonStyles): string => {

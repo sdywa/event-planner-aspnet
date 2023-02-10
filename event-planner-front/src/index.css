@@ -97,7 +97,7 @@
     }
 
     .textarea--error {
-        @apply border-red;
+        @apply border-red focus:border-red;
     }
 
     .error-text {

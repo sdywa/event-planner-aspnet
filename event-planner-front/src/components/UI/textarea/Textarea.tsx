@@ -12,11 +12,12 @@ interface ITextareaProps {
     maxLength?: number;
     className?: string;
     isSubmitted: boolean;
+    additionalText?: string;
     callBack: (name: string, value: IFormInputStatus) => void;
     [key: string]: any
 };
 
-export const Textarea: FC<ITextareaProps> = ({name, label, serverError, isSubmitted, callBack, minLength=0, maxLength=0, className, ...props}) => {
+export const Textarea: FC<ITextareaProps> = ({name, label, serverError, isSubmitted, callBack, minLength=0, maxLength=0, className, additionalText, ...props}) => {
     const validation = [ IS_NOT_EMPTY() ];
     if (minLength > 0)
         validation.push(MIN_LENGTH(minLength));
@@ -45,7 +46,15 @@ export const Textarea: FC<ITextareaProps> = ({name, label, serverError, isSubmit
                 </label>
                 <textarea name={name} {...props} value={value} {...inputData} className={clsx(getClassName(), className)} />
             </div>
-            <div className="text-red font-roboto font-bold text-xs h-6 pb-2">{errorText}</div>
+            <div className="font-roboto font-bold text-xs h-6 pb-2">
+                {
+                    errorText 
+                    ?
+                    <span className="text-red">{errorText}</span>
+                    :
+                    <span className="text-gray">{additionalText}</span>
+                }
+            </div>
         </div>
     );
 }
