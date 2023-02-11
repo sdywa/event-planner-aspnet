@@ -21,7 +21,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
     const [isDirty, setDirty] = useState(false);
 
     useEffect(() => {
-        console.log(new Date(date + time).toISOString());
+        /* eslint-disable react-hooks/exhaustive-deps */
         callBack(name, {
             name: name,
             value: new Date(date + time).toISOString(),
@@ -49,7 +49,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
         const parsed = Date.parse(dateRef.current?.value || "");
         if (new Date(parsed) > new Date()) {
             setDate(parsed);
-        } else if (date !== -1) {
+        } else {
             setErrorText("Дата должна быть не менее завтра");
             setError(true);
             return;
