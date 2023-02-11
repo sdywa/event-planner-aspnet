@@ -1,15 +1,15 @@
 import { FC } from "react";
-import { Input } from "../../input/Input";
+import { Input } from "../../inputs/input/Input";
 import { IFormInputData, IFormInputStatus } from "../../../../types";
 import useFormInput from "../../../../hooks/forms/useFormInput";
 
 interface IFormInputProps {
-    name: string,
-    data: IFormInputData,
-    serverError: string,
-    isSubmitted: boolean,
-    callBack: (name: string, value: IFormInputStatus) => void,
-    [key: string]: any
+    name: string;
+    data: IFormInputData;
+    serverError: string;
+    isSubmitted: boolean;
+    callBack: (name: string, value: IFormInputStatus) => void;
+    [key: string]: any;
 };
 
 export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmitted, callBack,...props}) => {

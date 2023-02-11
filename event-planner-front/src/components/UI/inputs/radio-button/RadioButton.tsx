@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { IFormInputStatus } from "../../../types";
+import { IFormInputStatus } from "../../../../types";
 
 interface IRadioButtonProps {
     id: string;
@@ -13,7 +13,6 @@ interface IRadioButtonProps {
 
 export const RadioButton: FC<IRadioButtonProps> = ({id, name, value, children, callBack, defaultChecked, ...props}) => {
     function update() {
-        console.log(1);
         callBack(name, {
             name: name,
             value: value,

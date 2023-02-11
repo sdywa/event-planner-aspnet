@@ -7,12 +7,12 @@ import { SubmitButton } from "../../components/UI/button/SubmitButton";
 import { Location } from "../../components/UI/events/location/Location";
 import { WithIcon } from "../../components/UI/with-icon/WithIcon";
 import { FormInput } from "../../components/UI/forms/form-input/FormInput";
-import { RadioButton } from "../../components/UI/radio-button/RadioButton";
+import { RadioButton } from "../../components/UI/inputs/radio-button/RadioButton";
 import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
 import { IExtendedEvent, IFormInputStatus, IFormInputData, IServerError } from "../../types";
-import { Textarea } from "../../components/UI/textarea/Textarea";
+import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 
 export const Event: FC = () => {
     // const params = useParams();

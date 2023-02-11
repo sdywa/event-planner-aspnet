@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import useDebounce from "../../../../hooks/useDebounce";
-import { Input, InputStyle } from "../../input/Input";
+import { Input, InputStyle } from "../../inputs/input/Input";
 import { ActionButton } from "../../button/ActionButton";
 import { IEvent, IFilter } from "../../../../types";
 import { IS_FAVORITE } from "../../../../hooks/useFilter";

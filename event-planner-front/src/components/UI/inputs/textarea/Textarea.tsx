@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { IFormInputStatus } from "../../../types";
-import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../../hooks/useValidation";
-import useFormInput from "../../../hooks/forms/useFormInput";
+import { IFormInputStatus } from "../../../../types";
+import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../../../hooks/useValidation";
+import useFormInput from "../../../../hooks/forms/useFormInput";
 import clsx from "clsx";
 
 interface ITextareaProps {
