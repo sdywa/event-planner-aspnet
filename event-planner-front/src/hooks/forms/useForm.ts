@@ -7,7 +7,8 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
     const [isSubmitted, setSubmitted] = useState(false);
     const [inputStatuses, setInputStatuses] = useState<{[key: string]: IFormInputStatus}>({});
 
-    const updateFieldStatuses = (name: string, value: IFormInputStatus) => setInputStatuses((currValue) => {
+    const getInputStatus = (name: string) => inputStatuses[name];
+    const updateInputStatuses = (name: string, value: IFormInputStatus) => setInputStatuses((currValue) => {
         const result = {...currValue};
         result[name] = value;
         return result;
@@ -59,7 +60,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
         }
     }
 
-    return {serverErrors, isSubmitted, updateFieldStatuses, onChange, onSubmit, hasError};
+    return {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError};
 }
 
 export default useForm;

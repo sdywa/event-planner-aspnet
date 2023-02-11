@@ -15,7 +15,7 @@ export interface IAuthFormProps {
 export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormData}) => {
     const tabs = [{title: "Вход", link: "/login"}, {title: "Регистрация", link: "/signup"}];
     const activeTab = tabs[selectedTabIndex].title;
-    const {serverErrors, isSubmitted, updateFieldStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
+    const {serverErrors, isSubmitted, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
 
     return (
         <form className="flex flex-col justify-center items-center gap-6 w-[26rem] bg-white rounded-lg p-10 shadow-lg" onSubmit={onSubmit} onChange={onChange}>
@@ -29,7 +29,7 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
                         data={v} 
                         serverError={serverErrors[k]} 
                         isSubmitted={isSubmitted}
-                        callBack={updateFieldStatuses} />)
+                        callBack={updateInputStatuses} />)
                 }
             </div>
             <div className="flex justify-end w-full px-8">

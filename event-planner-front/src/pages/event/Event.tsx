@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 // import { useParams } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Bookmark } from "../../components/UI/bookmark/Bookmark";
@@ -49,8 +49,7 @@ export const Event: FC = () => {
             {id: "2", name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
         ]
     });
-    const [ticket, setTicket] = useState(event.tickets[0].id.toString());
-    const {serverErrors, isSubmitted, updateFieldStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
+    const {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
     const questionForm = useForm(sendQuestionFormData);
     const [modalActive, setActive] = useState(false);
     const defaultFormInputData = (label: string): IFormInputData => {
@@ -62,13 +61,9 @@ export const Event: FC = () => {
         };
     };
 
-    function onTicketChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setTicket(e.target.value);
-        console.log(e.target.value);
-    }
-
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sent!");
+        console.log(Object.values(data).map((a) => console.log(`${a.name}: ${a.value}`)));
         return {};
     }
 
@@ -106,12 +101,12 @@ export const Event: FC = () => {
                         </div>
                         <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange}>
                             <div className="w-80">
-                                <FormInput name="name" data={defaultFormInputData("Ваше имя")} serverError={questionForm.serverErrors["name"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
+                                <FormInput name="name" data={defaultFormInputData("Ваше имя")} serverError={questionForm.serverErrors["name"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
                             </div>
                             <div className="w-80">
-                                <FormInput name="email" data={defaultFormInputData("Ваш email")} serverError={questionForm.serverErrors["email"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
+                                <FormInput name="email" data={defaultFormInputData("Ваш email")} serverError={questionForm.serverErrors["email"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
                             </div>
-                            <Textarea name="question" className="h-60" label="Текст сообщения:" minLength={50} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateFieldStatuses} />
+                            <Textarea name="question" className="h-60" label="Текст сообщения:" minLength={50} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
                             <div className="flex justify-end items-center gap-2">
                                 <Button onClick={() => setModal(false)}>
                                     <div className="text-gray">Отмена</div>
@@ -183,7 +178,7 @@ export const Event: FC = () => {
                                             data={defaultFormInputData(text)}
                                             serverError={serverErrors[text]}
                                             isSubmitted={isSubmitted}
-                                            callBack={updateFieldStatuses}
+                                            callBack={updateInputStatuses}
                                         />)
                                     }
                                 </div>
@@ -195,7 +190,7 @@ export const Event: FC = () => {
                                     <ul>
                                         {
                                             event.tickets.map(({id, name, until, price}, i) => 
-                                                <RadioButton key={name} name="tickets" id={name} value={id} defaultChecked={i === 0} onChange={onTicketChange}>
+                                                <RadioButton key={name} name="tickets" id={name} value={id} defaultChecked={i === 0} callBack={updateInputStatuses}>
                                                     <div className="flex justify-between gap-4">
                                                         <div className="w-60">
                                                                 <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>
@@ -220,7 +215,7 @@ export const Event: FC = () => {
                             <SubmitButton disabled={hasError} isPrimary={true} 
                                 buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                 {
-                                    event.tickets.find((t) => t.id === ticket)?.price
+                                    event.tickets.find((t) => t.id === getInputStatus("tickets")?.value)?.price
                                     ?
                                     "Купить билет"
                                     :
