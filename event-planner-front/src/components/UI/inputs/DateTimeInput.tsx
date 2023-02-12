@@ -4,12 +4,13 @@ import { IFormInputStatus } from "../../../types/index";
 
 interface IDateTimeInputProps {
     name: string;
+    isFormSubmitted: boolean;
     serverError: string;
     callBack: (name: string, value: IFormInputStatus) => void;
 };
 
-export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
-    const defaultClass = "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150";
+export const DateTimeInput: FC<IDateTimeInputProps> = ({name, isFormSubmitted, callBack}) => {
+    const defaultClass = "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150 cursor-pointer";
     const [date, setDate] = useState(-1);
     const [time, setTime] = useState(-1);
 
@@ -21,11 +22,19 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
     const [isDirty, setDirty] = useState(false);
     const [isActive, setActive] = useState(false);
 
+    const parsedDate = () => Date.parse(dateRef.current?.value || "");
+    const parsedTime = () => Date.parse(`01 Jan 1970 ${timeRef.current?.value} GMT`);
+    const fullDate = () => time && time !== -1 && date && date !== -1 ? new Date(date + time).toISOString() : null;
+
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
+        const resultDate = fullDate();
+        if (!resultDate)
+            return;
+
         callBack(name, {
             name: name,
-            value: new Date(date + time).toISOString(),
+            value: resultDate,
             removeDirty: () => {},
             hasError: hasError, 
             isDirty: isDirty, 
@@ -47,50 +56,60 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
         return className.join(" ");
     }
 
+    function getError(isSubmitted: boolean) {
+        const isDateUsed = (date && date !== -1) || isSubmitted;
+        if (!dateRef.current?.value && isDateUsed) { 
+            setError(true);
+            return "Введите дату";
+        }
+        
+        const parsed = parsedDate();
+        if (new Date(parsed) < new Date() && isDateUsed) {
+            setError(true);
+            return "Некорректная дата";
+        }
+
+        const isTimeUsed = (time && time !== -1) || isSubmitted;
+        if (!timeRef.current?.value && isTimeUsed) {
+            setError(true);
+            return "Введите время";
+        }
+        return "";
+    }
+
     const onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
         setActive(true);
         e.target.showPicker();
-    }
+    };
 
     const onChange = (e: React.ChangeEvent) => {
         setError(false);
         setErrorText("");
-    }
+    };
 
     const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         setActive(false);
         setDirty(true);
-        console.log(dateRef.current?.value, date, time);
-        if (date !== -1 && !dateRef.current?.value) {
-            setErrorText("Введите дату");
-            setError(true);
-            return;
-        }
-        
-        const parsed = Date.parse(dateRef.current?.value || "");
-        if (new Date(parsed) > new Date()) {
-            setDate(parsed);
-        } else if (date !== -1) {
-            setErrorText("Дата должна быть не менее завтра");
-            setError(true);
-            return;
-        }
+        const errors = getError(false);
+        setErrorText(errors);
 
-        if (timeRef.current?.value) {
-            setTime(Date.parse(`01 Jan 1970 ${timeRef.current?.value} GMT`));
-        } else if ((time !== -1)) {
-            console.log(!timeRef.current?.value)
-            setErrorText("Введите время");
-            setError(true);
-            return;
+        if (!errors) {
+            setDate(parsedDate());
+            setTime(parsedTime());
         }
     };
+
+    useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        if (isFormSubmitted)
+            setErrorText(getError(true));
+    }, [isFormSubmitted]);
 
     return (
         <div>
             <div className="flex items-center gap-4 font-roboto text-sm">
                 <input type="date" className={clsx("w-32", getClassName())} ref={dateRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur} />
-                <input type="time" className={clsx("w-24", getClassName())} ref={timeRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur}/>
+                <input type="time" className={clsx("w-24", getClassName())} ref={timeRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur} />
             </div>
             <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
         </div>
