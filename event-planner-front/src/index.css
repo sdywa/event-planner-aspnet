@@ -110,6 +110,30 @@
         @apply border-red focus:border-red;
     }
 
+    .select-base {
+        @apply absolute inset-0 border-2 rounded-md py-1 px-2 text-gray border-lightgray font-bold transition-colors duration-300 hover:text-darkgray group-hover:border-gray after:content-[''] after:w-0 after:h-0 after:border-[6px] after:border-transparent after:border-t-lightgray hover:after:border-t-gray after:absolute after:right-3 after:top-2/3 after:-translate-y-1/2 after:transition-colors after:duration-300;
+    }
+
+    .select-base--active {
+        @apply border-green group-hover:border-green after:border-t-green hover:after:border-t-green;
+    }
+
+    .select-base--error {
+        @apply text-red border-red group-hover:border-red after:border-t-red hover:after:border-t-red;
+    }
+
+    .select-popup {
+        @apply absolute inset-x-0 top-full z-50 bg-white shadow-lg border-2 border-t-0 rounded-b-md;
+    }
+
+    .select-popup--active {
+        @apply border-green;
+    }
+
+    .select-popup--error {
+        @apply border-red;
+    }
+
     .error-text {
         @apply text-red font-roboto font-bold text-xs;
     }
