@@ -9,7 +9,7 @@ interface IDateTimeInputProps {
 };
 
 export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
-    const className = "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150 focus:border-green";
+    const defaultClass = "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150";
     const [date, setDate] = useState(-1);
     const [time, setTime] = useState(-1);
 
@@ -19,6 +19,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
     const [hasError, setError] = useState(true);
     const [errorText, setErrorText] = useState("");
     const [isDirty, setDirty] = useState(false);
+    const [isActive, setActive] = useState(false);
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
@@ -30,7 +31,26 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
             isDirty: isDirty, 
             isActive: false
         });
-    }, [date, time, hasError, isDirty])
+    }, [date, time, hasError, isDirty]);
+
+    function getClassName() {
+        const className = [defaultClass];
+        if (isActive) 
+            className.push("input--active");
+        
+        if (errorText)
+            className.push("input--error");
+
+        if (className.length === 1)
+            className.push("border-lightgray");
+
+        return className.join(" ");
+    }
+
+    const onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+        setActive(true);
+        e.target.showPicker();
+    }
 
     const onChange = (e: React.ChangeEvent) => {
         setError(false);
@@ -38,9 +58,10 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
     }
 
     const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        setActive(false);
         setDirty(true);
         console.log(dateRef.current?.value, date, time);
-        if ((date !== -1 && time !== -1) && !dateRef.current?.value) {
+        if (date !== -1 && !dateRef.current?.value) {
             setErrorText("Введите дату");
             setError(true);
             return;
@@ -49,7 +70,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
         const parsed = Date.parse(dateRef.current?.value || "");
         if (new Date(parsed) > new Date()) {
             setDate(parsed);
-        } else {
+        } else if (date !== -1) {
             setErrorText("Дата должна быть не менее завтра");
             setError(true);
             return;
@@ -57,7 +78,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
 
         if (timeRef.current?.value) {
             setTime(Date.parse(`01 Jan 1970 ${timeRef.current?.value} GMT`));
-        } else if ((date !== -1 && time !== -1)) {
+        } else if ((time !== -1)) {
             console.log(!timeRef.current?.value)
             setErrorText("Введите время");
             setError(true);
@@ -68,8 +89,8 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, callBack}) => {
     return (
         <div>
             <div className="flex items-center gap-4 font-roboto text-sm">
-                <input type="date" className={clsx("w-32", className, errorText ? "input--error" : "border-gray")} ref={dateRef} onFocus={(e) => e.target.showPicker()} onChange={onChange} onBlur={onBlur} />
-                <input type="time" className={clsx("w-24", className, errorText ? "input--error" : "border-gray")} ref={timeRef} onFocus={(e) => e.target.showPicker()} onChange={onChange} onBlur={onBlur} />
+                <input type="date" className={clsx("w-32", getClassName())} ref={dateRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur} />
+                <input type="time" className={clsx("w-24", getClassName())} ref={timeRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur}/>
             </div>
             <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
         </div>

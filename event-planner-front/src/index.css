@@ -39,8 +39,12 @@
     }
 
     .input {
-        @apply bg-white p-3 w-full h-full text-black text-sm font-bold focus:outline-none;
+        @apply bg-white p-3 w-full h-full text-black text-sm font-bold border-lightgray focus:outline-none;
         @apply placeholder:text-base placeholder:text-lightgray;
+    }
+
+    .input--active {
+        @apply border-green;
     }
 
     .input:-webkit-autofill,
