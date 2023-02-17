@@ -39,8 +39,8 @@ export const Textarea: FC<ITextareaProps> = ({name, label, serverError, isSubmit
         callBack);
 
     return (
-        <div className="h-full">
-            <div className="w-[44rem] h-full">
+        <div>
+            <div className="w-full">
                 <label htmlFor={name} className="font-medium">
                     {label}
                 </label>

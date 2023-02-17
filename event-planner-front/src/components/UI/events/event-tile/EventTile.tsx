@@ -12,7 +12,7 @@ interface IEventTileProps {
 export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {  
     return (
         <Link to={`/events/${event.id}`}
-            className="flex flex-col max-w-[21.5rem] font-roboto text-base text-black"
+            className="flex flex-col max-w-[21.5rem] font-roboto text-base text-black shadow-lg rounded-xl"
         >
             <div className="w-full h-44 relative bg-lightgray rounded-t-xl">
                 {

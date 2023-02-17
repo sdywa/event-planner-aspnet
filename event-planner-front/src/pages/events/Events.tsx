@@ -94,7 +94,7 @@ export const Events: FC = () => {
             {
                 filteredItems.length
                 ?
-                <div className="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center content-center">
+                <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
                     {
                         filteredItems.map((v) => <EventTile key={v.id} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
                     }

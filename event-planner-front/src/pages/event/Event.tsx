@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 // import { useParams } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Bookmark } from "../../components/UI/bookmark/Bookmark";
@@ -97,13 +97,13 @@ export const Event: FC = () => {
                     <Modal active={modalActive} setActive={setModal}>
                         <div className="flex justify-between items-center">
                             <h3 className="heading--tertiary">Связаться с организатором</h3>
-                            <Button className="text-gray p-0" onClick={() => setModal(false)}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></Button>
+                            <a href="#" className="text-gray hover:text-darkgray transition-colors duration-150 ease-in" onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); setModal(false)}}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></a>
                         </div>
-                        <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange}>
+                        <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange} className="w-[44rem]">
                             <div className="w-80">
                                 <FormInput name="name" data={defaultFormInputData("Ваше имя")} serverError={questionForm.serverErrors["name"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
                             </div>
-                            <div className="w-80">
+                            <div className="w-80 mb-4">
                                 <FormInput name="email" data={defaultFormInputData("Ваш email")} serverError={questionForm.serverErrors["email"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
                             </div>
                             <Textarea name="question" className="h-60" label="Текст сообщения:" minLength={50} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
