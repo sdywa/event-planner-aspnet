@@ -19,7 +19,7 @@ export interface IFormInputData {
 
 export interface IFormInputStatus {
     name: string,
-    value: string,
+    value: any,
     hasError: boolean,
     isActive: boolean,
     isDirty: boolean,
