@@ -29,9 +29,6 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, isFormSubmitted, c
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
         const resultDate = fullDate();
-        if (!resultDate)
-            return;
-
         callBack(name, {
             name: name,
             value: resultDate,
