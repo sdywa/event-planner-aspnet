@@ -93,7 +93,7 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
     }
 
     return { 
-        value, errorText, onChange, onFocus, onBlur, getClassName
+        value, setValue, errorText, onChange, onFocus, onBlur, getClassName
     };
 }
 

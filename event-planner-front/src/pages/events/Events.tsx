@@ -4,7 +4,7 @@ import { Button, ButtonStyles } from "../../components/UI/button/Button";
 import { EventTile } from "../../components/UI/events/event-tile/EventTile";
 import { EventSearch } from "../../components/UI/events/event-search/EventSearch";
 import { EventFilter } from "../../components/UI/events/event-filter/EventFilter";
-import { IEvent } from "../../types";
+import { IUserEvent } from "../../types";
 import { WithIcon } from "../../components/UI/with-icon/WithIcon";
 import useFilter from "../../hooks/useFilter";
 import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
@@ -12,53 +12,77 @@ import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPla
 export const Events: FC = () => {
     const isAuth = true;
     const isCreator = true;
-    const [events, setEvents] = useState<IEvent[]>([{
+    const [events, setEvents] = useState<IUserEvent[]>([{
         id: 1,
         title: "Заголовок",
-        coverUrl: "",
+        cover: "",
         description: "Описание мероприятия описание описание описание описание",
-        category: "Бизнес",
-        type: "Offline",
-        date: "12 декабря",
-        location: "г. Москва",
+        category: {
+            id: 1,
+            title: "Бизнес"
+        },
+        type: {
+            id: 1,
+            title: "Оффлайн"
+        },
+        startDate: "2023-12-12T15:00:00.000Z",
+        address: "г. Москва",
         minPrice: 0,
         isFavorite: false
     },
     {
         id: 2,
         title: "Очень очень длинный заголовок который не помещается",
-        coverUrl: "",
+        cover: "",
         description: "Очень длинное название которое тоже не помещается в этот маленький блок что я не знаю что с ним делать",
-        category: "Искусство и культура",
-        type: "Offline",
-        date: "12 сентября, 2024 г.",
-        location: "г. Кременчуг-Константиновское",
+        category: {
+            id: 1,
+            title: "Искусство и культура"
+        },
+        type: {
+            id: 1,
+            title: "Оффлайн"
+        },
+        startDate: "2024-12-12T15:00:00.000Z",
+        address: "г. Кременчуг-Константиновское",
         minPrice: 99999,
         isFavorite: true
     },
     {
         id: 3,
         title: "Заголовок",
-        coverUrl: "",
+        cover: "",
         description: "Описание мероприятия описание описание описание описание",
-        category: "Бизнес",
-        type: "Online",
-        date: "12 декабря",
+        category: {
+            id: 1,
+            title: "Бизнес"
+        },
+        type: {
+            id: 2,
+            title: "Онлайн"
+        },
+        startDate: "2023-12-12T15:00:00.000Z",
         minPrice: 0,
         isFavorite: false
     },
     {
         id: 4,
         title: "Заголовок",
-        coverUrl: "",
+        cover: "",
         description: "Описание мероприятия описание описание описание описание",
-        category: "Бизнес",
-        type: "Online",
-        date: "12 декабря",
+        category: {
+            id: 1,
+            title: "Бизнес"
+        },
+        type: {
+            id: 2,
+            title: "Онлайн"
+        },
+        startDate: "2023-12-12T15:00:00.000Z",
         minPrice: 0,
         isFavorite: false
     }]);
-    const {filteredItems, toggleFilter} = useFilter<IEvent>(events);
+    const {filteredItems, toggleFilter} = useFilter<IUserEvent>(events);
     const [showingFilter, setShowingFilter] = useState(false);
 
     function setFavorite(eventId: number, value: boolean) {

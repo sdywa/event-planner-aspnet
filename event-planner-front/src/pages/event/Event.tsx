@@ -1,4 +1,5 @@
 import React, { FC, useState } from "react";
+import { Link } from "react-router-dom";
 // import { useParams } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Bookmark } from "../../components/UI/bookmark/Bookmark";
@@ -11,26 +12,33 @@ import { RadioButton } from "../../components/UI/inputs/radio-button/RadioButton
 import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
-import { IExtendedEvent, IFormInputStatus, IFormInputData, IServerError } from "../../types";
+import { IFormInputStatus, IFormInputData, IServerError, IUserExtendedEvent } from "../../types";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 
 export const Event: FC = () => {
     // const params = useParams();
     const isAuth = true;
-    const [event, setEvent] = useState<IExtendedEvent>({
+    const [event, setEvent] = useState<IUserExtendedEvent>({
         id: 1,
         title: "Заголовок",
-        coverUrl: "",
+        cover: "",
         description: "Описание мероприятия описание описание описание описание",
         fullDescription: `    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet convallis velit. Curabitur varius bibendum ornare. Vestibulum vitae vestibulum lorem. Duis molestie nunc vel mollis molestie. Nullam feugiat tortor eu lacus molestie, nec efficitur lectus finibus. Cras neque ipsum, tempus eget mi a, imperdiet tempus turpis. Vestibulum ac nisi vitae est volutpat finibus. Fusce sagittis magna in ipsum egestas vehicula. Sed mollis tincidunt felis vel mollis. Aliquam ut lectus vel dui auctor congue quis vitae tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
 
     Maecenas viverra, lacus a pellentesque aliquet, lacus justo pretium nunc, et rutrum turpis justo et lorem. Morbi sem risus, feugiat eu interdum ac, sollicitudin quis libero. Duis et maximus lectus. Cras porta fringilla nisl, a euismod tortor imperdiet at. Nullam posuere dapibus velit. Praesent at risus sit amet magna pellentesque sollicitudin eu nec justo. Pellentesque sit amet eros at mauris consequat cursus. Curabitur at odio et quam hendrerit accumsan sed ultrices purus. Vestibulum sagittis rutrum efficitur. Vivamus pharetra vel mi ut scelerisque. Phasellus sagittis laoreet erat, sed faucibus purus lacinia at. Sed convallis facilisis eros ac vehicula. Curabitur sit amet accumsan neque, ac viverra lectus. Duis ut libero nec eros scelerisque bibendum tincidunt non lorem. Nullam sed neque tortor.
         
     Nulla faucibus et mauris vitae pharetra. Vestibulum aliquam pulvinar augue, eu molestie sapien finibus vel. Proin consequat, massa et vestibulum tempus, velit leo tincidunt ante, eu aliquet erat lectus id nibh. Cras magna leo, convallis et mauris ut, ullamcorper porttitor augue. Nullam vitae est sed sem porttitor pharetra sed eget odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris ut quam eu orci feugiat pellentesque et sed neque. In hac habitasse platea dictumst. Praesent dapibus non purus condimentum iaculis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed iaculis varius placerat. Ut nulla erat, eleifend vitae diam et, porttitor tempor nunc.`,
-        category: "Бизнес",
-        type: "Offline",
-        date: "Понедельник, 12 декабря",
-        location: "г. Москва, очень длинный адрес который может не",
+        category: {
+            id: 1,
+            title: "Бизнес"
+        },
+        type: {
+            id: 1,
+            title: "Оффлайн"
+        },
+        startDate: "2023-02-17T13:40:00.000Z",
+        endDate: "2023-02-17T15:00:00.000",
+        address: "г. Москва, очень длинный адрес который может не ",
         minPrice: 0,
         isFavorite: false,
         creator: {
@@ -88,6 +96,17 @@ export const Event: FC = () => {
             document.body.classList.remove("overflow-hidden");
     }
 
+    function parseDate(date: Date) {
+        const currentYear = new Date().getFullYear();
+        const options: Intl.DateTimeFormatOptions = {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: currentYear !== date.getFullYear() ? "numeric" : undefined
+        }
+        return date.toLocaleDateString("ru-RU", options);
+    }
+
     return (
         <PageLayout title={event.title} isCentered={true} header={
             <Bookmark isFavorite={event.isFavorite} className={"text-lg"} favoriteCallback={setFavorite} />
@@ -97,7 +116,7 @@ export const Event: FC = () => {
                     <Modal active={modalActive} setActive={setModal}>
                         <div className="flex justify-between items-center">
                             <h3 className="heading--tertiary">Связаться с организатором</h3>
-                            <a href="#" className="text-gray hover:text-darkgray transition-colors duration-150 ease-in" onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); setModal(false)}}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></a>
+                            <Link to="#" className="text-gray hover:text-darkgray transition-colors duration-150 ease-in" onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); setModal(false)}}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></Link>
                         </div>
                         <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange} className="w-[44rem]">
                             <div className="w-80">
@@ -120,16 +139,19 @@ export const Event: FC = () => {
                     </Modal>
             }
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-3 mt-2">
-                <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>
-                    {event.date}
-                </WithIcon>
-                <Location type={event.type} location={event.location} />
+                {
+                    event.startDate &&
+                    <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>
+                        {parseDate(new Date(event.startDate))}
+                    </WithIcon>
+                }
+                <Location type={event.type} location={event.address} />
             </div>
             <div className="flex justify-center items-center gap-4 py-4 relative">
                 <div className="flex flex-col justify-center items-start gap-4">
                     <div className="w-[44rem] h-[25rem] relative bg-lightgray rounded-md">
                         {
-                            event.coverUrl && <img src={event.coverUrl} alt={event.title} />
+                            event.cover && <img src={event.cover} alt={event.title} />
                         }
                     </div>
                     <WithIcon icon={<i className="fa-solid fa-tags"></i>}>

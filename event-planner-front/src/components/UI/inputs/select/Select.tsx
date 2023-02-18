@@ -5,10 +5,10 @@ import { SelectOption } from "./SelectOption";
 
 interface ISelectProps {
     name: string;
-    defaultValue?: string;
+    defaultValue?: any;
     isFormSubmitted: boolean;
     options: {
-        value: string;
+        value: any;
         title: string;
     }[];
     callBack: (name: string, value: IFormInputStatus) => void;
@@ -17,21 +17,9 @@ interface ISelectProps {
 export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitted, defaultValue=""}) => {
 
     // Проверяем, есть ли такое значение в options. Если нет, то берём его за базовое
-    let initValue = "";
-    let initTitle = "";
-    let defaultTitle = "";
-    if (defaultValue) {
-        let defaultOption = options.findIndex((o) => o.value === defaultValue);
-        if (defaultOption !== -1) {
-            initValue = options[defaultOption].value;
-            initTitle = options[defaultOption].title;
-        } else {
-            defaultTitle = defaultValue;
-        }
-    }
-
-    const [value, setValue] = useState(initValue);
-    const [title, setTitle] = useState(initTitle);
+    const [defaultTitle, setDefaultTitle] = useState("");
+    const [value, setValue] = useState("");
+    const [title, setTitle] = useState("");
 
     const [hasError, setError] = useState(false);
     const [errorText, setErrorText] = useState("");
@@ -105,6 +93,24 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
             setErrorText(getError());
         }
     }, [isFormSubmitted]);
+
+    useEffect(() => {
+        let value = "";
+        let title = "";
+        let defaultTitle = "";
+        if (defaultValue) {
+            let defaultOption = options.findIndex((o) => o.value === defaultValue);
+            if (defaultOption !== -1) {
+                value = options[defaultOption].value;
+                title = options[defaultOption].title;
+            } else {
+                defaultTitle = defaultValue;
+            }
+        }
+        setValue(value);
+        setTitle(title);
+        setDefaultTitle(defaultTitle);
+    }, [defaultValue]);
 
     return (
         <div>

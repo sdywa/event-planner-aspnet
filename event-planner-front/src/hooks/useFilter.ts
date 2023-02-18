@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { IEvent, IFilter } from "../types/index";
+import { IUserEvent, IFilter } from "../types/index";
 
-export const IS_FAVORITE: IFilter<IEvent> = {
+export const IS_FAVORITE: IFilter<IUserEvent> = {
     name: "isFavorite",
     func: (value) => value.isFavorite
 };

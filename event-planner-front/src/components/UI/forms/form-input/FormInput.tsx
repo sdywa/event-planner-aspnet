@@ -1,9 +1,10 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Input } from "../../inputs/input/Input";
 import { IFormInputData, IFormInputStatus } from "../../../../types";
 import useFormInput from "../../../../hooks/forms/useFormInput";
 
 interface IFormInputProps {
+    initialValue?: string;
     name: string;
     data: IFormInputData;
     serverError: string;
@@ -12,9 +13,9 @@ interface IFormInputProps {
     [key: string]: any;
 };
 
-export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmitted, callBack,...props}) => {
-    const {value, errorText, getClassName, ...inputData} = useFormInput<HTMLInputElement>(
-        "", 
+export const FormInput: FC<IFormInputProps> = ({initialValue="", name, data, serverError, isSubmitted, callBack, ...props}) => {
+    const {value, setValue, errorText, getClassName, ...inputData} = useFormInput<HTMLInputElement>(
+        initialValue, 
         name, 
         data.validation, 
         isSubmitted, 
@@ -25,8 +26,11 @@ export const FormInput: FC<IFormInputProps> = ({name, data, serverError, isSubmi
             dirty: "input--dirty",
             error: "input--error"
         },
-        callBack);
+    callBack);
   
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue, setValue]);
 
     return (
         <div className="w-full">

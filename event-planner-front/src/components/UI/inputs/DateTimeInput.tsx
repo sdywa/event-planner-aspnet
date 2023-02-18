@@ -3,14 +3,16 @@ import clsx from "clsx";
 import { IFormInputStatus } from "../../../types/index";
 
 interface IDateTimeInputProps {
+    initialValue?: string;
     name: string;
     isFormSubmitted: boolean;
     serverError: string;
     callBack: (name: string, value: IFormInputStatus) => void;
 };
 
-export const DateTimeInput: FC<IDateTimeInputProps> = ({name, isFormSubmitted, callBack}) => {
+export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, isFormSubmitted, callBack}) => {
     const defaultClass = "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150 cursor-pointer";
+
     const [date, setDate] = useState(-1);
     const [time, setTime] = useState(-1);
 
@@ -101,6 +103,28 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({name, isFormSubmitted, c
         if (isFormSubmitted)
             setErrorText(getError(true));
     }, [isFormSubmitted]);
+
+    useEffect(() => {
+        console.log(initialValue);
+        let initialDate = 0;
+        let initialTime = 0;
+        if (initialValue) {
+            const parsed = Date.parse(initialValue);
+            if (!isNaN(parsed)) {
+                const fullDate = new Date(parsed);
+                const date = new Date(fullDate.getFullYear(), fullDate.getMonth(), fullDate.getDate()).getTime();
+                const time = new Date(parsed - date).getTime();
+                initialDate = date - fullDate.getTimezoneOffset() * 60 * 1000;
+                initialTime = time;
+            }
+        }
+        if (!dateRef.current || !timeRef.current || !initialDate || !initialTime)
+            return;
+        setDate(initialDate);
+        setTime(initialTime);
+        dateRef.current.value = new Date(initialDate).toISOString().split("T")[0];
+        timeRef.current.value = new Date(initialTime).toISOString().split("T")[1]?.split(".")[0];
+    }, [initialValue]);
 
     return (
         <div>
