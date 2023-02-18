@@ -18,7 +18,7 @@ export const Header: FC = () => {
                         {label: "Выход", link: "/logout", icon: <i className="fa-solid fa-right-from-bracket"></i>}
                         ]}>
                             <Button>
-                                <div className="flex justify-between items-center gap-2 text-lg">
+                                <div className="flex justify-between items-center gap-2 text-lg py-2">
                                     <div>{username}</div>
                                     <i className="fa-solid fa-caret-down"></i>
                                 </div>

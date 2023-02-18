@@ -14,10 +14,12 @@ import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
 import { IFormInputStatus, IFormInputData, IServerError, IUserExtendedEvent } from "../../types";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
+import { DropdownMenu } from "../../components/UI/dropdown-menu/DropdownMenu";
 
 export const Event: FC = () => {
     // const params = useParams();
     const isAuth = true;
+    const isCreator = true;
     const [event, setEvent] = useState<IUserExtendedEvent>({
         id: 1,
         title: "Заголовок",
@@ -38,7 +40,7 @@ export const Event: FC = () => {
         },
         startDate: "2023-02-17T13:40:00.000Z",
         endDate: "2023-02-17T15:00:00.000",
-        address: "г. Москва, очень длинный адрес который может не ",
+        address: "г. Москва, очень длинный адрес который может не",
         minPrice: 0,
         isFavorite: false,
         creator: {
@@ -138,7 +140,34 @@ export const Event: FC = () => {
                         </form>
                     </Modal>
             }
-            <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-3 mt-2">
+            {
+                isCreator && 
+                <div className="flex items-center justify-center">
+                    <DropdownMenu items={[
+                        {label: "Информация", link: `/events/${event.id}/edit`}, 
+                        {label: "Анкета", link: `/events/${event.id}/edit`},
+                        {label: "Билеты", link: `/events/${event.id}/edit`}
+                    ]}>
+                        <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">
+                            <WithIcon icon={<i className="fa-solid fa-pen"></i>}>
+                                <span className="text-base font-semibold">Изменить</span>
+                            </WithIcon>
+                        </Button>
+                    </DropdownMenu>
+                    <DropdownMenu items={[
+                        {label: "Статистика", link: `/events/${event.id}/edit`}, 
+                        {label: "Участники", link: `/events/${event.id}/edit`},
+                        {label: "Обратная связь", link: `/events/${event.id}/edit`}
+                    ]}>
+                        <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">
+                            <WithIcon icon={<i className="fa-solid fa-box-archive"></i>}>
+                                <span className="text-base font-semibold">Управление</span>
+                            </WithIcon>
+                        </Button>
+                    </DropdownMenu>
+                </div>
+            }
+            <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-x-4">
                 {
                     event.startDate &&
                     <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>

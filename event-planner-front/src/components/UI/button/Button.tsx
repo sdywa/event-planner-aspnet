@@ -10,7 +10,7 @@ export enum ButtonStyles {
 }
 
 export const getStyles = (isPrimary: boolean, style?: ButtonStyles): string => {
-    let result = "inline-block p-3 bg-transparent font-ubuntu text-sm text-center font-bold cursor-pointer transition-all duration-300 ease-in";
+    let result = "inline-block px-3 bg-transparent font-ubuntu text-sm text-center font-bold cursor-pointer transition-all duration-300 ease-in";
     if (isPrimary)
         result += " py-2 px-5 border-2 rounded-md";
     
