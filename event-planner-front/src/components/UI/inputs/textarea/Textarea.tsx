@@ -40,8 +40,9 @@ export const Textarea: FC<ITextareaProps> = ({initialValue="", name, label, serv
     callBack);
 
     useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
         setValue(initialValue);
-    }, [initialValue, setValue]);
+    }, [initialValue]);
 
     return (
         <div>

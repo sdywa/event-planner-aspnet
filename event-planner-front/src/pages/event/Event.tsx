@@ -38,8 +38,8 @@ export const Event: FC = () => {
             id: 1,
             title: "Оффлайн"
         },
-        startDate: "2023-02-17T13:40:00.000Z",
-        endDate: "2023-02-17T15:00:00.000",
+        startDate: "2023-03-17T13:40:00.000Z",
+        endDate: "2023-03-17T15:00:00.000",
         address: "г. Москва, очень длинный адрес который может не",
         minPrice: 0,
         isFavorite: false,
@@ -73,7 +73,6 @@ export const Event: FC = () => {
 
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sent!");
-        console.log(Object.values(data).map((a) => console.log(`${a.name}: ${a.value}`)));
         return {};
     }
 

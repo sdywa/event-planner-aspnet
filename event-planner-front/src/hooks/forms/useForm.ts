@@ -6,11 +6,36 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
     const [usedSubmit, setUsedSubmit] = useState(false);
     const [isSubmitted, setSubmitted] = useState(false);
     const [inputStatuses, setInputStatuses] = useState<{[key: string]: IFormInputStatus}>({});
+    const [hiddenInputStatuses, setHiddenInputStatuses] = useState<{[key: string]: IFormInputStatus}>({});
 
     const getInputStatus = (name: string) => inputStatuses[name];
+    const hideInputStatus = (name: string, hidden: Boolean) => {
+        if (hidden) {
+            if (!(name in inputStatuses))
+                return;
+                
+            const newHidden = {...hiddenInputStatuses};
+            newHidden[name] = inputStatuses[name];
+            const newStatuses = {...inputStatuses};
+            delete newStatuses[name];
+            setHiddenInputStatuses(newHidden);
+            setInputStatuses(newStatuses);
+        } else {
+            if (!(name in hiddenInputStatuses)) 
+                return;
+
+            const newStatuses = {...inputStatuses};
+            newStatuses[name] = hiddenInputStatuses[name];
+            const newHidden = {...hiddenInputStatuses};
+            delete newHidden[name];
+            setHiddenInputStatuses(newHidden);
+            setInputStatuses(newStatuses);
+        }
+    };
     const updateInputStatuses = (name: string, value: IFormInputStatus) => setInputStatuses((currValue) => {
         const result = {...currValue};
         result[name] = value;
+        console.log(result);
         return result;
     });
     const [hasError, setErrors] = useState(false);
@@ -21,7 +46,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
         
         for (const key in inputStatuses) {
             const status = inputStatuses[key];
-
+            
             if (status.hasError)
                 hasError = true;
 
@@ -60,7 +85,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
         }
     }
 
-    return {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError};
+    return {serverErrors, isSubmitted, getInputStatus, hideInputStatus, updateInputStatuses, onChange, onSubmit, hasError};
 }
 
 export default useForm;

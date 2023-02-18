@@ -29,8 +29,9 @@ export const FormInput: FC<IFormInputProps> = ({initialValue="", name, data, ser
     callBack);
   
     useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
         setValue(initialValue);
-    }, [initialValue, setValue]);
+    }, [initialValue]);
 
     return (
         <div className="w-full">

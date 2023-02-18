@@ -55,7 +55,7 @@ export const EditEvent: FC = () => {
 
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sent!");
-        return {};
+        return { description: "Ошибка", startDate: "Некорректная дата", category: "Некорректная категория", cover: "Неверный формат" };
     }
 
     useEffect(() => {
@@ -79,14 +79,18 @@ export const EditEvent: FC = () => {
                     id: 1,
                     title: "Оффлайн"
                 },
-                startDate: "2023-02-17T13:40:00.000Z",
-                endDate: "2023-02-17T15:00:00.000Z",
+                startDate: "2023-03-17T13:40:00.000Z",
+                endDate: "2023-03-17T15:00:00.000Z",
                 address: "г. Москва, очень длинный адрес который может не поместиться в одну строку"
             });
         }
     }, []);
 
-    // TODO: доделать ответ сервера в datatimeinput
+    useEffect(() => {
+        infoForm.hideInputStatus("address", infoForm.getInputStatus("type")?.value !== eventType[0].id);
+        //infoForm.getInputStatus("type")?.value !== eventType[0].id
+    }, [infoForm.getInputStatus("type")]);
+
     return (
         <PageLayout title="Новое мероприятие">
             <div className="flex gap-12">
@@ -109,20 +113,20 @@ export const EditEvent: FC = () => {
                             <div>
                                 <span className="font-medium">Начало мероприятия:</span>
                                 <div className="flex gap-2 font-roboto text-sm">
-                                    <DateTimeInput initialValue={event?.startDate} name="startDate" serverError="a" isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                    <DateTimeInput initialValue={event?.startDate} name="startDate" serverError={infoForm.serverErrors["startDate"]} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                     <span className="p-2">—</span>
-                                    <DateTimeInput initialValue={event?.endDate} name="endDate" serverError="a" isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                    <DateTimeInput initialValue={event?.endDate} name="endDate" serverError={infoForm.serverErrors["endDate"]} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                 </div>
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-medium">Категория:</span>
                                 <div className="w-52">
-                                    <Select name="category" defaultValue={event ? event.category.id : "Выберите категорию"} options={categories.map(({id, title}) => ({value: id, title}))} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                    <Select name="category" defaultValue={event ? event.category.id : "Выберите категорию"} serverError={infoForm.serverErrors["category"]} options={categories.map(({id, title}) => ({value: id, title}))} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                 </div>
                             </div>
                             <div>
                                 <span className="font-medium">Обложка:</span>
-                                <FileUpload name="cover" title="Выбрать изображение" acceptedType={AcceptedTypes.IMAGES} serverError="a" isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                <FileUpload name="cover" title="Выбрать изображение" acceptedType={AcceptedTypes.IMAGES} serverError={infoForm.serverErrors["cover"]} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                             </div>
                         </div>
                     </div>
@@ -131,7 +135,7 @@ export const EditEvent: FC = () => {
                         <div className="flex flex-col">
                             <span className="font-medium">Тип:</span>
                             <div className="w-32">
-                                <Select name="type" defaultValue={event ? event.type.id : eventType[0].id} options={eventType.map(({id, title}) => ({value: id, title}))} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                <Select name="type" defaultValue={event ? event.type.id : eventType[0].id} serverError={infoForm.serverErrors["type"]} options={eventType.map(({id, title}) => ({value: id, title}))} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                             </div>
                         </div>
                         {

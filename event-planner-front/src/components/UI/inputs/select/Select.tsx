@@ -7,6 +7,7 @@ interface ISelectProps {
     name: string;
     defaultValue?: any;
     isFormSubmitted: boolean;
+    serverError: string;
     options: {
         value: any;
         title: string;
@@ -14,16 +15,17 @@ interface ISelectProps {
     callBack: (name: string, value: IFormInputStatus) => void;
 };
 
-export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitted, defaultValue=""}) => {
+export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitted, serverError, defaultValue=""}) => {
 
     // Проверяем, есть ли такое значение в options. Если нет, то берём его за базовое
     const [defaultTitle, setDefaultTitle] = useState("");
     const [value, setValue] = useState("");
     const [title, setTitle] = useState("");
+    const [prevValue, setPrevValue] = useState("");
 
     const [hasError, setError] = useState(false);
     const [errorText, setErrorText] = useState("");
-
+    const [isDirty, setDirty] = useState(false);
     const [isActive, setActive] = useState(false);
 
     useEffect(() => {
@@ -37,7 +39,7 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
             value: value,
             removeDirty: () => {},
             hasError: hasError, 
-            isDirty: false, 
+            isDirty: isDirty, 
             isActive: false
         });
     }
@@ -58,19 +60,25 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
 
     const optionCallback = (value: string) => {
         setError(false);
-        setErrorText("");
         setValue(value);
         update(value);
+        const isDirty = value !== prevValue;
+        setDirty(isDirty);
+        setErrorText(getError(value, isDirty));
         const option = options.find(o => o.value === value);
         if (option)
             setTitle(option.title);
         setActive(false);
     }
 
-    function getError() {
+    function getError(value: string, isDirty: Boolean) {
         if (!value) {
             setError(true);
             return defaultTitle ? defaultTitle : "Выберите пункт";
+        }
+        if (!isDirty && serverError) {
+            setError(true);
+            return serverError;
         }
         return "";
     }
@@ -83,14 +91,17 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
     const onMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
         if (isActive) {
             setActive(false);
-            setErrorText(getError());
+            const isDirty = value !== prevValue;
+            setDirty(isDirty);
+            setErrorText(getError(value, isDirty));
         }
     }
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */ 
         if (isFormSubmitted) {
-            setErrorText(getError());
+            setErrorText(getError(value, false));
+            setPrevValue(value);
         }
     }, [isFormSubmitted]);
 

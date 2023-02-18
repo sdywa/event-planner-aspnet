@@ -92,8 +92,13 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
         setPrevValue(value);
     }
 
+    const set = (newValue: string) => {
+        setValue(newValue);
+        setError(!Boolean(newValue));
+    }
+
     return { 
-        value, setValue, errorText, onChange, onFocus, onBlur, getClassName
+        value, setValue: set, errorText, onChange, onFocus, onBlur, getClassName
     };
 }
 
