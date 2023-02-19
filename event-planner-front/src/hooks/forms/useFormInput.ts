@@ -37,8 +37,7 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
         return error;
     }
 
-    useEffect(() => {
-        /* eslint-disable react-hooks/exhaustive-deps */
+    function update() {
         callBack(inputName, {
             name: inputName,
             value: value,
@@ -47,6 +46,11 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
             isDirty, 
             isActive
         });
+    }
+
+    useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        update();
     }, [hasError, isDirty, isActive, value]);
 
     useEffect(() => {

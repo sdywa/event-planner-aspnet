@@ -5,6 +5,7 @@ import Learn from "../pages/learn/Learn";
 import { Login } from "../pages/login/Login";
 import { Signup } from "../pages/signup/Signup";
 import { EditEvent } from "../pages/newEvent/EditEvent";
+import { QuestionsPage } from "../pages/QuestionsPage";
 
 interface route {
     path: string;
@@ -16,6 +17,7 @@ export const routes: route[] = [
     { path: "/events/:eventId", component: Event },
     { path: "/events/new", component: EditEvent },
     { path: "/events/:eventId/edit", component: EditEvent },
+    { path: "/events/:eventId/questions", component: QuestionsPage },
     { path: "/learn", component: Learn },
 ];
 

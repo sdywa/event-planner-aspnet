@@ -8,7 +8,10 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
     const [inputStatuses, setInputStatuses] = useState<{[key: string]: IFormInputStatus}>({});
     const [hiddenInputStatuses, setHiddenInputStatuses] = useState<{[key: string]: IFormInputStatus}>({});
 
-    const getInputStatus = (name: string) => inputStatuses[name];
+    const getInputStatus = (name: string) => {
+        if (name in inputStatuses) 
+            return inputStatuses[name];
+    }
     const hideInputStatus = (name: string, hidden: Boolean) => {
         if (hidden) {
             if (!(name in inputStatuses))
@@ -35,7 +38,6 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
     const updateInputStatuses = (name: string, value: IFormInputStatus) => setInputStatuses((currValue) => {
         const result = {...currValue};
         result[name] = value;
-        console.log(result);
         return result;
     });
     const [hasError, setErrors] = useState(false);

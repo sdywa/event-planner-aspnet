@@ -144,7 +144,7 @@ export const Event: FC = () => {
                 <div className="flex items-center justify-center">
                     <DropdownMenu items={[
                         {label: "Информация", link: `/events/${event.id}/edit`}, 
-                        {label: "Анкета", link: `/events/${event.id}/edit`},
+                        {label: "Анкета", link: `/events/${event.id}/questions`},
                         {label: "Билеты", link: `/events/${event.id}/edit`}
                     ]}>
                         <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">

@@ -84,7 +84,7 @@
         @apply pr-9 border-red;
     }
 
-    .input--error + .input-label::after {
+    .input--error.warning + .input-label::after {
         @apply content-['!'] absolute right-2 bottom-2 w-5 h-5 text-red font-ubuntu font-bold text-sm flex justify-center items-center rounded-full border-2 border-red;
     }
 

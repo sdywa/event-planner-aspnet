@@ -53,6 +53,23 @@ export interface IExtendedEvent extends IEvent {
     fullDescription: string,
 }
 
+export interface IEventQuestion {
+    id: number,
+    name: string,
+    editable: Boolean
+}
+
+export interface IEditEvent extends IEvent {
+    id: number,
+    questions: IEventQuestion[],
+    tickets: {
+        id: string,
+        name: string,
+        until: string,
+        price: number
+    }[]
+}
+
 // Showing on events page
 export interface IUserEvent extends IEvent {
     id: number,

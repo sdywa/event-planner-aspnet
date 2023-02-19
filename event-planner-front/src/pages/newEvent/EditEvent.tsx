@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { List } from "../../components/UI/list/List";
 import { ListItem } from "../../components/UI/list/ListItem";
@@ -15,6 +15,7 @@ import { FileUpload, AcceptedTypes } from "../../components/UI/inputs/FileUpload
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../hooks/useValidation";
 
 export const EditEvent: FC = () => {
+    const navigate = useNavigate();
     const {eventId} = useParams();
     const [event, setEvent] = useState<IExtendedEvent>();
 
@@ -55,7 +56,8 @@ export const EditEvent: FC = () => {
 
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sent!");
-        return { description: "Ошибка", startDate: "Некорректная дата", category: "Некорректная категория", cover: "Неверный формат" };
+        navigate("/events/1/questions");
+        return {};
     }
 
     useEffect(() => {
@@ -96,8 +98,8 @@ export const EditEvent: FC = () => {
             <div className="flex gap-12">
                 <List className="w-48 text-black">
                     <ListItem className="text-green">Информация</ListItem>
-                    <ListItem className={["text-darkgray hover:text-gray", !event ? "pointer-events-none" : ""]}>Анкета</ListItem>
-                    <ListItem className={["text-darkgray hover:text-gray", !event ? "pointer-events-none" : ""]}>Билеты</ListItem>
+                    <ListItem link={event && `/events/${eventId}/questions`} className={["text-darkgray hover:text-gray", !event ? "text-lightgray pointer-events-none" : ""]}>Анкета</ListItem>
+                    <ListItem className={["text-darkgray hover:text-gray", !event ? "text-lightgray pointer-events-none" : ""]}>Билеты</ListItem>
                 </List>
                 <form className="w-full flex flex-col gap-8" onSubmit={infoForm.onSubmit} onChange={infoForm.onChange}>
                     <div className="flex flex-col gap-4">
