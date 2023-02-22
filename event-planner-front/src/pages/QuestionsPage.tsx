@@ -57,8 +57,8 @@ export const QuestionsPage: FC = () => {
                     {id: 4, name: "Ваш Возраст", editable: true}
                 ],
                 tickets: [
-                    {id: "1", name: "Входной билет", until: "12.12.2022", price: 0},
-                    {id: "2", name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
+                    {id: 1, name: "Входной билет", until: "12.12.2022", price: 0},
+                    {id: 2, name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
                 ]
             };
             setEvent(event);
@@ -121,7 +121,7 @@ export const QuestionsPage: FC = () => {
                 <List className="w-48 text-black">
                     <ListItem link={event && `/events/${eventId}/edit`} className="text-darkgray hover:text-gray">Информация</ListItem>
                     <ListItem className="text-green">Анкета</ListItem>
-                    <ListItem className="text-darkgray hover:text-gray">Билеты</ListItem>
+                    <ListItem link={event && `/events/${eventId}/tickets`} className="text-darkgray hover:text-gray">Билеты</ListItem>
                 </List>
                 <div className="flex flex-col gap-2">
                     <h3 className="text-xl">Регистрация на событие</h3>

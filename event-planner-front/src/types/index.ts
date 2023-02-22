@@ -56,18 +56,21 @@ export interface IExtendedEvent extends IEvent {
 export interface IEventQuestion {
     id: number,
     name: string,
-    editable: Boolean
+    editable?: Boolean
 }
+
+export interface IEventTicket{
+    id: number,
+    name: string,
+    limit?: number,
+    until: string,
+    price: number
+};
 
 export interface IEditEvent extends IEvent {
     id: number,
     questions: IEventQuestion[],
-    tickets: {
-        id: string,
-        name: string,
-        until: string,
-        price: number
-    }[]
+    tickets: IEventTicket[]
 }
 
 // Showing on events page
@@ -84,14 +87,6 @@ export interface IUserExtendedEvent extends IUserEvent, IExtendedEvent {
         eventsCount: number,
         rating: number
     },
-    questions: {
-        id: string,
-        name: string
-    }[],
-    tickets: {
-        id: string,
-        name: string,
-        until: string,
-        price: number
-    }[]
+    questions: IEventQuestion[],
+    tickets: IEventTicket[]
 }

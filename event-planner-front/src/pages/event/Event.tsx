@@ -49,14 +49,14 @@ export const Event: FC = () => {
             rating: 4.5
         },
         questions: [
-            {id: "1", name: "Email"},
-            {id: "2", name: "Имя"},
-            {id: "3", name: "Фамилия"},
-            {id: "4", name: "Ваш Возраст"}
+            {id: 1, name: "Email"},
+            {id: 2, name: "Имя"},
+            {id: 3, name: "Фамилия"},
+            {id: 4, name: "Ваш Возраст"}
         ],
         tickets: [
-            {id: "1", name: "Входной билет", until: "12.12.2022", price: 0},
-            {id: "2", name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
+            {id: 1, name: "Входной билет", until: "12.12.2022", price: 0},
+            {id: 2, name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
         ]
     });
     const {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
@@ -145,7 +145,7 @@ export const Event: FC = () => {
                     <DropdownMenu items={[
                         {label: "Информация", link: `/events/${event.id}/edit`}, 
                         {label: "Анкета", link: `/events/${event.id}/questions`},
-                        {label: "Билеты", link: `/events/${event.id}/edit`}
+                        {label: "Билеты", link: `/events/${event.id}/tickets`}
                     ]}>
                         <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">
                             <WithIcon icon={<i className="fa-solid fa-pen"></i>}>
@@ -240,7 +240,7 @@ export const Event: FC = () => {
                                     <ul>
                                         {
                                             event.tickets.map(({id, name, until, price}, i) => 
-                                                <RadioButton key={name} name="tickets" id={name} value={id} defaultChecked={i === 0} callBack={updateInputStatuses}>
+                                                <RadioButton key={name} name="tickets" id={name} value={id.toString()} defaultChecked={i === 0} callBack={updateInputStatuses}>
                                                     <div className="flex justify-between gap-4">
                                                         <div className="w-60">
                                                                 <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>

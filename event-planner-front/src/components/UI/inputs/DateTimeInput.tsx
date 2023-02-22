@@ -7,11 +7,13 @@ interface IDateTimeInputProps {
     name: string;
     isFormSubmitted: boolean;
     serverError: string;
+    showError?: boolean,
     callBack: (name: string, value: IFormInputStatus) => void;
 };
 
-export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, isFormSubmitted, serverError, callBack}) => {
+export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, isFormSubmitted, serverError, showError=true, callBack}) => {
     const defaultClass = "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150 cursor-pointer";
+    const userTimezone = new Date().getTimezoneOffset() * 60 * 1000;
 
     const [date, setDate] = useState(-1);
     const [time, setTime] = useState(-1);
@@ -27,7 +29,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
 
     const parsedDate = () => Date.parse(dateRef.current?.value || "");
     const parsedTime = () => Date.parse(`01 Jan 1970 ${timeRef.current?.value} GMT`);
-    const fullDate = () => time && time !== -1 && date && date !== -1 ? new Date(date + time).toISOString() : null;
+    const fullDate = () => time !== -1 && date !== -1 ? new Date(date + time + userTimezone).toISOString() : null;
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
@@ -127,7 +129,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
                 const fullDate = new Date(parsed);
                 const date = new Date(fullDate.getFullYear(), fullDate.getMonth(), fullDate.getDate()).getTime();
                 const time = new Date(parsed - date).getTime();
-                initialDate = date - fullDate.getTimezoneOffset() * 60 * 1000;
+                initialDate = date - userTimezone;
                 initialTime = time;
             }
         }
@@ -149,7 +151,9 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
                 <input type="date" className={clsx("w-32", getClassName())} ref={dateRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur} />
                 <input type="time" className={clsx("w-24", getClassName())} ref={timeRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur} />
             </div>
-            <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
+            {
+                showError && <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
+            }
         </div>
     );
 }

@@ -39,6 +39,15 @@ export const EMAIL_ADDRESS: (errorText?: string) => IValidation = (errorText='')
     };
 };
 
+export const IS_NUMERIC: (errorText?: string) => IValidation = (errorText='') => {
+    return {
+        order: 3,
+        name: "isNumeric",
+        error: errorText ? errorText : "Некорректное значение",
+        func: (value) => !value.toString().replace(/\d/g, "")
+    };
+};
+
 const useValidation = (value: string, validations: IValidation[]) => {
     const [error, setError] = useState('');
 

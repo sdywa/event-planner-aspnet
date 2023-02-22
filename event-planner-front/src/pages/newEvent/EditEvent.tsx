@@ -99,7 +99,7 @@ export const EditEvent: FC = () => {
                 <List className="w-48 text-black">
                     <ListItem className="text-green">Информация</ListItem>
                     <ListItem link={event && `/events/${eventId}/questions`} className={["text-darkgray hover:text-gray", !event ? "text-lightgray pointer-events-none" : ""]}>Анкета</ListItem>
-                    <ListItem className={["text-darkgray hover:text-gray", !event ? "text-lightgray pointer-events-none" : ""]}>Билеты</ListItem>
+                    <ListItem link={event && `/events/${eventId}/tickets`} className={["text-darkgray hover:text-gray", !event ? "text-lightgray pointer-events-none" : ""]}>Билеты</ListItem>
                 </List>
                 <form className="w-full flex flex-col gap-8" onSubmit={infoForm.onSubmit} onChange={infoForm.onChange}>
                     <div className="flex flex-col gap-4">
