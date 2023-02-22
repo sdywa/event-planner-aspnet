@@ -140,6 +140,9 @@ export const QuestionsPage: FC = () => {
                                     Добавить вопрос
                                 </WithIcon>
                             </Button>
+                            {
+                            questionForm.hasError && <div className="text-red font-roboto font-bold text-sm h-6 pt-2">Введите валидные значения</div>
+                            }
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-6">
