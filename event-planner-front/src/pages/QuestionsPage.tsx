@@ -126,8 +126,8 @@ export const QuestionsPage: FC = () => {
                 <div className="flex flex-col gap-2">
                     <h3 className="text-xl">Регистрация на событие</h3>
                     <form className="flex flex-col justify-start gap-4" onSubmit={questionForm.onSubmit} onChange={questionForm.onChange}>
-                        <span>Вопросы анкеты: </span>
                         <div className="w-80">
+                            <span>Вопросы анкеты:</span>
                             {
                                 questions.map((q) =>
                                     renderQuestion(q)

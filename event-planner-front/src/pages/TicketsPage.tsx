@@ -218,22 +218,21 @@ export const TicketsPage: FC = () => {
                 <div className="flex flex-col gap-2 w-full">
                     <h3 className="text-xl">Настройка билетов</h3>
                     <form className="flex flex-col justify-start gap-4" onSubmit={ticketForm.onSubmit} onChange={ticketForm.onChange}>
-                        <span>Вопросы анкеты: </span>
-                        <div className="flex justify-between w-full pl-9 pr-16 font-bold">
-                            <div className="w-64">
-                                Название
-                            </div>
-                            <div className="w-16 text-center">
-                                Лимит
-                            </div>
-                            <div className="w-24 text-center">
-                                Цена
-                            </div>
-                            <div className="w-56 text-center">
-                                Дата
-                            </div>
-                        </div>
                         <div className="w-full">
+                            <div className="flex justify-between w-full pl-9 pr-16 font-bold">
+                                <div className="w-64">
+                                    Название
+                                </div>
+                                <div className="w-16 text-center">
+                                    Лимит
+                                </div>
+                                <div className="w-24 text-center">
+                                    Цена
+                                </div>
+                                <div className="w-56 text-center">
+                                    Дата
+                                </div>
+                            </div>
                             {
                                 tickets.map((t) =>
                                     renderTicket(t)
