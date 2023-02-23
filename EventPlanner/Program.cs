@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using EventPlanner.Models;
+using EventPlanner.Services.UserServices;
+using EventPlanner.Services.AuthenticationServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +11,11 @@ builder.Services.AddDbContext<Context>(options => options
     .UseMySql(connection, ServerVersion.AutoDetect(connection)));
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 
 var app = builder.Build();
 
