@@ -6,6 +6,7 @@ public class Context : DbContext
 {
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     public Context(DbContextOptions<Context> options) : base(options)
     {

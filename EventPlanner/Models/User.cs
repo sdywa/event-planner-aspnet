@@ -17,4 +17,6 @@ public class User : CommonModel<int>
     public UserRole RoleId { get; set; }
     public Role Role { get; set; } = null!;
 
+    public string? RefreshTokenId { get; set; }
+    public RefreshToken? RefreshToken { get; set; }
 }
