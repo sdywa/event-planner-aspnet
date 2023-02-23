@@ -29,7 +29,7 @@ export const Signup: FC = () => {
             autoComplete: "current-password",
             validation: [IS_NOT_EMPTY("Укажите пароль"), MIN_LENGTH(8), MAX_LENGTH(70)]
         },
-        repeatPassword: {
+        passwordConfirm: {
             label: "Подтвердите пароль",
             type: "password",
             autoComplete: "current-password",
@@ -39,8 +39,8 @@ export const Signup: FC = () => {
 
     function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
         console.log("sent!");
-        if (data["password"].value !== data["repeatPassword"].value)
-            return { repeatPassword: "Пароль не совпадает"};
+        if (data["password"].value !== data["passwordConfirm"].value)
+            return { passwordConfirm: "Пароль не совпадает"};
 
         return {
             email: "Email занят"
