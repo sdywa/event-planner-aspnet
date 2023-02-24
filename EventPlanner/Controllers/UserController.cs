@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using EventPlanner.Controllers.Models;
 using EventPlanner.Exceptions;
+using EventPlanner.Models;
 using EventPlanner.Services.AuthenticationServices;
-using EventPlanner.Services.AuthorizationService;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
@@ -12,23 +14,42 @@ namespace EventPlanner.Controllers
     public class UserController : ControllerBase
     {
         private IAuthenticationService _authenticationService;
-        private IAuthorizationService _authorizationService;
+        private EventPlanner.Services.AuthorizationService.IAuthorizationService _authorizationService;
+        private Context _context;
         private IUserService _userService;
 
         public UserController(
             IAuthenticationService authenticationService,
-            IAuthorizationService authorizationService,
+            EventPlanner.Services.AuthorizationService.IAuthorizationService authorizationService,
+            Context context,
             IUserService userService) 
         {
             _authenticationService = authenticationService;
             _authorizationService = authorizationService;
+            _context = context;
             _userService = userService;
         }
 
         [HttpPost("refreshToken")]
-        public async Task<IActionResult> RefreshToken([FromForm] string? token)
+        public async Task<IActionResult> RefreshToken([FromBody] string? token)
         {
-            throw new NotImplementedException();
+            try {
+                var user = await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.RefreshToken)
+                .FirstOrDefaultAsync(u => u.RefreshTokenId == token);
+
+                if (user == null || token == null)
+                    return BadRequest();
+
+                return new JsonResult(
+                    await _authorizationService.RefreshTokens(user, token)
+                );
+            } 
+            catch (InvalidRefreshToken)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("login")]

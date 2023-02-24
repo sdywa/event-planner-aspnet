@@ -31,6 +31,9 @@ export default class User {
     async login(data: {email: string, password: string}) {
         try {
             const response = await AuthService.login(data);
+            if (response.data.user === undefined)
+                return;
+                
             localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
             localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
             this.setAuth(true);

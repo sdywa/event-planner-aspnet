@@ -7,7 +7,7 @@ export interface IServerResponse {
     traceId: string;
 }
 
-interface IToken {
+export interface IToken {
     token: string;
     created: string;
     expires: string;
@@ -28,5 +28,5 @@ export interface IUser {
 export interface IAuthResponse {
     accessToken: IToken;
     refreshToken: IToken;
-    user: IUser;
+    user?: IUser;
 }

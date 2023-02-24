@@ -1,6 +1,7 @@
 import axios from "axios";
 import { AxiosError } from "axios";
-import { IServerResponse } from "../types/Api";
+import { IServerResponse, IToken } from "../types/Api";
+import AuthService from "./services/AuthService";
 
 export const API_URL = `https://localhost:7222/api`;
 
@@ -23,9 +24,30 @@ export function getErrors(e: any) {
     }
 }
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
     config.headers.set("Access-Control-Allow-Origin", "*");
     config.headers.set("Content-Type", "application/json");
+
+    let accessToken: IToken = JSON.parse(localStorage.getItem("accessToken") || "");
+    if (!accessToken)
+        return config;
+
+    if (new Date(accessToken.expires) < new Date())
+    {
+        console.log("refreshing token...");
+        const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToke") || "");
+        if (new Date(refreshToken.expires) < new Date()) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            return config;
+        }
+        const response = await AuthService.refreshToken({token: refreshToken.token});
+        localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+        localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
+        accessToken = response.data.accessToken;
+    }
+    
+    config.headers.Authorization = `Bearer ${accessToken.token}`;
     return config;
 });
 
