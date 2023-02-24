@@ -1,25 +1,26 @@
-import { FC } from "react";
+import { observer } from "mobx-react-lite";
+import { FC, useContext } from "react";
+import { Context } from "../../..";
 import { Button } from "../button/Button";
 import { DropdownMenu } from "../dropdown-menu/DropdownMenu";
 import { Logo, LogoTypes } from "../logo/Logo";
 
-export const Header: FC = () => {
-    const isAuth = false;
-    const username = "Username";
+const Header: FC = () => {
+    const {user} = useContext(Context);
 
     return (
         <header className="flex justify-center items-center">
             <div className="flex justify-between items-center h-[3.75rem] min-w-[48rem] max-w-6xl w-9/12">
                 <Logo logoType={LogoTypes.COMPACT_LOGO} />
-                {isAuth
+                {user.isAuth
                 ?
                     <DropdownMenu items={[
                         {label: "Настройки", link: "/account/settings", icon: <i className="fa-solid fa-gear"></i>}, 
-                        {label: "Выход", link: "/logout", icon: <i className="fa-solid fa-right-from-bracket"></i>}
+                        {label: "Выход", onClick: () => user.logout(), icon: <i className="fa-solid fa-right-from-bracket"></i>}
                         ]}>
                             <Button>
                                 <div className="flex justify-between items-center gap-2 text-lg py-2">
-                                    <div>{username}</div>
+                                    <div>{user.user.name}</div>
                                     <i className="fa-solid fa-caret-down"></i>
                                 </div>
                             </Button>
@@ -34,3 +35,5 @@ export const Header: FC = () => {
         </header>
     );
 }
+
+export default observer(Header);

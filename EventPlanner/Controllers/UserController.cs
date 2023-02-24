@@ -31,19 +31,22 @@ namespace EventPlanner.Controllers
         }
 
         [HttpPost("refreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody] string? token)
+        public async Task<IActionResult> RefreshToken([FromBody] TokenModel? model)
         {
+            if (model?.Token == null)
+                return BadRequest();
+
             try {
                 var user = await _context.Users
                 .Include(u => u.Role)
                 .Include(u => u.RefreshToken)
-                .FirstOrDefaultAsync(u => u.RefreshTokenId == token);
+                .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
 
-                if (user == null || token == null)
+                if (user == null)
                     return BadRequest();
 
                 return new JsonResult(
-                    await _authorizationService.RefreshTokens(user, token)
+                    await _authorizationService.RefreshTokens(user, model.Token)
                 );
             } 
             catch (InvalidRefreshToken)
@@ -97,6 +100,30 @@ namespace EventPlanner.Controllers
 
             await _authenticationService.RegisterAsync(model.Name, model.Surname, model.Email, model.Password, UserRole.Participant);
             return Ok();
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] TokenModel? model)
+        {
+            if (model?.Token == null)
+                return BadRequest();
+
+            try {
+                var user = await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.RefreshToken)
+                .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
+
+                if (user == null)
+                    return BadRequest();
+
+                await _authorizationService.RemoveRefreshToken(user, model.Token);
+                return Ok();
+            } 
+            catch (InvalidRefreshToken)
+            {
+                return BadRequest();
+            }
         }
     }
 }

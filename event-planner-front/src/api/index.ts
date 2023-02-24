@@ -24,31 +24,32 @@ export function getErrors(e: any) {
     }
 }
 
-api.interceptors.request.use(async (config) => {
+api.interceptors.request.use((config) => {
     config.headers.set("Access-Control-Allow-Origin", "*");
     config.headers.set("Content-Type", "application/json");
 
-    let accessToken: IToken = JSON.parse(localStorage.getItem("accessToken") || "");
-    if (!accessToken)
-        return config;
+    let accessToken: IToken = JSON.parse(localStorage.getItem("accessToken") || "{}");
+    config.headers.Authorization = `Bearer ${accessToken.token}`;
+    
+    return config;
+});
 
-    if (new Date(accessToken.expires) < new Date())
-    {
-        console.log("refreshing token...");
-        const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToke") || "");
-        if (new Date(refreshToken.expires) < new Date()) {
+api.interceptors.response.use((config) => config, async (error) => {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && error.config && !error.config._isRetry) {
+        const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToke") || "{}");
+        originalRequest._isRetry = true;
+        try {
+            const response = await AuthService.refreshToken({token: refreshToken.token});
+            localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+            localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
+            return api.request(originalRequest);
+        } catch (e) {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
-            return config;
+            console.log("не авторизован");
         }
-        const response = await AuthService.refreshToken({token: refreshToken.token});
-        localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
-        localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
-        accessToken = response.data.accessToken;
     }
-    
-    config.headers.Authorization = `Bearer ${accessToken.token}`;
-    return config;
 });
 
 export default api;

@@ -1,18 +1,18 @@
 import { makeAutoObservable } from "mobx";
-import { getErrors, isAxiosError } from "../api";
+import { getErrors } from "../api";
 import AuthService from "../api/services/AuthService";
-import { IUser } from "../types/Api";
+import { IUser, IToken } from "../types/Api";
 
 export default class User {
     user = {} as IUser;
     isAuth = false;
-    isLoading = false;
 
     constructor() {
         makeAutoObservable(this);
     }
 
     setAuth(value: boolean) {
+        console.log(1);
         this.isAuth = value;
     }
 
@@ -31,9 +31,10 @@ export default class User {
     async login(data: {email: string, password: string}) {
         try {
             const response = await AuthService.login(data);
-            if (response.data.user === undefined)
+            console.log(response);
+            if (!response || response.data.user === undefined)
                 return;
-                
+
             localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
             localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
             this.setAuth(true);
@@ -41,6 +42,20 @@ export default class User {
         } catch (e) {
             console.log(e);
             return getErrors(e);
+        }
+    }
+
+    async logout() {
+        try {
+            const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToken") || "{}");
+            console.log(refreshToken);
+            await AuthService.logout({token: refreshToken.token});
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            this.setAuth(false);
+            this.setUser({} as IUser);
+        } catch (e) {
+            console.log(e);
         }
     }
 }

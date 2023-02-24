@@ -58,7 +58,7 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task<RefreshToken> GetRefreshToken(User user) {
+    public async Task<Object> GetRefreshToken(User user) {
         var refreshToken = new RefreshToken
         {
             Id = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
@@ -69,7 +69,12 @@ public class AuthorizationService : IAuthorizationService
         user.RefreshToken = refreshToken;
         await _userService.UpdateAsync(user);
 
-        return refreshToken;
+        return new 
+        {
+            Token = refreshToken.Id,
+            Created = refreshToken.Created,
+            Expires = refreshToken.Expires
+        };
     }
 
     public async Task<Object> RefreshTokens(User user, string refreshToken) {
@@ -87,12 +92,25 @@ public class AuthorizationService : IAuthorizationService
         return new 
         {
             accessToken = jwt,
-            refreshToken = new 
-            {
-                token = newRefreshToken.Id,
-                created = newRefreshToken.Created,
-                expires = newRefreshToken.Expires
-            }
+            refreshToken = newRefreshToken
         };
+    }
+
+    public async Task RemoveRefreshToken(User user, string refreshToken) {
+        var foundUser = await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.RefreshToken)
+            .FirstOrDefaultAsync(u => u.Id == user.Id && u.RefreshTokenId == refreshToken);
+
+        var token = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Id == refreshToken);;
+
+        if (foundUser == null || token == null)
+            return;
+
+        foundUser.RefreshToken = null;
+        await _userService.UpdateAsync(user);
+
+        _context.RefreshTokens.Remove(token);
+        await _context.SaveChangesAsync();
     }
 }
