@@ -24,5 +24,4 @@ public class SignupModel {
     [MinLength(8, ErrorMessage = "Используйте не менее 8 символов")]
     [Compare(nameof(Password), ErrorMessage = "Пароли не совпадают")]
     public string PasswordConfirm { get; set; } = string.Empty;
-    public int RoleId { get; set; } = 1;
 }

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using EventPlanner.Controllers.Models;
+using EventPlanner.Exceptions;
 using EventPlanner.Services.AuthenticationServices;
+using EventPlanner.Services.AuthorizationService;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
@@ -10,11 +12,16 @@ namespace EventPlanner.Controllers
     public class UserController : ControllerBase
     {
         private IAuthenticationService _authenticationService;
+        private IAuthorizationService _authorizationService;
         private IUserService _userService;
 
-        public UserController(IAuthenticationService authenticationService, IUserService userService) 
+        public UserController(
+            IAuthenticationService authenticationService,
+            IAuthorizationService authorizationService,
+            IUserService userService) 
         {
             _authenticationService = authenticationService;
+            _authorizationService = authorizationService;
             _userService = userService;
         }
 
@@ -25,9 +32,34 @@ namespace EventPlanner.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromForm] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await _authenticationService.LoginAsync(model.Email, model.Password);
+                var accessToken = _authorizationService.GetAccessToken(user);
+                var refreshToken = await _authorizationService.GetRefreshToken(user);
+
+                return new JsonResult(
+                    new {
+                        accessToken = accessToken,
+                        refreshToken = refreshToken, 
+                        user = new {
+                            name = user.Name,
+                            surname = user.Surname,
+                            role = user.Role.Name,
+                        }
+                    }
+                );
+            }
+            catch (UserNotFoundException)
+            {
+                return NotFound(new { Errors = new { Email = "Пользователь не найден" } });
+            }
+            catch (InvalidPasswordException)
+            {
+                return BadRequest(new { Errors = new { Password = "Неправильный пароль" } });
+            }
         }
 
         private async Task<bool> IsEmailUsedAsync(string email)
