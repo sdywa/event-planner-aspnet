@@ -54,7 +54,7 @@ export const EditEvent: FC = () => {
         { id: 2, name: "Online", title: "Онлайн" }
     ];
 
-    function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
+    async function sendFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("sent!");
         navigate("/events/1/questions");
         return {};

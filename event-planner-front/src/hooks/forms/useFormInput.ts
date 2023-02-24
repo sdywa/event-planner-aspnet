@@ -57,6 +57,10 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
         if (isFormSubmitted)
             setErrorText(getError(false));
     }, [isFormSubmitted]);
+    
+    useEffect(() => {
+        setErrorText(getError(isDirty));
+    }, [serverError]);
 
     function getClassName() {
         const className = [classes.default];

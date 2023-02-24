@@ -6,11 +6,11 @@ public class SignupModel {
     [Required(ErrorMessage = "Укажите имя")]
     [StringLength(30, ErrorMessage = "Используйте менее 30 символов")]
     [MinLength(2, ErrorMessage = "Используйте не менее 2 символов")]
-    public string FirstName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
     [Required(ErrorMessage = "Укажите фамилию")]
     [StringLength(45, ErrorMessage = "Используйте менее 45 символов")]
     [MinLength(2, ErrorMessage = "Используйте не менее 2 символов")]
-    public string LastName { get; set; } = string.Empty;
+    public string Surname { get; set; } = string.Empty;
     [Required(ErrorMessage = "Укажите email")]
     [StringLength(50, ErrorMessage = "Используйте менее 50 символов")]
     [EmailAddress(ErrorMessage = "Некорректный email")]

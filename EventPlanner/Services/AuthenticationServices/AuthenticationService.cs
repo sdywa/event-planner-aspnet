@@ -33,8 +33,8 @@ public class AuthenticationService : IAuthenticationService
     {
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
         var user = new User() {
-            FirstName = firstName,
-            LastName = lastName,
+            Name = firstName,
+            Surname = lastName,
             Email = email,
             Password = hashedPassword,
             RegTime = DateTimeOffset.Now.ToUnixTimeSeconds(),

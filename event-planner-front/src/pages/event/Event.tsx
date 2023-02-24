@@ -71,12 +71,12 @@ export const Event: FC = () => {
         };
     };
 
-    function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
+    async function sendFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("sent!");
         return {};
     }
 
-    function sendQuestionFormData(data: {[key: string]: IFormInputStatus}): IServerError {
+    async function sendQuestionFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("question sent!");
         return {};
     }

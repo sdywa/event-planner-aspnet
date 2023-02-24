@@ -36,12 +36,13 @@ namespace EventPlanner.Controllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup([FromForm] SignupModel model)
+        public async Task<IActionResult> Signup([FromBody] SignupModel model)
         {
+            Console.WriteLine(model);
             if (await IsEmailUsedAsync(model.Email))
-                return BadRequest(new { ErrorText = "Данная почта уже используется" });
+                return BadRequest(new { Errors = new { Email = "Данная почта уже используется" } });
 
-            await _authenticationService.RegisterAsync(model.FirstName, model.LastName, model.Email, model.Password, UserRole.Participant);
+            await _authenticationService.RegisterAsync(model.Name, model.Surname, model.Email, model.Password, UserRole.Participant);
             return Ok();
         }
     }

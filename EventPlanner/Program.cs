@@ -18,9 +18,10 @@ builder.Services.AddControllers();
 builder.Services.AddCors(options => 
 {
     options.AddPolicy(name: "test", policy => {
-        policy.AllowAnyOrigin();
+        policy.WithOrigins("http://localhost:3000");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
+        policy.AllowCredentials();
     }); 
 });
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -62,6 +63,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("test");
 
 app.UseHttpsRedirection();
 

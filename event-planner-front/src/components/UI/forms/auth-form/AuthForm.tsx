@@ -9,7 +9,7 @@ import useForm from "../../../../hooks/forms/useForm";
 export interface IAuthFormProps {
     selectedTabIndex: 0 | 1;
     data: { [key: string]: IFormInputData };
-    sendFormData: (data: {[key: string]: IFormInputStatus}) => IServerError;
+    sendFormData: (data: {[key: string]: IFormInputStatus}) => Promise<IServerError>;
 };
 
 export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormData}) => {

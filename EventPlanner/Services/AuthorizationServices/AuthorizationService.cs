@@ -21,12 +21,12 @@ public class AuthorizationService : IAuthorizationService
 
     private ClaimsIdentity GetIdentity(User user)
     {
-        Console.WriteLine($"{user.Email} {user.FirstName} {user.LastName}");
+        Console.WriteLine($"{user.Email} {user.Name} {user.Surname}");
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName),
-            new Claim(ClaimTypes.Surname, user.LastName),
+            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
+            new Claim(ClaimTypes.Surname, user.Surname),
             new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name)
         };
         ClaimsIdentity identity = new ClaimsIdentity(
@@ -78,7 +78,7 @@ public class AuthorizationService : IAuthorizationService
             .Include(u => u.RefreshToken)
             .FirstOrDefaultAsync(u => u.Id == user.Id && u.RefreshTokenId == refreshToken);
 
-        Console.WriteLine($"{foundUser?.FirstName} — \"{foundUser?.RefreshTokenId}\" {user?.FirstName}: {user?.RefreshToken}");
+        Console.WriteLine($"{foundUser?.Name} — \"{foundUser?.RefreshTokenId}\" {user?.Name}: {user?.RefreshToken}");
         if (foundUser == null || foundUser.RefreshToken == null || foundUser.RefreshToken.Expires < DateTime.Now)
             throw new InvalidRefreshToken();
 

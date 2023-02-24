@@ -181,7 +181,7 @@ export const TicketsPage: FC = () => {
         }
     }
 
-    function sendFormData(data: {[key: string]: IFormInputStatus}): IServerError {
+    async function sendFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("sent!");
         navigate("/events");
         return {};

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { IFormInputStatus, IServerError } from "../../types";
 
-const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => IServerError) => {
+const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Promise<IServerError>) => {
     const [serverErrors, setServerErrors] = useState<IServerError>({});
     const [usedSubmit, setUsedSubmit] = useState(false);
     const [isSubmitted, setSubmitted] = useState(false);
@@ -37,7 +37,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
     };
     const updateInputStatuses = (name: string, value: IFormInputStatus) => setInputStatuses((currValue) => {
         const result = {...currValue};
-        result[name] = value;
+        result[name.toLowerCase()] = value;
         return result;
     });
     const [hasError, setErrors] = useState(false);
@@ -67,7 +67,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
     }, [inputStatuses]);
 
     const onChange = () => setSubmitted(false);
-    const onSubmit = (e: React.SyntheticEvent) => {
+    const onSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         const hasErrors = checkErrors();
         setErrors(hasErrors);
@@ -76,13 +76,14 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => ISer
         setServerErrors({});
         console.log("submitted", hasErrors);
         if (!hasErrors && Object.keys(inputStatuses).length > 0) {
-            const errors = sendFormData(inputStatuses);
+            const errors = await sendFormData(inputStatuses);
             console.log("sent");
+            console.log(inputStatuses);
             if (!errors)
                 return; 
             setServerErrors(errors);
             for (const key in errors) {
-                inputStatuses[key].removeDirty();
+                inputStatuses[key.toLowerCase()].removeDirty();
             }
         }
     }
