@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using EventPlanner.Controllers.Models;
+using EventPlanner.Services.AuthenticationServices;
+using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
 {
@@ -7,6 +9,15 @@ namespace EventPlanner.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private IAuthenticationService _authenticationService;
+        private IUserService _userService;
+
+        public UserController(IAuthenticationService authenticationService, IUserService userService) 
+        {
+            _authenticationService = authenticationService;
+            _userService = userService;
+        }
+
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken([FromForm] string? token)
         {
@@ -19,10 +30,19 @@ namespace EventPlanner.Controllers
             throw new NotImplementedException();
         }
 
+        private async Task<bool> IsEmailUsedAsync(string email)
+        {
+            return await _userService.GetByEmailAsync(email) != null;
+        }
+
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromForm] SignupModel model)
         {
-            throw new NotImplementedException();
+            if (await IsEmailUsedAsync(model.Email))
+                return BadRequest(new { ErrorText = "Данная почта уже используется" });
+
+            await _authenticationService.RegisterAsync(model.FirstName, model.LastName, model.Email, model.Password, UserRole.Participant);
+            return Ok();
         }
     }
 }
