@@ -10,6 +10,9 @@ export default class User {
 
     constructor() {
         makeAutoObservable(this);
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        this.setUser(user);
+        this.setAuth(Object.keys(user).length > 0);
     }
 
     setAuth(value: boolean) {
@@ -19,6 +22,7 @@ export default class User {
     setUser(value: IUser) {
         this.user = value;
         this.isCreator = value.role === "Organizer" || value.role === "Administrator";
+        localStorage.setItem("user", JSON.stringify(value));
     }
 
     async signup(data: {name: string, surname: string, email: string, password: string}) {

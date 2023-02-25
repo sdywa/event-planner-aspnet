@@ -16,8 +16,9 @@ import { IFormInputStatus, IFormInputData, IServerError, IUserExtendedEvent } fr
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 import { DropdownMenu } from "../../components/UI/dropdown-menu/DropdownMenu";
 import { Context } from "../..";
+import { observer } from "mobx-react-lite";
 
-export const Event: FC = () => {
+const Event: FC = () => {
     // const params = useParams();
     const {user} = useContext(Context);
     const [event, setEvent] = useState<IUserExtendedEvent>({
@@ -280,3 +281,5 @@ export const Event: FC = () => {
         </PageLayout>
     );
 }
+
+export default observer(Event);

@@ -9,8 +9,9 @@ import { WithIcon } from "../../components/UI/with-icon/WithIcon";
 import useFilter from "../../hooks/useFilter";
 import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
 import { Context } from "../..";
+import { observer } from "mobx-react-lite";
 
-export const Events: FC = () => {
+const Events: FC = () => {
     const {user} = useContext(Context);
     const [events, setEvents] = useState<IUserEvent[]>([{
         id: 1,
@@ -129,3 +130,5 @@ export const Events: FC = () => {
         </PageLayout>
     );
 }
+
+export default observer(Events);
