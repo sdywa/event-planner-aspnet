@@ -6,18 +6,19 @@ import { IUser, IToken } from "../types/Api";
 export default class User {
     user = {} as IUser;
     isAuth = false;
+    isCreator = false;
 
     constructor() {
         makeAutoObservable(this);
     }
 
     setAuth(value: boolean) {
-        console.log(1);
         this.isAuth = value;
     }
 
     setUser(value: IUser) {
         this.user = value;
+        this.isCreator = value.role === "Organizer" || value.role === "Administrator";
     }
 
     async signup(data: {name: string, surname: string, email: string, password: string}) {
@@ -31,8 +32,7 @@ export default class User {
     async login(data: {email: string, password: string}) {
         try {
             const response = await AuthService.login(data);
-            console.log(response);
-            if (!response || response.data.user === undefined)
+            if (response.data.user === undefined)
                 return;
 
             localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
@@ -40,7 +40,6 @@ export default class User {
             this.setAuth(true);
             this.setUser(response.data.user);
         } catch (e) {
-            console.log(e);
             return getErrors(e);
         }
     }
@@ -48,7 +47,6 @@ export default class User {
     async logout() {
         try {
             const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToken") || "{}");
-            console.log(refreshToken);
             await AuthService.logout({token: refreshToken.token});
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");

@@ -78,7 +78,6 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
         if (!hasErrors && Object.keys(inputStatuses).length > 0) {
             const errors = await sendFormData(inputStatuses);
             console.log("sent");
-            console.log(inputStatuses);
             if (!errors)
                 return; 
             setServerErrors(errors);

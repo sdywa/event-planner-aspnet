@@ -50,6 +50,7 @@ api.interceptors.response.use((config) => config, async (error) => {
             console.log("не авторизован");
         }
     }
+    throw error;
 });
 
 export default api;

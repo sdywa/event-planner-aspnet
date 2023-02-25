@@ -27,13 +27,10 @@ export const Login: FC = () => {
         console.log("sent!");
         const result = Object.entries(data).map(([key, d]) => [key, d.value]);
 
-        console.log(result);
-
         let errors = {};
         await user.login(Object.fromEntries(result))
             .then((e) => {
                 errors = e;
-                console.log(e);
                 if (!errors)
                     navigate("/events");
             });

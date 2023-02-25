@@ -52,7 +52,6 @@ export const Signup: FC = () => {
         await user.signup(Object.fromEntries(result))
             .then((e) => {
                 errors = e;
-                console.log(e);
                 if (!errors)
                     navigate("/login");
             });
