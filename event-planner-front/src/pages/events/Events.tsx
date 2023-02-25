@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useContext } from "react";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Button, ButtonStyles } from "../../components/UI/button/Button";
 import { EventTile } from "../../components/UI/events/event-tile/EventTile";
@@ -8,10 +8,10 @@ import { IUserEvent } from "../../types";
 import { WithIcon } from "../../components/UI/with-icon/WithIcon";
 import useFilter from "../../hooks/useFilter";
 import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
+import { Context } from "../..";
 
 export const Events: FC = () => {
-    const isAuth = true;
-    const isCreator = true;
+    const {user} = useContext(Context);
     const [events, setEvents] = useState<IUserEvent[]>([{
         id: 1,
         title: "Заголовок",
@@ -101,9 +101,9 @@ export const Events: FC = () => {
     return (
         <PageLayout title="Мероприятия" header={
             <div className="w-full flex justify-between items-center ml-10">
-                <EventSearch isAuth={isAuth} searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
+                <EventSearch isAuth={user.isAuth} searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
                 { 
-                    isCreator && 
+                    user.isCreator && 
                     <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new">
                         <WithIcon icon={<i className="fa-solid fa-plus"></i>}>
                             Добавить
@@ -120,7 +120,7 @@ export const Events: FC = () => {
                 ?
                 <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
                     {
-                        filteredItems.map((v) => <EventTile key={v.id} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
+                        filteredItems.map((v) => <EventTile key={v.id} isAuth={user.isAuth} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
                     }
                 </div>
                 :

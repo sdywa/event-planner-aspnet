@@ -5,11 +5,12 @@ import { Bookmark } from "../../bookmark/Bookmark";
 import { Location } from "../location/Location";
 
 interface IEventTileProps {
+    isAuth: Boolean;
     event: IUserEvent;
     favoriteCallback: (value: boolean) => void;
 };
 
-export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => { 
+export const EventTile: FC<IEventTileProps> = ({isAuth, event, favoriteCallback}) => { 
     function parseDate(date: Date) {
         const currentYear = new Date().getFullYear();
         const options: Intl.DateTimeFormatOptions = {
@@ -28,7 +29,9 @@ export const EventTile: FC<IEventTileProps> = ({event, favoriteCallback}) => {
                 {
                     event.cover && <img src={event.cover} alt={event.title} />
                 }
-                <Bookmark isFavorite={event.isFavorite} className={"absolute top-4 right-4 text-2xl"} favoriteCallback={favoriteCallback} />
+                {
+                    isAuth && <Bookmark isFavorite={event.isFavorite} className={"absolute top-4 right-4 text-2xl"} favoriteCallback={favoriteCallback} />
+                }
             </div>
             <div className="flex flex-col gap-1 max-h-[11.5rem] py-4 px-3">
                 <div className="flex flex-col">

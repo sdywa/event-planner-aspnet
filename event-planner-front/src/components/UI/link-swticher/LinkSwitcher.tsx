@@ -13,7 +13,7 @@ export const LinkSwitcher: FC<ILinkSwitcherProps> = ({tabs, activeTab}) => {
             {
                 tabs.map(({title, link}) => 
                     <li key={link} className={clsx(["switcher-tab group", activeTab === title && "switcher-tab--selected"])}>
-                        <Button link={link} className={"switcher-tab-button group-[.switcher-tab--selected]:border-green"}>
+                        <Button link={link} className={"switcher-tab-button group-[.switcher-tab--selected]:border-green py-2"}>
                             <span className="text-lg group-[.switcher-tab--selected]:text-green">{title}</span>
                         </Button>
                     </li>

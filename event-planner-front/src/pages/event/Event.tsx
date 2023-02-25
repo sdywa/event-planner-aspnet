@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 // import { useParams } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
@@ -15,11 +15,11 @@ import { Modal } from "../../components/UI/modal/Modal";
 import { IFormInputStatus, IFormInputData, IServerError, IUserExtendedEvent } from "../../types";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 import { DropdownMenu } from "../../components/UI/dropdown-menu/DropdownMenu";
+import { Context } from "../..";
 
 export const Event: FC = () => {
     // const params = useParams();
-    const isAuth = true;
-    const isCreator = true;
+    const {user} = useContext(Context);
     const [event, setEvent] = useState<IUserExtendedEvent>({
         id: 1,
         title: "Заголовок",
@@ -44,6 +44,7 @@ export const Event: FC = () => {
         minPrice: 0,
         isFavorite: false,
         creator: {
+            id: 1,
             name: "Создатель Создальевич",
             eventsCount: 20,
             rating: 4.5
@@ -109,11 +110,11 @@ export const Event: FC = () => {
     }
 
     return (
-        <PageLayout title={event.title} isCentered={true} header={
+        <PageLayout title={event.title} isCentered={true} header={ user.isAuth &&
             <Bookmark isFavorite={event.isFavorite} className={"text-lg"} favoriteCallback={setFavorite} />
         }>
             {
-                isAuth &&
+                user.isAuth &&
                     <Modal active={modalActive} setActive={setModal}>
                         <div className="flex justify-between items-center">
                             <h3 className="heading--tertiary">Связаться с организатором</h3>
@@ -140,7 +141,7 @@ export const Event: FC = () => {
                     </Modal>
             }
             {
-                isCreator && 
+                user.user.id === event.creator.id && 
                 <div className="flex items-center justify-center">
                     <DropdownMenu items={[
                         {label: "Информация", link: `/events/${event.id}/edit`}, 
@@ -201,7 +202,7 @@ export const Event: FC = () => {
                         </div>
                     </div>
                     {
-                        isAuth &&
+                        user.isAuth &&
                             <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
                                 <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
                                     <span className="text-base">Связаться с организатором</span>
@@ -215,7 +216,7 @@ export const Event: FC = () => {
                     {event.fullDescription}
                 </div>
                 {
-                    isAuth &&
+                    user.isAuth &&
                     <div className="m-auto">
                         <h3 className="heading--tertiary mb-2">Регистрация</h3>
                         <form onSubmit={onSubmit} onChange={onChange}>

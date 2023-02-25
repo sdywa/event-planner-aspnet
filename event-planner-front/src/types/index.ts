@@ -83,6 +83,7 @@ export interface IUserEvent extends IEvent {
 // Showing on event page
 export interface IUserExtendedEvent extends IUserEvent, IExtendedEvent {
     creator: {
+        id: number,
         name: string,
         eventsCount: number,
         rating: number
