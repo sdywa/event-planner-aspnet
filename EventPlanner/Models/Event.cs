@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class Event {
+public class Event : CommonModel<int>
+{
     [StringLength(70)]
     public string Title { get; set; } = null!;
     [StringLength(70)]
