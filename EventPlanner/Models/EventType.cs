@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class Role : CommonModel<UserRole>
+public class Type : CommonModel<EventType>
 {
     [StringLength(45)]
     public string Name { get; set; } = null!;

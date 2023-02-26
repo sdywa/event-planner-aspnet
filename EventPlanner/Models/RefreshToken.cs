@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace EventPlanner.Models;
 
 public class RefreshToken : CommonModel<String>
