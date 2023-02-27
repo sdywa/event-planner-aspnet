@@ -36,12 +36,17 @@ const Event: FC = () => {
             title: "Бизнес"
         },
         type: {
-            id: 1,
+            id: 0,
             title: "Оффлайн"
         },
         startDate: "2023-03-17T13:40:00.000Z",
         endDate: "2023-03-17T15:00:00.000",
-        address: "г. Москва, очень длинный адрес который может не",
+        address: {
+            country: "Россия",
+            region: "Москва",
+            city: "Москва",
+            street: "очень длинный адрес который может не"
+        },
         minPrice: 0,
         isFavorite: false,
         creator: {
@@ -175,7 +180,7 @@ const Event: FC = () => {
                         {parseDate(new Date(event.startDate))}
                     </WithIcon>
                 }
-                <Location type={event.type} location={event.address} />
+                <Location type={event.type} location={`г. ${event.address?.city}, ${event.address?.street}`} />
             </div>
             <div className="flex justify-center items-center gap-4 py-4 relative">
                 <div className="flex flex-col justify-center items-start gap-4">

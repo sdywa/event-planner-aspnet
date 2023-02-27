@@ -32,6 +32,13 @@ export interface IAuthResponse {
     user?: IUser;
 }
 
+export interface IAddress {
+    country: string,
+    region: string,
+    city: string,
+    street: string
+}
+
 // Common interface
 export interface IDefaultEvent {
     title: string,
@@ -47,7 +54,7 @@ export interface IDefaultEvent {
     },
     startDate?: string,
     endDate?: string,
-    address?: string,
+    address?: IAddress,
 }
 
 // Showing on events page

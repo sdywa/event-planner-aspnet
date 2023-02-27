@@ -13,7 +13,7 @@ export const Location: FC<ILocationProps> = ({type, location}) => {
     return (
         <>
             {
-                type.id === 1
+                type.id === 0
                 ?
                     <WithIcon icon={<i className="fa-solid fa-location-dot" />}>
                         {location}

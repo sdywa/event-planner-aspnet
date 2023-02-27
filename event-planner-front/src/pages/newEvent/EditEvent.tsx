@@ -83,7 +83,12 @@ export const EditEvent: FC = () => {
                 },
                 startDate: "2023-03-17T13:40:00.000Z",
                 endDate: "2023-03-17T15:00:00.000Z",
-                address: "г. Москва, очень длинный адрес который может не поместиться в одну строку"
+                address: {
+                    country: "Россия",
+                    region: "Москва",
+                    city: "Москва",
+                    street: "очень длинный адрес который может не"
+                }
             });
         }
     }, []);
@@ -144,7 +149,7 @@ export const EditEvent: FC = () => {
                             infoForm.getInputStatus("type")?.value === eventType[0].id &&
                             <div className="flex flex-col">
                                 <div className="mx-2">
-                                    <FormInput initialValue={event?.address} name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                    <FormInput initialValue={Object.values(event?.address || {}).join(", ")} name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                 </div>
                                 <div className="w-full h-96 bg-lightgray rounded-md"></div>
                             </div>

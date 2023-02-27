@@ -50,7 +50,7 @@ export const EventTile: FC<IEventTileProps> = ({isAuth, event, favoriteCallback}
                     {event.description}
                 </div>
                 <div className="flex justify-between items-center flex-wrap">
-                    <Location type={event.type} location={event.address} />
+                    <Location type={event.type} location={`г. ${event.address?.city}`} />
                     <div className="font-bold">
                         {
                             event.minPrice 
