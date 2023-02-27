@@ -95,7 +95,6 @@ namespace EventPlanner.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] SignupModel model)
         {
-            Console.WriteLine(model);
             if (await IsEmailUsedAsync(model.Email))
                 return BadRequest(new { Errors = new { Email = "Данная почта уже используется" } });
 
@@ -103,9 +102,11 @@ namespace EventPlanner.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] TokenModel? model)
         {
+            Console.WriteLine($"token: {model?.Token}");
             if (model?.Token == null)
                 return BadRequest();
 

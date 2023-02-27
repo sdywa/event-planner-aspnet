@@ -54,7 +54,7 @@ public class Context : DbContext
                 Name = "Каролина",
                 Surname = "Назарова",
                 Email = "cardso@rhyta.com",
-                Password = "$2a$11$1TjBUPHK6tsKddKdXUp9KeFbC/u6NvYL4mzE6wqroeMvw.n0pgxWu", //eeHee7xugoh
+                Password = "$2a$11$CSZkDopk8ppLYKci3F3Hku16o5NNMob7bjSXztVpUYqfOjsVhCViu", //eeHee7xugoh
                 RegTime = 1648022798,
                 RoleId = UserRole.Organizer
             },
@@ -63,7 +63,7 @@ public class Context : DbContext
                 Name = "Роберт",
                 Surname = "Алиев",
                 Email = "feek1993@rhyta.com",
-                Password = "$2a$11$.wAt7jt37WlsLhmZH3J9eOijrox.elpjNJ5WXpnzdPYQUjkoiEGWe", // aS9AhN1u
+                Password = "$2a$11$I.byg3ATg9FPi1nMVrzXXedjwLTPezFZdkJiP0x0FPEs59Fc8qtIi", // aS9AhN1u
                 RegTime = 1648050294,
                 RoleId = UserRole.Organizer
             },
@@ -72,7 +72,7 @@ public class Context : DbContext
                 Name = "Сергей",
                 Surname = "Озёров",
                 Email = "hencomitair@armyspy.com",
-                Password = "$2a$11$.wAt7jt37WlsLhmZH3J9eOijrox.elpjNJ5WXpnzdPYQUjkoiEGWe", // Yaecha9te1
+                Password = "$2a$11$ikyy6AcYekdAdEmEwN7fFOnojaEY6YhWSE5RS1frvamuoQxHvI9qe", // Yaecha9te1
                 RegTime = 1648125670,
                 RoleId = UserRole.Participant
             },
@@ -81,7 +81,7 @@ public class Context : DbContext
                 Name = "Всеволод",
                 Surname = "Балашов",
                 Email = "dered37@armyspy.com",
-                Password = "$2a$11$.wAt7jt37WlsLhmZH3J9eOijrox.elpjNJ5WXpnzdPYQUjkoiEGWe", // ceiqu0Lae
+                Password = "$2a$11$EtGWjaVugK2aOrh/4r1jPuWJydM5Z/WNz.1wfk3GytOl4fcohqfHK", // ceiqu0Lae
                 RegTime = 1648150448,
                 RoleId = UserRole.Organizer
             },
@@ -90,7 +90,7 @@ public class Context : DbContext
                 Name = "Анатолий",
                 Surname = "Харламов",
                 Email = "hathead@teleworm.us",
-                Password = "$2a$11$.wAt7jt37WlsLhmZH3J9eOijrox.elpjNJ5WXpnzdPYQUjkoiEGWe", // seiQuoh7ohp
+                Password = "$2a$11$NRYDDkO88A9vX/BTf0PWGen3p1DiWOkw47/fN7JYBv9lndQxREou2", // seiQuoh7ohp
                 RegTime = 1648185723,
                 RoleId = UserRole.Participant
             },
@@ -99,7 +99,7 @@ public class Context : DbContext
                 Name = "Алла",
                 Surname = "Соломина",
                 Email = "Noures96@jourrapide.com",
-                Password = "$2a$11$.wAt7jt37WlsLhmZH3J9eOijrox.elpjNJ5WXpnzdPYQUjkoiEGWe", // Oor5fooquuQu
+                Password = "$2a$11$U6YsXt2Cj5lB9MF/FZ2OSewNBd3lMmmTrv.BWwxZ7MQymUIGcPoZq", // Oor5fooquuQu
                 RegTime = 1648207626,
                 RoleId = UserRole.Participant
             }

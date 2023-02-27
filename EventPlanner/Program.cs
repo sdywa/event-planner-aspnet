@@ -48,6 +48,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
+
 builder.Services.AddTransient<IEventStorageService, EventStorageService>();
 
 var app = builder.Build();
@@ -70,6 +71,7 @@ app.UseCors("test");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

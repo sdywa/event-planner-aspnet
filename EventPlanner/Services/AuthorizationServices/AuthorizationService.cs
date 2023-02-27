@@ -21,7 +21,6 @@ public class AuthorizationService : IAuthorizationService
 
     private ClaimsIdentity GetIdentity(User user)
     {
-        Console.WriteLine($"{user.Email} {user.Name} {user.Surname}");
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Email, user.Email),
@@ -102,7 +101,7 @@ public class AuthorizationService : IAuthorizationService
             .Include(u => u.RefreshToken)
             .FirstOrDefaultAsync(u => u.Id == user.Id && u.RefreshTokenId == refreshToken);
 
-        var token = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Id == refreshToken);;
+        var token = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Id == refreshToken);
 
         if (foundUser == null || token == null)
             return;
