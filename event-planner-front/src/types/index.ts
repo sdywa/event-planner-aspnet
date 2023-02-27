@@ -1,3 +1,5 @@
+import { IEventResponse, IDefaultEvent } from "./Api";
+
 export interface IValidation {
     order: number;
     name: string;
@@ -30,26 +32,8 @@ export interface IServerError {
     [key: string]: string
 }
 
-// Common interface
-export interface IEvent {
-    title: string,
-    cover?: string,
-    description: string,
-    category: {
-        id: number,
-        title: string
-    },
-    type: {
-        id: number,
-        title: "Оффлайн" | "Онлайн"
-    },
-    startDate?: string,
-    endDate?: string,
-    address?: string,
-}
-
 // Interface for creator
-export interface IExtendedEvent extends IEvent {
+export interface IExtendedEvent extends IDefaultEvent {
     fullDescription: string,
 }
 
@@ -67,21 +51,14 @@ export interface IEventTicket{
     price: number
 };
 
-export interface IEditEvent extends IEvent {
+export interface IEditEvent extends IDefaultEvent {
     id: number,
     questions: IEventQuestion[],
     tickets: IEventTicket[]
 }
 
-// Showing on events page
-export interface IUserEvent extends IEvent {
-    id: number,
-    isFavorite: boolean
-    minPrice: number
-}
-
 // Showing on event page
-export interface IUserExtendedEvent extends IUserEvent, IExtendedEvent {
+export interface IUserExtendedEvent extends IEventResponse, IExtendedEvent {
     creator: {
         id: number,
         name: string,

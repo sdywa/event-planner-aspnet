@@ -1,12 +1,12 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import { IUserEvent } from "../../../../types";
+import { IEventResponse } from "../../../../types/Api";
 import { Bookmark } from "../../bookmark/Bookmark";
 import { Location } from "../location/Location";
 
 interface IEventTileProps {
     isAuth: Boolean;
-    event: IUserEvent;
+    event: IEventResponse;
     favoriteCallback: (value: boolean) => void;
 };
 

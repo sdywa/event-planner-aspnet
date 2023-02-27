@@ -2,15 +2,16 @@ import React, { FC, useState } from "react";
 import useDebounce from "../../../../hooks/useDebounce";
 import { Input, InputStyle } from "../../inputs/input/Input";
 import { ActionButton } from "../../button/ActionButton";
-import { IUserEvent, IFilter } from "../../../../types";
+import { IFilter } from "../../../../types";
+import { IEventResponse } from "../../../../types/Api";
 import { IS_FAVORITE } from "../../../../hooks/useFilter";
 
 interface IEventSearchProps {
     isAuth: boolean;
     searchUrl: string;
-    events: IUserEvent[];
+    events: IEventResponse[];
     showingFilterCallback: (value: boolean) => void;
-    filtersCallback: (value: IFilter<IUserEvent>) => void;
+    filtersCallback: (value: IFilter<IEventResponse>) => void;
 };
 
 export const EventSearch: FC<IEventSearchProps> = ({isAuth, searchUrl, events, showingFilterCallback, filtersCallback}) => {

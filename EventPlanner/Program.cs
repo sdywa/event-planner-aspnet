@@ -6,6 +6,7 @@ using EventPlanner.Models;
 using EventPlanner.Services.UserServices;
 using EventPlanner.Services.AuthenticationServices;
 using EventPlanner.Services.AuthorizationService;
+using EventPlanner.Services.EventStorageServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
+builder.Services.AddTransient<IEventStorageService, EventStorageService>();
 
 var app = builder.Build();
 

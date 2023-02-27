@@ -1,89 +1,21 @@
-import { FC, useState, useContext } from "react";
+import { FC, useState, useContext, useEffect } from "react";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Button, ButtonStyles } from "../../components/UI/button/Button";
 import { EventTile } from "../../components/UI/events/event-tile/EventTile";
 import { EventSearch } from "../../components/UI/events/event-search/EventSearch";
 import { EventFilter } from "../../components/UI/events/event-filter/EventFilter";
-import { IUserEvent } from "../../types";
+import { IEventResponse } from "../../types/Api";
 import { WithIcon } from "../../components/UI/with-icon/WithIcon";
 import useFilter from "../../hooks/useFilter";
 import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
 import { Context } from "../..";
 import { observer } from "mobx-react-lite";
+import EventService from "../../api/services/EventService";
 
 const Events: FC = () => {
     const {user} = useContext(Context);
-    const [events, setEvents] = useState<IUserEvent[]>([{
-        id: 1,
-        title: "Заголовок",
-        cover: "",
-        description: "Описание мероприятия описание описание описание описание",
-        category: {
-            id: 1,
-            title: "Бизнес"
-        },
-        type: {
-            id: 1,
-            title: "Оффлайн"
-        },
-        startDate: "2023-12-12T15:00:00.000Z",
-        address: "г. Москва",
-        minPrice: 0,
-        isFavorite: false
-    },
-    {
-        id: 2,
-        title: "Очень очень длинный заголовок который не помещается",
-        cover: "",
-        description: "Очень длинное название которое тоже не помещается в этот маленький блок что я не знаю что с ним делать",
-        category: {
-            id: 1,
-            title: "Искусство и культура"
-        },
-        type: {
-            id: 1,
-            title: "Оффлайн"
-        },
-        startDate: "2024-12-12T15:00:00.000Z",
-        address: "г. Кременчуг-Константиновское",
-        minPrice: 99999,
-        isFavorite: true
-    },
-    {
-        id: 3,
-        title: "Заголовок",
-        cover: "",
-        description: "Описание мероприятия описание описание описание описание",
-        category: {
-            id: 1,
-            title: "Бизнес"
-        },
-        type: {
-            id: 2,
-            title: "Онлайн"
-        },
-        startDate: "2023-12-12T15:00:00.000Z",
-        minPrice: 0,
-        isFavorite: false
-    },
-    {
-        id: 4,
-        title: "Заголовок",
-        cover: "",
-        description: "Описание мероприятия описание описание описание описание",
-        category: {
-            id: 1,
-            title: "Бизнес"
-        },
-        type: {
-            id: 2,
-            title: "Онлайн"
-        },
-        startDate: "2023-12-12T15:00:00.000Z",
-        minPrice: 0,
-        isFavorite: false
-    }]);
-    const {filteredItems, toggleFilter} = useFilter<IUserEvent>(events);
+    const [events, setEvents] = useState<IEventResponse[]>([]);
+    const {filteredItems, toggleFilter} = useFilter<IEventResponse>(events);
     const [showingFilter, setShowingFilter] = useState(false);
 
     function setFavorite(eventId: number, value: boolean) {
@@ -98,6 +30,20 @@ const Events: FC = () => {
         });
         setEvents(nextEvents);
     }
+
+    useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        const getEvents = async () => {
+            try {
+                const events = await EventService.getAll();
+                setEvents(events.data);
+            } catch (e) {
+                return;
+            }
+        } 
+
+        getEvents();
+    }, []);
 
     return (
         <PageLayout title="Мероприятия" header={

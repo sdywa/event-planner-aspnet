@@ -1,8 +1,9 @@
 import { FC } from "react";
-import { IEvent, IFilter } from "../../../../types";
+import { IFilter } from "../../../../types";
+import { IEventResponse } from "../../../../types/Api";
 
 interface IEventFilterProps {
-    filtersCallback: (value: IFilter<IEvent>) => void;
+    filtersCallback: (value: IFilter<IEventResponse>) => void;
     [props:string]: any 
 };
 

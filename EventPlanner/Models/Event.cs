@@ -6,7 +6,7 @@ public class Event : CommonModel<int>
 {
     [StringLength(70)]
     public string Title { get; set; } = null!;
-    [StringLength(70)]
+    [StringLength(250)]
     public string Description { get; set; } = null!;
     public string FullDescription { get; set; } = null!;
     public string? Cover { get; set; }
@@ -18,8 +18,8 @@ public class Event : CommonModel<int>
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
 
-    public int TypeId { get; set; }
-    public System.Type Type { get; set; } = null!;
+    public EventPlanner.EventType TypeId { get; set; }
+    public EventType Type { get; set; } = null!;
 
     public int CreatorId { get; set; }
     public User Creator { get; set; } = null!;
