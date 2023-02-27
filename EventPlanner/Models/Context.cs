@@ -13,6 +13,8 @@ public class Context : DbContext
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
 
+    public DbSet<FavEvent> FavEvents { get; set; } = null!;
+
     public Context(DbContextOptions<Context> options) : base(options)
     {
         

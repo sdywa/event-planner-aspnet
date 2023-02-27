@@ -19,6 +19,7 @@ const Events: FC = () => {
     const [showingFilter, setShowingFilter] = useState(false);
 
     function setFavorite(eventId: number, value: boolean) {
+        EventService.setFavorite(eventId, {isFavorite: value})
         const nextEvents = events.map((event) => {
             if (event.id === eventId) {
                 return {

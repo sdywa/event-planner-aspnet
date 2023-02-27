@@ -19,4 +19,6 @@ public class User : CommonModel<int>
 
     public string? RefreshTokenId { get; set; }
     public RefreshToken? RefreshToken { get; set; }
+
+    public ICollection<FavEvent> FavEvents { get; set; } = null!;
 }

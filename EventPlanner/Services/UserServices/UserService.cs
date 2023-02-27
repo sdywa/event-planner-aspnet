@@ -18,7 +18,7 @@ public class UserService : IUserService
         await _common.CreateAsync(entity);
 
     public async Task<User?> GetAsync(int id) =>
-        await _common.GetAsync(id, IncludeValues());
+        await _common.GetAsync(id, IncludeValuesWithEvents());
 
     public async Task<List<User>> GetAllAsync() =>
         await _common.GetAllAsync(IncludeValues());
@@ -39,4 +39,13 @@ public class UserService : IUserService
     private IQueryable<User> IncludeValues() =>
         _context.Users
             .Include(u => u.Role);
+
+    private IQueryable<User> IncludeValuesWithEvents() => 
+        IncludeValues()
+            .Include(u => u.FavEvents)
+                .ThenInclude(f => f.Event)
+                    .ThenInclude(e => e.Type)
+            .Include(u => u.FavEvents)
+                .ThenInclude(f => f.Event)
+                    .ThenInclude(e => e.Category);
 }

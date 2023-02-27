@@ -23,6 +23,7 @@ public class AuthorizationService : IAuthorizationService
     {
         var claims = new List<Claim>
         {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
             new Claim(ClaimTypes.Surname, user.Surname),

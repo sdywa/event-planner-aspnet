@@ -52,12 +52,13 @@ export default class User {
         try {
             const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToken") || "{}");
             await AuthService.logout({token: refreshToken.token});
+        } catch (e) {
+            console.log(e);
+        } finally {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             this.setAuth(false);
             this.setUser({} as IUser);
-        } catch (e) {
-            console.log(e);
         }
     }
 }
