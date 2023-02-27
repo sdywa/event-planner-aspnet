@@ -8,20 +8,19 @@ import { IS_FAVORITE } from "../../../../hooks/useFilter";
 
 interface IEventSearchProps {
     isAuth: boolean;
-    searchUrl: string;
-    events: IEventResponse[];
+    setSearchText: (value: string) => void,
     showingFilterCallback: (value: boolean) => void;
     filtersCallback: (value: IFilter<IEventResponse>) => void;
 };
 
-export const EventSearch: FC<IEventSearchProps> = ({isAuth, searchUrl, events, showingFilterCallback, filtersCallback}) => {
+export const EventSearch: FC<IEventSearchProps> = ({isAuth, setSearchText, showingFilterCallback, filtersCallback}) => {
     const [value, setValue] = useState("");
     const [showingFilter, setFilter] = useState(false);
     const [showingFavorite, setFavorite] = useState(false);
     const debouncedSearch = useDebounce<string>(search, 500);
 
     function search(query: string) {
-        console.log(`searching... ${query}`);
+        setSearchText(query.trim());
     }
 
     function onChange(e: React.ChangeEvent<HTMLInputElement>) {

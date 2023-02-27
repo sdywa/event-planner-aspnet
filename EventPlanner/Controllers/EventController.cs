@@ -26,31 +26,36 @@ namespace EventPlanner.Controllers
             _userService = userService;
         }
 
+        private async Task<Object> PrepareEvents(List<Event> events) 
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return events;
+            
+            var user = await _userService.GetAsync(int.Parse(userId));
+            return events.Select(e => new {
+                Id = e.Id,
+                Title = e.Title,
+                Description = e.Description,
+                FullDescription = e.FullDescription,
+                Cover = e.Cover,
+                CreationTime = e.CreationTime,
+                StartDate = e.StartDate,
+                EndDate = e.EndDate,
+                Category = e.Category,
+                Type = e.Type,
+                Creator = e.Creator,
+                Address = e.Address,
+                IsFavorite = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null
+            });
+        }
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync() 
         {
             var events = await _eventStorageService.GetAllAsync();
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId != null) {
-                var user = await _userService.GetAsync(int.Parse(userId));
-                return new JsonResult(events.Select(e => new {
-                    Id = e.Id,
-                    Title = e.Title,
-                    Description = e.Description,
-                    FullDescription = e.FullDescription,
-                    Cover = e.Cover,
-                    CreationTime = e.CreationTime,
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate,
-                    Category = e.Category,
-                    Type = e.Type,
-                    Creator = e.Creator,
-                    Address = e.Address,
-                    IsFavorite = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null
-                }));
-            }
-            return new JsonResult(events);
+            return new JsonResult(await PrepareEvents(events));
         }
 
         [Authorize]
@@ -85,6 +90,23 @@ namespace EventPlanner.Controllers
 
             await _context.SaveChangesAsync();
             return Ok();
+        }
+    
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            search = search.ToLower().Trim();
+            if (search == string.Empty)
+                return BadRequest(new { ErrorText = "Пустая строка поиска" });
+
+            var events = await _eventStorageService.GetAllAsync();
+            events = events
+                .Where(e => e.Title.ToLower().Contains(search) || 
+                    e.Description.ToLower().Contains(search))
+                .ToList();
+            
+            return new JsonResult(await PrepareEvents(events));
         }
     }
 }

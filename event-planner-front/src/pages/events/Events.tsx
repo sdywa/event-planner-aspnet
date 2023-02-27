@@ -14,9 +14,11 @@ import EventService from "../../api/services/EventService";
 
 const Events: FC = () => {
     const {user} = useContext(Context);
+    const [allEvents, setAllEvents] = useState<IEventResponse[]>([]);
     const [events, setEvents] = useState<IEventResponse[]>([]);
     const {filteredItems, toggleFilter} = useFilter<IEventResponse>(events);
     const [showingFilter, setShowingFilter] = useState(false);
+    const [searchText, setSearchText] = useState("");
 
     function setFavorite(eventId: number, value: boolean) {
         EventService.setFavorite(eventId, {isFavorite: value})
@@ -38,6 +40,7 @@ const Events: FC = () => {
             try {
                 const events = await EventService.getAll();
                 setEvents(events.data);
+                setAllEvents(events.data);
             } catch (e) {
                 return;
             }
@@ -46,10 +49,23 @@ const Events: FC = () => {
         getEvents();
     }, []);
 
+    useEffect(() => {
+        const searchEvents = async () => {
+            const events = await EventService.search({search: searchText});
+            setEvents(events.data);
+        }
+
+        if (searchText) {
+            searchEvents();
+        } else {
+            setEvents(allEvents);
+        }
+    }, [searchText]);
+
     return (
         <PageLayout title="Мероприятия" header={
             <div className="w-full flex justify-between items-center ml-10">
-                <EventSearch isAuth={user.isAuth} searchUrl={""} events={events} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
+                <EventSearch isAuth={user.isAuth} setSearchText={setSearchText} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
                 { 
                     user.isCreator && 
                     <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new">
