@@ -26,7 +26,10 @@ export function getErrors(e: any) {
 
 api.interceptors.request.use((config) => {
     config.headers.set("Access-Control-Allow-Origin", "*");
-    config.headers.set("Content-Type", "application/json");
+    if (config.data && Object.keys(config.data).length === 0)
+        config.headers.set("Content-Type", "multipart/form-data");
+    else
+        config.headers.set("Content-Type", "application/json");
 
     let accessToken: IToken = JSON.parse(localStorage.getItem("accessToken") || "{}");
     config.headers.Authorization = `Bearer ${accessToken.token}`;
@@ -44,6 +47,7 @@ api.interceptors.response.use((config) => config, async (error) => {
                 const response = await AuthService.refreshToken({token: refreshToken.token});
                 localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
                 localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
+                console.log(JSON.stringify(originalRequest));
                 return api.request(originalRequest);
             } catch (e) {
                 localStorage.removeItem("user");

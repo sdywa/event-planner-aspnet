@@ -59,7 +59,8 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
     }
 
     function getError(isDirty: boolean, isSubmitted: boolean) {
-        const isDateUsed = (date && date !== -1) || isSubmitted;
+        console.log(serverError);
+        const isDateUsed = date > -1 || isSubmitted;
         if (!dateRef.current?.value && isDateUsed) { 
             setError(true);
             return "Введите дату";
@@ -84,6 +85,10 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
         return "";
     }
 
+    useEffect(() => {
+        setErrorText(getError(isDirty, false));
+    }, [serverError]);
+
     const onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
         setActive(true);
         e.target.showPicker();
@@ -100,9 +105,11 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
         const newDate = parsedDate();
         const isDirty = newDate !== prevDate;
         setDirty(isDirty);
-
-        setDate(newDate);
-        setTime(parsedTime());
+        setDate(!isNaN(newDate) ? newDate : 0);
+        
+        const newTime = parsedTime();
+        if (!isNaN(newTime))
+            setTime(newTime);
         
         const errors = getError(isDirty, false);
         setErrorText(errors);

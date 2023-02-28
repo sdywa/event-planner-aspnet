@@ -13,6 +13,8 @@ import { DateTimeInput } from "../../components/UI/inputs/DateTimeInput";
 import { SubmitButton } from "../../components/UI/button/SubmitButton";
 import { FileUpload, AcceptedTypes } from "../../components/UI/inputs/FileUpload";
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../hooks/useValidation";
+import EventService from "../../api/services/EventService";
+import { getErrors } from "../../api";
 
 export const EditEvent: FC = () => {
     const navigate = useNavigate();
@@ -24,7 +26,7 @@ export const EditEvent: FC = () => {
             label: "Название",
             type: "text",
             autoComplete: "off",
-            validation: [IS_NOT_EMPTY("Укажите название"), MIN_LENGTH(3), MAX_LENGTH(50)]
+            validation: [IS_NOT_EMPTY("Укажите название"), MIN_LENGTH(3), MAX_LENGTH(70)]
         },
         address: {
             label: "Адрес",
@@ -50,14 +52,26 @@ export const EditEvent: FC = () => {
     ];
 
     const eventType = [
-        { id: 1, name: "Offline", title: "Офлайн" },
-        { id: 2, name: "Online", title: "Онлайн" }
+        { id: 0, name: "Offline", title: "Офлайн" },
+        { id: 1, name: "Online", title: "Онлайн" }
     ];
 
     async function sendFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("sent!");
-        navigate("/events/1/questions");
-        return {};
+        const result = Object.entries(data).map(([key, d]) => [key, d.value]);
+
+        let errors = {};
+        try {
+            const response = await EventService.createEvent(Object.fromEntries(result));
+            console.log(response);
+            navigate(`/events/${response.data.id}/questions`);
+        } catch (e) {
+            errors = getErrors(e);
+        }
+
+        console.log(errors);
+
+        return errors;
     }
 
     useEffect(() => {
@@ -95,7 +109,6 @@ export const EditEvent: FC = () => {
 
     useEffect(() => {
         infoForm.hideInputStatus("address", infoForm.getInputStatus("type")?.value !== eventType[0].id);
-        //infoForm.getInputStatus("type")?.value !== eventType[0].id
     }, [infoForm.getInputStatus("type")]);
 
     return (
@@ -114,15 +127,15 @@ export const EditEvent: FC = () => {
                                 <FormInput initialValue={event?.title} name="title" data={data.title} serverError={infoForm.serverErrors["title"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                             </div>
                             <Textarea initialValue={event?.description} name="description" label="Краткое описание:" minLength={50} maxLength={250} className="h-20" serverError={infoForm.serverErrors["description"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} additionalText="Краткое описание будет отображаться на странице списка мероприятий"/>
-                            <Textarea initialValue={event?.fullDescription} name="fullDescription" label="Подробное описание:" minLength={200} className="h-60" serverError={infoForm.serverErrors["fullDescription"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} additionalText="Подробное описание будет показываться на страничке мероприятия"/>
+                            <Textarea initialValue={event?.fullDescription} name="fulldescription" label="Подробное описание:" minLength={200} className="h-60" serverError={infoForm.serverErrors["fulldescription"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} additionalText="Подробное описание будет показываться на страничке мероприятия"/>
                         </div>
                         <div>
                             <div>
                                 <span className="font-medium">Начало мероприятия:</span>
                                 <div className="flex gap-2 font-roboto text-sm">
-                                    <DateTimeInput initialValue={event?.startDate} name="startDate" serverError={infoForm.serverErrors["startDate"]} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                    <DateTimeInput initialValue={event?.startDate} name="startdate" serverError={infoForm.serverErrors["startdate"]} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                     <span className="p-2">—</span>
-                                    <DateTimeInput initialValue={event?.endDate} name="endDate" serverError={infoForm.serverErrors["endDate"]} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                    <DateTimeInput initialValue={event?.endDate} name="enddate" serverError={infoForm.serverErrors["enddate"]} isFormSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                 </div>
                             </div>
                             <div className="flex flex-col">

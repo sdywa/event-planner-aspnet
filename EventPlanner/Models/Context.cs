@@ -115,7 +115,6 @@ public class Context : DbContext
                 City = "Москва",
                 Street = "Коммунистическая",
                 Building = "8",
-                Title = "Бизнес-центр"
             },
             new Address {
                 Id = 2,
@@ -124,7 +123,6 @@ public class Context : DbContext
                 City = "Москва",
                 Street = "1-я Тверская-Ямская",
                 Building = "12/23",
-                Title = "Конференц-центр"
             }
         );
 

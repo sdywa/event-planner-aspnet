@@ -14,6 +14,4 @@ public class Address : CommonModel<int>
     public string Street { get; set; } = null!;
     [StringLength(5)]
     public string Building { get; set; } = null!;
-    [StringLength(100)]
-    public String Title { get; set; } = null!;
 }

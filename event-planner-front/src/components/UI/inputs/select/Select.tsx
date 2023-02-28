@@ -15,7 +15,7 @@ interface ISelectProps {
     callBack: (name: string, value: IFormInputStatus) => void;
 };
 
-export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitted, serverError, defaultValue=""}) => {
+export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitted, serverError, defaultValue=null}) => {
 
     // Проверяем, есть ли такое значение в options. Если нет, то берём его за базовое
     const [defaultTitle, setDefaultTitle] = useState("");
@@ -72,7 +72,9 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
     }
 
     function getError(value: string, isDirty: Boolean) {
-        if (!value) {
+        console.log(value);
+        if (value === "") {
+            console.log(value == "");
             setError(true);
             return defaultTitle ? defaultTitle : "Выберите пункт";
         }
@@ -109,7 +111,7 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
         let value = "";
         let title = "";
         let defaultTitle = "";
-        if (defaultValue) {
+        if (defaultValue != null) {
             let defaultOption = options.findIndex((o) => o.value === defaultValue);
             if (defaultOption !== -1) {
                 value = options[defaultOption].value;

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using EventPlanner;
 using EventPlanner.Models;
 using EventPlanner.Services.UserServices;
@@ -15,7 +16,10 @@ var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<Context>(options => options
     .UseMySql(connection, ServerVersion.AutoDetect(connection)));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+.AddNewtonsoftJson(options=>
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
 builder.Services.AddCors(options => 
 {
     options.AddPolicy(name: "test", policy => {
