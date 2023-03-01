@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,26 @@ namespace EventPlanner.Controllers
             return null;
         }
 
-        private async Task<Object> PrepareEvents(List<Event> events) 
+        private Object PrepareEvent(User? user, Event e) 
+        {          
+            dynamic result = new ExpandoObject();
+            result.Id = e.Id;
+            result.Title = e.Title;
+            result.Description = e.Description;
+            result.FullDescription = e.FullDescription;
+            result.Cover = LoadImage(e.Cover ?? "");
+            result.CreationTime = e.CreationTime;
+            result.StartDate = e.StartDate;
+            result.EndDate = e.EndDate;
+            result.Category = e.Category;
+            result.Type = e.Type;
+            result.Creator = e.Creator;
+            result.Address = e.Address;
+            result.IsFavorite = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null;
+            return result;
+        }
+
+        private async Task<Object> PrepareEventsAsync(List<Event> events) 
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
            
@@ -47,28 +67,48 @@ namespace EventPlanner.Controllers
             if (userId != null)
                 user = await _userService.GetAsync(int.Parse(userId));
             
-            return events.Select(e => new {
-                Id = e.Id,
-                Title = e.Title,
-                Description = e.Description,
-                FullDescription = e.FullDescription,
-                Cover = LoadImage(e.Cover ?? ""),
-                CreationTime = e.CreationTime,
-                StartDate = e.StartDate,
-                EndDate = e.EndDate,
-                Category = e.Category,
-                Type = e.Type,
-                Creator = e.Creator,
-                Address = e.Address,
-                IsFavorite = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null
-            });
+            return events.Select(e => PrepareEvent(user, e));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync() 
         {
             var events = await _eventStorageService.GetAllAsync();
-            return new JsonResult(await PrepareEvents(events));
+            return new JsonResult(await PrepareEventsAsync(events));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAsync(int id) 
+        {
+            var eventInfo = await _eventStorageService.GetAsync(id);
+            if (eventInfo == null)
+                return BadRequest();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            User? user = null;
+            if (userId != null)
+                user = await _userService.GetAsync(int.Parse(userId));
+            
+            dynamic e = PrepareEvent(user, eventInfo);
+            e.Creator = new {
+                Id = e.Creator.Id,
+                Name = e.Creator.Name,
+                EventsCount = e.Creator.CreatedEvents.Count,
+                Rating = 5
+            };
+            e.Tickets = new List<Object>
+            {
+                new { Id = 1, Name = "Входной билет", Price = 0 },
+                new { Id = 2, Name = "Очень длинное название билетаfffffffffааааааа", Price = 100 },
+            };
+            e.Questions = new List<Object>
+            {
+                new { Id = 1, Name = "Email" },
+                new { Id = 2, Name = "Имя" },
+                new { Id = 3, Name = "Фамилия" },
+                new { Id = 4, Name = "Ваш возраст" },
+            };
+            return new JsonResult(e);
         }
 
         [Authorize]
@@ -118,7 +158,7 @@ namespace EventPlanner.Controllers
                     e.Description.ToLower().Contains(search))
                 .ToList();
             
-            return new JsonResult(await PrepareEvents(events));
+            return new JsonResult(await PrepareEventsAsync(events));
         }
 
 

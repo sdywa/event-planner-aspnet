@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using EventPlanner;
 using EventPlanner.Models;
 using EventPlanner.Services.UserServices;
@@ -17,8 +18,10 @@ builder.Services.AddDbContext<Context>(options => options
     .UseMySql(connection, ServerVersion.AutoDetect(connection)));
 
 builder.Services.AddControllers()
-.AddNewtonsoftJson(options=>
-    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+.AddNewtonsoftJson(options => {
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+});
 
 builder.Services.AddCors(options => 
 {

@@ -1,7 +1,8 @@
 import { FC, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PageLayout } from "../components/layouts/page-layout/PageLayout";
-import { IEditEvent, IEventQuestion, IFormInputStatus, IFormInputData, IServerError } from "../types";
+import { IFormInputStatus, IFormInputData, IServerError } from "../types";
+import { IExtendedEventResponse, IEventQuestion } from "../types/Api";
 import { List } from "../components/UI/list/List";
 import { ListItem } from "../components/UI/list/ListItem";
 import { DraggableItem } from "../components/UI/DraggableItem";
@@ -16,7 +17,7 @@ import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../hooks/useValidation";
 export const QuestionsPage: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
-    const [event, setEvent] = useState<IEditEvent>();
+    const [event, setEvent] = useState<IExtendedEventResponse>();
 
     const [questions, setQuestions] = useState<IEventQuestion[]>([]);
     const [activeQuestions, setActiveQuestions] = useState<number[]>([]);
@@ -34,11 +35,13 @@ export const QuestionsPage: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (eventId) {
             // Sending request to server
-            const event: IEditEvent = {
+            const event: IExtendedEventResponse = {
                 id: 1,
                 title: "Заголовок",
                 cover: "",
                 description: "Описание мероприятия описание описание описание описание",
+                fullDescription: "",
+                isFavorite: false,
                 category: {
                     id: 1,
                     title: "Бизнес"
@@ -54,6 +57,12 @@ export const QuestionsPage: FC = () => {
                     region: "Москва",
                     city: "Москва",
                     street: "очень длинный адрес который может не"
+                },
+                creator: {
+                    id: 1,
+                    name: "Создатель Создальевич",
+                    eventsCount: 20,
+                    rating: 4.5
                 },
                 questions: [
                     {id: 1, name: "Email", editable: false},

@@ -6,11 +6,12 @@ import { Location } from "../location/Location";
 
 interface IEventTileProps {
     isAuth: Boolean;
+    minPrice: number;
     event: IEventResponse;
     favoriteCallback: (value: boolean) => void;
 };
 
-export const EventTile: FC<IEventTileProps> = ({isAuth, event, favoriteCallback}) => { 
+export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favoriteCallback}) => { 
     function parseDate(date: Date) {
         const currentYear = new Date().getFullYear();
         const options: Intl.DateTimeFormatOptions = {
@@ -50,12 +51,12 @@ export const EventTile: FC<IEventTileProps> = ({isAuth, event, favoriteCallback}
                     {event.description}
                 </div>
                 <div className="flex justify-between items-center flex-wrap">
-                    <Location type={event.type} location={`г. ${event.address?.city}`} />
+                    <Location type={event.type.id} location={`г. ${event.address?.city}`} />
                     <div className="font-bold">
                         {
-                            event.minPrice 
+                            minPrice
                             ?
-                            `от ${event.minPrice} руб.`
+                            `от ${minPrice} руб.`
                             :
                             "Бесплатно"
                         }

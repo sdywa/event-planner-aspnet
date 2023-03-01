@@ -22,6 +22,8 @@ const EventService = {
                 'Content-Type': 'multipart/form-data'
         }})
     },
+    get: async (id: number) => 
+        api.get(`/event/${id}`)
 }
 
 export default EventService;

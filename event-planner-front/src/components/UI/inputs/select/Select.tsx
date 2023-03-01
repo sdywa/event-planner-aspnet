@@ -74,7 +74,6 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
     function getError(value: string, isDirty: Boolean) {
         console.log(value);
         if (value === "") {
-            console.log(value == "");
             setError(true);
             return defaultTitle ? defaultTitle : "Выберите пункт";
         }

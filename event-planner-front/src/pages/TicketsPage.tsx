@@ -1,7 +1,8 @@
 import { FC, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PageLayout } from "../components/layouts/page-layout/PageLayout";
-import { IEditEvent, IEventTicket, IFormInputStatus, IServerError } from "../types";
+import { IFormInputStatus, IServerError } from "../types";
+import { IExtendedEventResponse, IEventTicket } from "../types/Api";
 import useForm from "../hooks/forms/useForm";
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH, IS_NUMERIC } from "../hooks/useValidation";
 import { EditableItem } from "../components/UI/EditableItem";
@@ -17,7 +18,7 @@ import { DateTimeInput } from "../components/UI/inputs/DateTimeInput";
 export const TicketsPage: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
-    const [event, setEvent] = useState<IEditEvent>();
+    const [event, setEvent] = useState<IExtendedEventResponse>();
 
     const [tickets, setTickets] = useState<IEventTicket[]>([]);
     const [activeTickets, setActiveTickets] = useState<number[]>([]);
@@ -40,11 +41,13 @@ export const TicketsPage: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (eventId) {
             // Sending request to server
-            const event: IEditEvent = {
+            const event: IExtendedEventResponse = {
                 id: 1,
                 title: "Заголовок",
                 cover: "",
                 description: "Описание мероприятия описание описание описание описание",
+                fullDescription: "",
+                isFavorite: false,
                 category: {
                     id: 1,
                     title: "Бизнес"
@@ -60,6 +63,12 @@ export const TicketsPage: FC = () => {
                     region: "Москва",
                     city: "Москва",
                     street: "очень длинный адрес который может не"
+                },
+                creator: {
+                    id: 1,
+                    name: "Создатель Создальевич",
+                    eventsCount: 20,
+                    rating: 4.5
                 },
                 questions: [
                     {id: 1, name: "Email", editable: false},

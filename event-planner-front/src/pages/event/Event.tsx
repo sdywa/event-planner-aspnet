@@ -1,6 +1,6 @@
-import React, { FC, useState, useContext } from "react";
+import React, { FC, useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-// import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Bookmark } from "../../components/UI/bookmark/Bookmark";
 import { Button, ButtonStyles } from "../../components/UI/button/Button";
@@ -12,60 +12,18 @@ import { RadioButton } from "../../components/UI/inputs/radio-button/RadioButton
 import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
-import { IFormInputStatus, IFormInputData, IServerError, IUserExtendedEvent } from "../../types";
+import { IFormInputStatus, IFormInputData, IServerError } from "../../types";
+import { IExtendedEventResponse } from "../../types/Api";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 import { DropdownMenu } from "../../components/UI/dropdown-menu/DropdownMenu";
 import { Context } from "../..";
 import { observer } from "mobx-react-lite";
+import EventService from "../../api/services/EventService";
 
 const Event: FC = () => {
-    // const params = useParams();
+    const {eventId} = useParams();
     const {user} = useContext(Context);
-    const [event, setEvent] = useState<IUserExtendedEvent>({
-        id: 1,
-        title: "Заголовок",
-        cover: "",
-        description: "Описание мероприятия описание описание описание описание",
-        fullDescription: `    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet convallis velit. Curabitur varius bibendum ornare. Vestibulum vitae vestibulum lorem. Duis molestie nunc vel mollis molestie. Nullam feugiat tortor eu lacus molestie, nec efficitur lectus finibus. Cras neque ipsum, tempus eget mi a, imperdiet tempus turpis. Vestibulum ac nisi vitae est volutpat finibus. Fusce sagittis magna in ipsum egestas vehicula. Sed mollis tincidunt felis vel mollis. Aliquam ut lectus vel dui auctor congue quis vitae tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-
-    Maecenas viverra, lacus a pellentesque aliquet, lacus justo pretium nunc, et rutrum turpis justo et lorem. Morbi sem risus, feugiat eu interdum ac, sollicitudin quis libero. Duis et maximus lectus. Cras porta fringilla nisl, a euismod tortor imperdiet at. Nullam posuere dapibus velit. Praesent at risus sit amet magna pellentesque sollicitudin eu nec justo. Pellentesque sit amet eros at mauris consequat cursus. Curabitur at odio et quam hendrerit accumsan sed ultrices purus. Vestibulum sagittis rutrum efficitur. Vivamus pharetra vel mi ut scelerisque. Phasellus sagittis laoreet erat, sed faucibus purus lacinia at. Sed convallis facilisis eros ac vehicula. Curabitur sit amet accumsan neque, ac viverra lectus. Duis ut libero nec eros scelerisque bibendum tincidunt non lorem. Nullam sed neque tortor.
-        
-    Nulla faucibus et mauris vitae pharetra. Vestibulum aliquam pulvinar augue, eu molestie sapien finibus vel. Proin consequat, massa et vestibulum tempus, velit leo tincidunt ante, eu aliquet erat lectus id nibh. Cras magna leo, convallis et mauris ut, ullamcorper porttitor augue. Nullam vitae est sed sem porttitor pharetra sed eget odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris ut quam eu orci feugiat pellentesque et sed neque. In hac habitasse platea dictumst. Praesent dapibus non purus condimentum iaculis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed iaculis varius placerat. Ut nulla erat, eleifend vitae diam et, porttitor tempor nunc.`,
-        category: {
-            id: 1,
-            title: "Бизнес"
-        },
-        type: {
-            id: 0,
-            title: "Оффлайн"
-        },
-        startDate: "2023-03-17T13:40:00.000Z",
-        endDate: "2023-03-17T15:00:00.000",
-        address: {
-            country: "Россия",
-            region: "Москва",
-            city: "Москва",
-            street: "очень длинный адрес который может не"
-        },
-        minPrice: 0,
-        isFavorite: false,
-        creator: {
-            id: 1,
-            name: "Создатель Создальевич",
-            eventsCount: 20,
-            rating: 4.5
-        },
-        questions: [
-            {id: 1, name: "Email"},
-            {id: 2, name: "Имя"},
-            {id: 3, name: "Фамилия"},
-            {id: 4, name: "Ваш Возраст"}
-        ],
-        tickets: [
-            {id: 1, name: "Входной билет", until: "12.12.2022", price: 0},
-            {id: 2, name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
-        ]
-    });
+    const [event, setEvent] = useState<IExtendedEventResponse>();
     const {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
     const questionForm = useForm(sendQuestionFormData);
     const [modalActive, setActive] = useState(false);
@@ -89,6 +47,10 @@ const Event: FC = () => {
     }
 
     function setFavorite(value: boolean) {
+        if (!event)
+            return;
+
+        EventService.setFavorite(event.id, {isFavorite: value});
         const nextEvent = {
             ...event,
             isFavorite: value
@@ -115,9 +77,48 @@ const Event: FC = () => {
         return date.toLocaleDateString("ru-RU", options);
     }
 
+    function getNounPluralForm (number: number, one: string, two: string, many: string) {
+    const mod10 = number % 10;
+    const mod100 = number % 100;
+
+    switch (true) {
+        case (mod100 >= 11 && mod100 <= 20):
+            return many;
+
+        case (mod10 > 5):
+            return many;
+
+        case (mod10 === 1):
+            return one;
+
+        case (mod10 >= 2 && mod10 <= 4):
+            return two;
+
+        default:
+            return many;
+    }
+}
+
+    useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        const getEvent = async () => {
+            if (!eventId)
+                return;
+
+            try {
+                const events = await EventService.get(Number(eventId));
+                setEvent(events.data);
+            } catch (e) {
+                return;
+            }
+        } 
+
+        getEvent();
+    }, []);
+
     return (
-        <PageLayout title={event.title} isCentered={true} header={ user.isAuth &&
-            <Bookmark isFavorite={event.isFavorite} className={"text-lg"} favoriteCallback={setFavorite} />
+        <PageLayout title={event?.title ?? ""} isCentered={true} header={ user.isAuth &&
+            <Bookmark isFavorite={event?.isFavorite ?? false} className={"text-lg"} favoriteCallback={setFavorite} />
         }>
             {
                 user.isAuth &&
@@ -147,12 +148,12 @@ const Event: FC = () => {
                     </Modal>
             }
             {
-                user.user.id === event.creator.id && 
+                user.isAuth && user.user.id === event?.creator.id && 
                 <div className="flex items-center justify-center">
                     <DropdownMenu items={[
-                        {label: "Информация", link: `/events/${event.id}/edit`}, 
-                        {label: "Анкета", link: `/events/${event.id}/questions`},
-                        {label: "Билеты", link: `/events/${event.id}/tickets`}
+                        {label: "Информация", link: `/events/${eventId}/edit`}, 
+                        {label: "Анкета", link: `/events/${eventId}/questions`},
+                        {label: "Билеты", link: `/events/${eventId}/tickets`}
                     ]}>
                         <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">
                             <WithIcon icon={<i className="fa-solid fa-pen"></i>}>
@@ -161,9 +162,9 @@ const Event: FC = () => {
                         </Button>
                     </DropdownMenu>
                     <DropdownMenu items={[
-                        {label: "Статистика", link: `/events/${event.id}/edit`}, 
-                        {label: "Участники", link: `/events/${event.id}/edit`},
-                        {label: "Обратная связь", link: `/events/${event.id}/edit`}
+                        {label: "Статистика", link: `/events/${eventId}/edit`}, 
+                        {label: "Участники", link: `/events/${eventId}/edit`},
+                        {label: "Обратная связь", link: `/events/${eventId}/edit`}
                     ]}>
                         <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">
                             <WithIcon icon={<i className="fa-solid fa-box-archive"></i>}>
@@ -175,18 +176,18 @@ const Event: FC = () => {
             }
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-x-4">
                 {
-                    event.startDate &&
+                    event?.startDate &&
                     <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>
                         {parseDate(new Date(event.startDate))}
                     </WithIcon>
                 }
-                <Location type={event.type} location={`г. ${event.address?.city}, ${event.address?.street}`} />
+                <Location type={event?.type.id} location={`г. ${event?.address?.city}, ${event?.address?.street}`} />
             </div>
             <div className="flex justify-center items-center gap-4 py-4 relative">
                 <div className="flex flex-col justify-center items-start gap-4">
-                    <div className="w-[44rem] h-[25rem] relative bg-lightgray rounded-md">
+                    <div className="w-[44rem] h-[25rem] relative bg-lightgray rounded-md overflow-hidden">
                         {
-                            event.cover && <img src={event.cover} alt={event.title} />
+                            event?.cover && <img src={"data:image/png;base64," + event.cover} alt={event.title} className="absolute -translate-y-1/2 top-1/2" />
                         }
                     </div>
                     <WithIcon icon={<i className="fa-solid fa-tags"></i>}>
@@ -194,16 +195,16 @@ const Event: FC = () => {
                     </WithIcon>
                 </div>
                 <div className="w-full h-full flex flex-col justify-center items-center gap-2">
-                    <div className="relative px-4 pt-[4.25rem] pb-6 w-72 flex flex-col justify-center items-center border-2 border-lightgray rounded-md">
-                        <div className="absolute -top-1/2 translate-y-1/2 w-28 h-28 bg-lightgray rounded-full border-4 border-white"></div>
+                    <div className="relative px-4 py-6 w-72 flex flex-col justify-center items-center border-2 border-lightgray rounded-md">
+                        {/* <div className="absolute -top-1/2 translate-y-1/2 w-28 h-28 bg-lightgray rounded-full border-4 border-white"></div> */}
                         <h3 className="text-2xl text-center">
-                            {event.creator.name}
+                            {event?.creator.name}
                         </h3>
                         <div className="text-base">
-                            {event.creator.eventsCount} мероприятий
+                            {event?.creator.eventsCount} {getNounPluralForm(event?.creator.eventsCount ?? 0, "мероприятие", "мероприятия", "мероприятий")}
                         </div>
                         <div className="flex justify-center items-center gap-1 text-base">
-                            <span className="font-medium">{event.creator.rating}</span>
+                            <span className="font-medium">{(event?.creator.rating ?? 5).toLocaleString(undefined, { minimumFractionDigits: 1 })}</span>
                             <i className="fa-solid fa-star text-yellow"></i>
                         </div>
                     </div>
@@ -219,7 +220,7 @@ const Event: FC = () => {
             </div>
             <div className="flex flex-col gap-8">
                 <div className="text-base whitespace-pre-wrap">
-                    {event.fullDescription}
+                    {event?.fullDescription}
                 </div>
                 {
                     user.isAuth &&
@@ -229,7 +230,7 @@ const Event: FC = () => {
                             <div className="flex gap-8 pb-2">
                                 <div className="w-80 max-w-xs">
                                     {
-                                        event.questions.map(({name: text}) => <FormInput
+                                        event?.questions.map(({name: text}) => <FormInput
                                             key={text} 
                                             name={text}
                                             data={defaultFormInputData(text)}
@@ -246,7 +247,7 @@ const Event: FC = () => {
                                     </div>
                                     <ul>
                                         {
-                                            event.tickets.map(({id, name, until, price}, i) => 
+                                            event?.tickets.map(({id, name, until, price}, i) => 
                                                 <RadioButton key={name} name="tickets" id={name} value={id.toString()} defaultChecked={i === 0} callBack={updateInputStatuses}>
                                                     <div className="flex justify-between gap-4">
                                                         <div className="w-60">
@@ -272,7 +273,7 @@ const Event: FC = () => {
                             <SubmitButton disabled={hasError} isPrimary={true} 
                                 buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                 {
-                                    event.tickets.find((t) => t.id === getInputStatus("tickets")?.value)?.price
+                                    event?.tickets.find((t) => t.id === getInputStatus("tickets")?.value)?.price
                                     ?
                                     "Купить билет"
                                     :

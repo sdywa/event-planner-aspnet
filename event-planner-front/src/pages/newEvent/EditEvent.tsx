@@ -4,7 +4,8 @@ import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { List } from "../../components/UI/list/List";
 import { ListItem } from "../../components/UI/list/ListItem";
 import useForm from "../../hooks/forms/useForm";
-import { IExtendedEvent, IFormInputStatus, IFormInputData, IServerError } from "../../types";
+import { IFormInputStatus, IFormInputData, IServerError } from "../../types";
+import { IExtendedEventResponse } from "../../types/Api";
 import { FormInput } from "../../components/UI/forms/form-input/FormInput";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 import { Select } from "../../components/UI/inputs/select/Select";
@@ -19,7 +20,7 @@ import { getErrors } from "../../api";
 export const EditEvent: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
-    const [event, setEvent] = useState<IExtendedEvent>();
+    const [event, setEvent] = useState<IExtendedEventResponse>();
 
     const data: { [key: string]: IFormInputData } = {
         title: {
@@ -78,32 +79,6 @@ export const EditEvent: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (eventId) {
             // Sending request to server
-            setEvent({
-                title: "Заголовок",
-                cover: "",
-                description: "Описание мероприятия описание описание описание описание",
-                fullDescription: `    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet convallis velit. Curabitur varius bibendum ornare. Vestibulum vitae vestibulum lorem. Duis molestie nunc vel mollis molestie. Nullam feugiat tortor eu lacus molestie, nec efficitur lectus finibus. Cras neque ipsum, tempus eget mi a, imperdiet tempus turpis. Vestibulum ac nisi vitae est volutpat finibus. Fusce sagittis magna in ipsum egestas vehicula. Sed mollis tincidunt felis vel mollis. Aliquam ut lectus vel dui auctor congue quis vitae tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-        
-            Maecenas viverra, lacus a pellentesque aliquet, lacus justo pretium nunc, et rutrum turpis justo et lorem. Morbi sem risus, feugiat eu interdum ac, sollicitudin quis libero. Duis et maximus lectus. Cras porta fringilla nisl, a euismod tortor imperdiet at. Nullam posuere dapibus velit. Praesent at risus sit amet magna pellentesque sollicitudin eu nec justo. Pellentesque sit amet eros at mauris consequat cursus. Curabitur at odio et quam hendrerit accumsan sed ultrices purus. Vestibulum sagittis rutrum efficitur. Vivamus pharetra vel mi ut scelerisque. Phasellus sagittis laoreet erat, sed faucibus purus lacinia at. Sed convallis facilisis eros ac vehicula. Curabitur sit amet accumsan neque, ac viverra lectus. Duis ut libero nec eros scelerisque bibendum tincidunt non lorem. Nullam sed neque tortor.
-                
-            Nulla faucibus et mauris vitae pharetra. Vestibulum aliquam pulvinar augue, eu molestie sapien finibus vel. Proin consequat, massa et vestibulum tempus, velit leo tincidunt ante, eu aliquet erat lectus id nibh. Cras magna leo, convallis et mauris ut, ullamcorper porttitor augue. Nullam vitae est sed sem porttitor pharetra sed eget odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris ut quam eu orci feugiat pellentesque et sed neque. In hac habitasse platea dictumst. Praesent dapibus non purus condimentum iaculis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed iaculis varius placerat. Ut nulla erat, eleifend vitae diam et, porttitor tempor nunc.`,
-                category: {
-                    id: 1,
-                    title: "Бизнес"
-                },
-                type: {
-                    id: 1,
-                    title: "Оффлайн"
-                },
-                startDate: "2023-03-17T13:40:00.000Z",
-                endDate: "2023-03-17T15:00:00.000Z",
-                address: {
-                    country: "Россия",
-                    region: "Москва",
-                    city: "Москва",
-                    street: "очень длинный адрес который может не"
-                }
-            });
         }
     }, []);
 

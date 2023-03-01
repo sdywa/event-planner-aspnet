@@ -21,7 +21,7 @@ const Events: FC = () => {
     const [searchText, setSearchText] = useState("");
 
     function setFavorite(eventId: number, value: boolean) {
-        EventService.setFavorite(eventId, {isFavorite: value})
+        EventService.setFavorite(eventId, {isFavorite: value});
         const nextEvents = events.map((event) => {
             if (event.id === eventId) {
                 return {
@@ -84,7 +84,7 @@ const Events: FC = () => {
                 ?
                 <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
                     {
-                        filteredItems.map((v) => <EventTile key={v.id} isAuth={user.isAuth} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
+                        filteredItems.map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
                     }
                 </div>
                 :

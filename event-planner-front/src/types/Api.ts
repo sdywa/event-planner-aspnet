@@ -61,5 +61,30 @@ export interface IDefaultEvent {
 export interface IEventResponse extends IDefaultEvent {
     id: number,
     isFavorite: boolean
-    minPrice: number
 }
+
+export interface IExtendedEventResponse extends IEventResponse {
+    fullDescription: string,
+    creator: {
+        id: number,
+        name: string,
+        eventsCount: number,
+        rating: number
+    },
+    questions: IEventQuestion[],
+    tickets: IEventTicket[]
+}
+
+export interface IEventQuestion {
+    id: number,
+    name: string,
+    editable?: Boolean
+}
+
+export interface IEventTicket{
+    id: number,
+    name: string,
+    limit?: number,
+    until: string,
+    price: number
+};
