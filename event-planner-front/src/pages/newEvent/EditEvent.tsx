@@ -75,7 +75,19 @@ export const EditEvent: FC = () => {
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (eventId) {
-            // Sending request to server
+            const getEvent = async () => {
+                if (!eventId)
+                    return;
+    
+                try {
+                    const events = await EventService.get(Number(eventId));
+                    setEvent(events.data);
+                } catch (e) {
+                    return;
+                }
+            } 
+    
+            getEvent();
         }
     }, []);
 
@@ -146,11 +158,11 @@ export const EditEvent: FC = () => {
                                 buttonStyle={infoForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                 Продолжить
                             </SubmitButton>
-                            <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GRAY}>
+                            {/* <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GRAY}>
                                 Сохранить черновик
-                            </Button>
+                            </Button> */}
                         </div>
-                        <Button link="/events">
+                        <Button link={eventId ? `/events/${eventId}` : "/events"}>
                             <div className="text-gray hover:text-red">Отмена</div>
                         </Button>
                     </div>

@@ -59,7 +59,6 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
     }
 
     function getError(isDirty: boolean, isSubmitted: boolean) {
-        console.log(serverError);
         const isDateUsed = date > -1 || isSubmitted;
         if (!dateRef.current?.value && isDateUsed) { 
             setError(true);
