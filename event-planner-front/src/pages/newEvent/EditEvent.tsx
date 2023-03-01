@@ -64,13 +64,10 @@ export const EditEvent: FC = () => {
         let errors = {};
         try {
             const response = await EventService.createEvent(Object.fromEntries(result));
-            console.log(response);
             navigate(`/events/${response.data.id}/questions`);
         } catch (e) {
             errors = getErrors(e);
         }
-
-        console.log(errors);
 
         return errors;
     }

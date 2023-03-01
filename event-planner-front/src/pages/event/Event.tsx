@@ -191,7 +191,7 @@ const Event: FC = () => {
                         }
                     </div>
                     <WithIcon icon={<i className="fa-solid fa-tags"></i>}>
-                        Категория
+                        {event?.category.title}
                     </WithIcon>
                 </div>
                 <div className="w-full h-full flex flex-col justify-center items-center gap-2">

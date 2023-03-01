@@ -13,7 +13,7 @@ export interface IAuthFormProps {
 };
 
 export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormData}) => {
-    const tabs = [{title: "Вход", link: "/login"}, {title: "Регистрация", link: "/signup"}];
+    const tabs = [{title: "Вход", link: "/login", button: "Войти"}, {title: "Регистрация", link: "/signup", button: "Создать аккаунт"}];
     const activeTab = tabs[selectedTabIndex].title;
     const {serverErrors, isSubmitted, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
 
@@ -35,7 +35,7 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
             <div className="flex justify-end w-full px-8">
                 <SubmitButton disabled={hasError} isPrimary={true} 
                     buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
-                    Войти 
+                    {tabs[selectedTabIndex].button} 
                 </SubmitButton>
             </div>
         </form>

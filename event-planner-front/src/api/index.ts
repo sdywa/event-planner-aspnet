@@ -47,7 +47,6 @@ api.interceptors.response.use((config) => config, async (error) => {
                 const response = await AuthService.refreshToken({token: refreshToken.token});
                 localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
                 localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
-                console.log(JSON.stringify(originalRequest));
                 return api.request(originalRequest);
             } catch (e) {
                 localStorage.removeItem("user");

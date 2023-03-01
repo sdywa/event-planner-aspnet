@@ -53,7 +53,7 @@ export default class User {
             const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToken") || "{}");
             await AuthService.logout({token: refreshToken.token});
         } catch (e) {
-            console.log(e);
+            return;
         } finally {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
