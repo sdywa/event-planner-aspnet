@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PageLayout } from "../components/layouts/page-layout/PageLayout";
 import { IFormInputStatus, IFormInputData, IServerError } from "../types";
-import { IExtendedEventResponse, IEventQuestion } from "../types/Api";
+import { IEventQuestion } from "../types/Api";
 import { List } from "../components/UI/list/List";
 import { ListItem } from "../components/UI/list/ListItem";
 import { DraggableItem } from "../components/UI/DraggableItem";
@@ -13,12 +13,13 @@ import { Button, ButtonStyles } from "../components/UI/button/Button";
 import { WithIcon } from "../components/UI/with-icon/WithIcon";
 import { SubmitButton } from "../components/UI/button/SubmitButton";
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../hooks/useValidation";
+import EventService from "../api/services/EventService";
+import { getErrors } from "../api";
 
 export const QuestionsPage: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
-    const [event, setEvent] = useState<IExtendedEventResponse>();
-
+    const [eventTitle, setTitle] = useState("");
     const [questions, setQuestions] = useState<IEventQuestion[]>([]);
     const [activeQuestions, setActiveQuestions] = useState<number[]>([]);
     const questionForm = useForm(sendFormData);
@@ -35,58 +36,29 @@ export const QuestionsPage: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (eventId) {
             // Sending request to server
-            const event: IExtendedEventResponse = {
-                id: 1,
-                title: "Заголовок",
-                cover: "",
-                description: "Описание мероприятия описание описание описание описание",
-                fullDescription: "",
-                isFavorite: false,
-                category: {
-                    id: 1,
-                    title: "Бизнес"
-                },
-                type: {
-                    id: 1,
-                    title: "Оффлайн"
-                },
-                startDate: "2023-03-17T13:40:00.000Z",
-                endDate: "2023-03-17T15:00:00.000",
-                address: {
-                    country: "Россия",
-                    region: "Москва",
-                    city: "Москва",
-                    street: "очень длинный адрес который может не"
-                },
-                creator: {
-                    id: 1,
-                    name: "Создатель Создальевич",
-                    eventsCount: 20,
-                    rating: 4.5
-                },
-                questions: [
-                    {id: 1, name: "Email", editable: false},
-                    {id: 2, name: "Ваше имя", editable: false},
-                    {id: 3, name: "Ваша фамилия", editable: false},
-                    {id: 4, name: "Ваш Возраст", editable: true}
-                ],
-                tickets: [
-                    {id: 1, name: "Входной билет", until: "12.12.2022", price: 0},
-                    {id: 2, name: "Очень длинное название билетаfffffffffааааааа", until: "12.12.2022", price: 100}
-                ]
-            };
-            setEvent(event);
-            setQuestions(event.questions);
-            return;
+
+            const getEvent = async () => {
+                if (!eventId)
+                    return;
+
+                try {
+                    const event = await EventService.get(Number(eventId));
+                    setTitle(event.data.title);
+                    const questions = await EventService.getQuestions(Number(eventId));
+                    setQuestions(questions.data);
+                } catch {
+                    navigate("/");
+                }
+            } 
+            getEvent();
         } 
-        navigate("/")
     }, []);
 
     function createQuestion() {
         const question: IEventQuestion = {
             id: createdCount,
-            name: "",
-            editable: true
+            title: "",
+            isEditable: true
         }
         setQuestions([...questions, question]);
         setActiveQuestions([...activeQuestions, question.id]);
@@ -97,13 +69,13 @@ export const QuestionsPage: FC = () => {
     function renderQuestion(question: IEventQuestion) {
         return (
             <DraggableItem key={question.id} className="border-b-2 border-lightgray group h-12">
-                <EditableItem isActive={activeQuestions.includes(question.id)} showButtons={question.editable}
+                <EditableItem isActive={activeQuestions.includes(question.id)} showButtons={question.isEditable}
                 open={() => openQuestion(question.id)} close={() => closeQuestion(question.id)} remove={() => removeQuestion(question.id)}
                 activeState={
-                    <FormInput initialValue={questionForm.getInputStatus(question.id.toString())?.value || question.name} name={question.id.toString()} data={defaultFormInputData} serverError={questionForm.serverErrors[question.id.toString()]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} showError={false} className="p-0" />
+                    <FormInput initialValue={questionForm.getInputStatus(question.id.toString())?.value || question.title} name={question.id.toString()} data={defaultFormInputData} serverError={questionForm.serverErrors[question.id.toString()]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} showError={false} className="p-0" />
                 } 
                 defaultState={
-                    <span className="font-medium">{questionForm.getInputStatus(question.id.toString())?.value || question.name}</span>
+                    <span className="font-medium">{questionForm.getInputStatus(question.id.toString())?.value || question.title}</span>
                 } />
             </DraggableItem>
         );
@@ -111,8 +83,25 @@ export const QuestionsPage: FC = () => {
 
     async function sendFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("sent!");
-        navigate("/events");
-        return {};
+        const result = Object.entries(data).map(([key, d]): IEventQuestion => {
+            const id = Number(key);
+            return {
+                id: id,
+                title: d.value,
+                isEditable: questions.find(q => q.id === id)?.isEditable
+            };
+        });
+        console.log(result);
+
+        let errors = {};
+        try {
+            await EventService.sendQuestions(Number(eventId), result);
+            navigate(`/events/${eventId}/tickets`);
+        } catch (e) {
+            errors = getErrors(e);
+        }
+
+        return errors;
     }
 
     const openQuestion = (id: number) => {
@@ -130,12 +119,12 @@ export const QuestionsPage: FC = () => {
     }
 
     return (
-        <PageLayout title={event ? event.title : ""}>
+        <PageLayout title={eventTitle}>
             <div className="flex gap-12">
                 <List className="w-48 text-black">
-                    <ListItem link={event && `/events/${eventId}/edit`} className="text-darkgray hover:text-gray">Информация</ListItem>
+                    <ListItem link={`/events/${eventId}/edit`} className="text-darkgray hover:text-gray">Информация</ListItem>
                     <ListItem className="text-green">Анкета</ListItem>
-                    <ListItem link={event && `/events/${eventId}/tickets`} className="text-darkgray hover:text-gray">Билеты</ListItem>
+                    <ListItem link={`/events/${eventId}/tickets`} className="text-darkgray hover:text-gray">Билеты</ListItem>
                 </List>
                 <div className="flex flex-col gap-2">
                     <h3 className="text-xl">Регистрация на событие</h3>

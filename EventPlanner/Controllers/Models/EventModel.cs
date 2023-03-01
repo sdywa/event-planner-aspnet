@@ -4,7 +4,6 @@ namespace EventPlanner.Controllers.Models;
 
 public class EventModel 
 {
-    public int? Id { get; set; }
     [Required(ErrorMessage = "Укажите название")]
     [StringLength(70, ErrorMessage = "Используйте менее 70 символов")]
     [MinLength(3, ErrorMessage = "Используйте не менее 3 символов")]

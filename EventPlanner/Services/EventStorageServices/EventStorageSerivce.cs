@@ -12,12 +12,14 @@ public class EventStorageService : IEventStorageService
     private Context _context;
     private CommonQueries<int, Event> _common;
     private CommonQueries<int, Address> _commonAddress;
+    private CommonQueries<int, Question> _commonQuestion;
 
     public EventStorageService(Context context)
     {
         _context = context;
         _common = new CommonQueries<int, Event>(_context);
         _commonAddress = new CommonQueries<int, Address>(_context);
+        _commonQuestion = new CommonQueries<int, Question>(_context);
     }
 
     public async Task<Event> CreateAsync(Event entity) =>
@@ -43,11 +45,29 @@ public class EventStorageService : IEventStorageService
     public async Task DeleteAsync(int id) => 
         await _common.DeleteAsync(id);
 
-    public async Task<Address> AddAddressAsync(Address entity) =>
+    public async Task<Address> CreateAddressAsync(Address entity) =>
         await _commonAddress.CreateAsync(entity);
 
     public async Task UpdateAddressAsync(Address entity) =>
         await _commonAddress.UpdateAsync(entity);
+
+    public async Task<Question?> GetQuestionAsync(int id) =>
+        await _commonQuestion.GetAsync(id, _context.Questions);
+
+    public async Task<List<Question>> GetQuestionsByEventAcyns (int eventId) 
+    {
+        var e = await _context.Events.Include(e => e.Questions).FirstOrDefaultAsync(e => e.Id == eventId);
+        if (e == null)
+            return new List<Question>();
+        return e.Questions.ToList();
+    }
+
+    public async Task<Question> CreateQuestionAsync(Question entity) =>
+        await _commonQuestion.CreateAsync(entity);
+    public async Task UpdateQuestionAsync(Question entity) =>
+        await _commonQuestion.UpdateAsync(entity);
+    public async Task DeleteQuestionAsync(int id) =>
+        await _commonQuestion.DeleteAsync(id);
 
     private IQueryable<Event> IncludeValues() =>
         _context.Events

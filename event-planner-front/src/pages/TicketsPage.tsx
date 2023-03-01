@@ -71,10 +71,10 @@ export const TicketsPage: FC = () => {
                     rating: 4.5
                 },
                 questions: [
-                    {id: 1, name: "Email", editable: false},
-                    {id: 2, name: "Ваше имя", editable: false},
-                    {id: 3, name: "Ваша фамилия", editable: false},
-                    {id: 4, name: "Ваш Возраст", editable: true}
+                    {id: 1, title: "Email", isEditable: false},
+                    {id: 2, title: "Ваше имя", isEditable: false},
+                    {id: 3, title: "Ваша фамилия", isEditable: false},
+                    {id: 4, title: "Ваш Возраст", isEditable: true}
                 ],
                 tickets: [
                     {id: 1, name: "Входной билет", until: "2023-03-09T21:00:00.000Z", price: 0, limit: 100},

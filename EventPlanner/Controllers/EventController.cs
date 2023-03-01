@@ -103,14 +103,35 @@ namespace EventPlanner.Controllers
                 new { Id = 1, Name = "Входной билет", Price = 0 },
                 new { Id = 2, Name = "Очень длинное название билетаfffffffffааааааа", Price = 100 },
             };
-            e.Questions = new List<Object>
+            var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
+            e.Questions = questions.Select(q => new 
             {
-                new { Id = 1, Name = "Email" },
-                new { Id = 2, Name = "Имя" },
-                new { Id = 3, Name = "Фамилия" },
-                new { Id = 4, Name = "Ваш возраст" },
-            };
+                Id = q.Id,
+                Title = q.Title
+            });
             return new JsonResult(e);
+        }
+
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpGet("{id}/questions")]
+        public async Task<IActionResult> GetQuestions(int id)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var e = await _eventStorageService.GetAsync(id);
+            if (e == null)
+                return BadRequest();
+            if (e?.CreatorId != int.Parse(rowId))
+                return Forbid(); 
+            
+            var question = await _eventStorageService.GetQuestionsByEventAcyns(id);
+            return new JsonResult(question.Select(q => new {
+                Id = q.Id,
+                Title = q.Title,
+                IsEditable = q.IsEditable
+            }));
         }
 
         [Authorize]
@@ -214,18 +235,18 @@ namespace EventPlanner.Controllers
             }
             else
             {
-                var created = await _eventStorageService.AddAddressAsync(newAddress);
+                var created = await _eventStorageService.CreateAddressAsync(newAddress);
                 addressId = created.Id;
             }
 
             return addressId;
         }
 
-        private async Task<Event> PrepareEvent(int userId, EventModel eventInfo)
+        private async Task<Event> PrepareEvent(int userId, int? eventId, EventModel eventInfo)
         {
             int? addressId = null;
             if (eventInfo.Address != null) 
-                addressId = await ProcessAddressAsync(eventInfo.Id, eventInfo.Address);
+                addressId = await ProcessAddressAsync(eventId, eventInfo.Address);
 
             var cover = await UploadImage(eventInfo.Cover);
             var newEvent = new Event() {
@@ -242,10 +263,22 @@ namespace EventPlanner.Controllers
                 AddressId = addressId
             };
 
-            if (eventInfo.Id != null)
-                newEvent.Id = (int)eventInfo.Id;
+            if (eventId != null)
+                newEvent.Id = (int)eventId;
 
             return newEvent;
+        }
+
+        private async Task CreateDefaultQuestion(int eventId, string title)
+        {
+            var question = new Question() 
+            {
+                EventId = eventId,
+                Title = title,
+                IsEditable = false
+            };
+
+            await _eventStorageService.CreateQuestionAsync(question);
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
@@ -256,36 +289,33 @@ namespace EventPlanner.Controllers
             if (rowId == null)
                 return Unauthorized();
 
-            if (newEventInfo.Id != null)
-                return BadRequest();
-
             if (DateTime.Now > newEventInfo.StartDate)
                 return BadRequest(new { Errors = new { StartDate = "Некорректная дата" } });
             if (newEventInfo.StartDate > newEventInfo.EndDate)
                 return BadRequest(new { Errors = new { EndDate = "Некорректная дата" } });
 
             
-            var newEvent = await PrepareEvent(int.Parse(rowId), newEventInfo);
+            var newEvent = await PrepareEvent(int.Parse(rowId), null, newEventInfo);
             if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
                 return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
             
             var created = await _eventStorageService.CreateAsync(newEvent);
+            await CreateDefaultQuestion(created.Id, "Email");
+            await CreateDefaultQuestion(created.Id, "Ваше Имя");
+            await CreateDefaultQuestion(created.Id, "Ваша Фамилия");
 
             return new JsonResult(new { id = created.Id });
         }
     
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateEvent([FromForm] EventModel eventInfo)
+        public async Task<IActionResult> UpdateEvent(int id, [FromForm] EventModel eventInfo)
         {
             var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (rowId == null)
                 return Unauthorized();
 
-            if (eventInfo.Id == null)
-                return BadRequest();
-
-            var e = await _eventStorageService.GetAsync((int)eventInfo.Id);
+            var e = await _eventStorageService.GetAsync(id);
             if (e?.CreatorId != int.Parse(rowId))
                 return Forbid(); 
 
@@ -294,7 +324,7 @@ namespace EventPlanner.Controllers
             if (eventInfo.StartDate > eventInfo.EndDate)
                 return BadRequest(new { Errors = new { EndDate = "Некорректная дата" } });
 
-            var newEvent = await PrepareEvent(int.Parse(rowId), eventInfo);
+            var newEvent = await PrepareEvent(int.Parse(rowId), id, eventInfo);
             if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
                 return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
 
@@ -303,6 +333,58 @@ namespace EventPlanner.Controllers
             
             _context.Entry(e).CurrentValues.SetValues(newEvent);
             await _eventStorageService.UpdateAsync(e);
+
+            return Ok();
+        }
+    
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpPost("{id}/questions")]
+        public async Task<IActionResult> ProcessQuestions(int id, [FromBody] List<QuestionModel> questions)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var e = await _eventStorageService.GetAsync(id);
+            if (e == null)
+                return BadRequest();
+            if (e?.CreatorId != int.Parse(rowId))
+                return Forbid(); 
+
+            var currentQuestions = await _eventStorageService.GetQuestionsByEventAcyns(e.Id);            
+            foreach (var question in questions)
+            {
+                if (question.Id > 0)
+                {
+                    var index = currentQuestions.FindIndex(e => e.Id == question.Id);
+                    currentQuestions.RemoveAt(index);
+                }
+
+                if (!question.IsEditable)
+                    continue;
+
+                if (question.Id > 0)
+                {
+                    var originalQuestion = await _eventStorageService.GetQuestionAsync(question.Id);
+                    if (originalQuestion != null)
+                    {
+                        _context.Entry(originalQuestion).CurrentValues.SetValues(question);
+                        await _eventStorageService.UpdateQuestionAsync(originalQuestion);
+                        continue;
+                    }
+                }
+                var newQuestion = new Question 
+                {
+                    EventId = id,
+                    Title = question.Title,
+                    IsEditable = question.IsEditable
+                };
+                await _eventStorageService.CreateQuestionAsync(newQuestion);
+            }
+
+            // Удаляем оставшиеся вопросы
+            foreach (var question in currentQuestions)
+                await _eventStorageService.DeleteQuestionAsync(question.Id);
 
             return Ok();
         }

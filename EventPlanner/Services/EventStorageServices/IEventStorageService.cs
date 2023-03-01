@@ -8,6 +8,11 @@ namespace EventPlanner.Services.EventStorageServices;
 public interface IEventStorageService : IDataService<int, Event>
 {
     Task<List<Event>> GetByCreatorAsync(int creatorId);
-    Task<Address> AddAddressAsync(Address entity);
+    Task<Address> CreateAddressAsync(Address entity);
     Task UpdateAddressAsync(Address entity);
+    Task<Question?> GetQuestionAsync(int id);
+    Task<List<Question>> GetQuestionsByEventAcyns (int eventId);
+    Task<Question> CreateQuestionAsync(Question entity);
+    Task UpdateQuestionAsync(Question entity);
+    Task DeleteQuestionAsync(int id);
 }

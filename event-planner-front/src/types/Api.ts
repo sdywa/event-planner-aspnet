@@ -77,8 +77,8 @@ export interface IExtendedEventResponse extends IEventResponse {
 
 export interface IEventQuestion {
     id: number,
-    name: string,
-    editable?: Boolean
+    title: string,
+    isEditable?: Boolean
 }
 
 export interface IEventTicket{

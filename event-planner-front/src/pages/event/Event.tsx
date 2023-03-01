@@ -230,7 +230,7 @@ const Event: FC = () => {
                             <div className="flex gap-8 pb-2">
                                 <div className="w-80 max-w-xs">
                                     {
-                                        event?.questions.map(({name: text}) => <FormInput
+                                        event?.questions.map(({title: text}) => <FormInput
                                             key={text} 
                                             name={text}
                                             data={defaultFormInputData(text)}
