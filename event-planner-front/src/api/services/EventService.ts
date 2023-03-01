@@ -17,10 +17,19 @@ const EventService = {
                 value = value.toString();
             formData.append(key, value);
         }   
-        return api.post<{id: number}>("/event/new", formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-        }})
+        return api.post<{id: number}>("/event/new", formData);
+    },
+    updateEvent: async (id: number, data: {title: string, description: string, fullDescription: string, cover?: File, startDate?: string, endDate?: string, typeId: number, categoryId: number, address?: string}) => {
+        const formData = new FormData();
+        formData.append("id", id.toString());
+        let key: keyof typeof data;
+        for (key in data) {
+            let value = data[key]!;
+            if (typeof value === "number")
+                value = value.toString();
+            formData.append(key, value);
+        }   
+        return api.patch(`/event/${id}`, formData);
     },
     get: async (id: number) => 
         api.get(`/event/${id}`)

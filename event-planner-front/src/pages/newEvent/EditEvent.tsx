@@ -63,8 +63,14 @@ export const EditEvent: FC = () => {
 
         let errors = {};
         try {
-            const response = await EventService.createEvent(Object.fromEntries(result));
-            navigate(`/events/${response.data.id}/questions`);
+            if (eventId) {
+                const response = await EventService.updateEvent(Number(eventId), Object.fromEntries(result));
+                navigate(`/events/${eventId}/questions`);
+            }
+            else {
+                const response = await EventService.createEvent(Object.fromEntries(result));
+                navigate(`/events/${response.data.id}/questions`);
+            }
         } catch (e) {
             errors = getErrors(e);
         }

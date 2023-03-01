@@ -46,6 +46,9 @@ public class EventStorageService : IEventStorageService
     public async Task<Address> AddAddressAsync(Address entity) =>
         await _commonAddress.CreateAsync(entity);
 
+    public async Task UpdateAddressAsync(Address entity) =>
+        await _commonAddress.UpdateAsync(entity);
+
     private IQueryable<Event> IncludeValues() =>
         _context.Events
             .Include(e => e.Type)

@@ -187,7 +187,7 @@ const Event: FC = () => {
                 <div className="flex flex-col justify-center items-start gap-4">
                     <div className="w-[44rem] h-[25rem] relative bg-lightgray rounded-md overflow-hidden">
                         {
-                            event?.cover && <img src={"data:image/png;base64," + event.cover} alt={event.title} className="absolute -translate-y-1/2 top-1/2" />
+                            event?.cover && <img src={"data:image/png;base64," + event.cover} alt={event.title} className="absolute -translate-y-1/2 top-1/2 w-full" />
                         }
                     </div>
                     <WithIcon icon={<i className="fa-solid fa-tags"></i>}>

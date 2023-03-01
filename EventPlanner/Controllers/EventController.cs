@@ -13,6 +13,8 @@ namespace EventPlanner.Controllers
     [ApiController]
     public class EventController : ControllerBase
     {
+        private static readonly string PlaceholderLink = "/Uploads/placeholder.png";
+
         private Context _context;
         private IEventStorageService _eventStorageService;
         private IUserService _userService;
@@ -161,7 +163,6 @@ namespace EventPlanner.Controllers
             return new JsonResult(await PrepareEventsAsync(events));
         }
 
-
         private void CreateUploadIfNotExist() 
         {
             var path = $"{_appEnvironment.WebRootPath}/Uploads";
@@ -181,7 +182,70 @@ namespace EventPlanner.Controllers
                     await image.CopyToAsync(fileStream);
                 return path;
             }
-            return "/Uploads/placeholder.png";
+            return PlaceholderLink;
+        }
+
+        private async Task<int?> ProcessAddressAsync(int? eventId, string address) 
+        {
+            int? addressId = null;
+            if (eventId != null)
+            {
+                var e = await _eventStorageService.GetAsync((int)eventId);
+                addressId = e?.AddressId;
+            }
+            
+            var splitted = address.Split(", ");
+            if (splitted.Length != 5)
+                return null;
+            
+            var newAddress = new Address()
+            {
+                Country = splitted[0],
+                Region = splitted[1],
+                City = splitted[2],
+                Street = splitted[3],
+                Building = splitted[4]
+            };
+
+            if (addressId != null)
+            {
+                newAddress.Id = (int)addressId;
+                await _eventStorageService.UpdateAddressAsync(newAddress);
+            }
+            else
+            {
+                var created = await _eventStorageService.AddAddressAsync(newAddress);
+                addressId = created.Id;
+            }
+
+            return addressId;
+        }
+
+        private async Task<Event> PrepareEvent(int userId, EventModel eventInfo)
+        {
+            int? addressId = null;
+            if (eventInfo.Address != null) 
+                addressId = await ProcessAddressAsync(eventInfo.Id, eventInfo.Address);
+
+            var cover = await UploadImage(eventInfo.Cover);
+            var newEvent = new Event() {
+                Title = eventInfo.Title,
+                Description = eventInfo.Description,
+                FullDescription = eventInfo.FullDescription,
+                Cover = cover,
+                CreationTime = DateTime.Now,
+                StartDate = eventInfo.StartDate,
+                EndDate = eventInfo.EndDate,
+                CategoryId = eventInfo.Category,
+                TypeId = eventInfo.Type,
+                CreatorId = userId,
+                AddressId = addressId
+            };
+
+            if (eventInfo.Id != null)
+                newEvent.Id = (int)eventInfo.Id;
+
+            return newEvent;
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
@@ -195,46 +259,52 @@ namespace EventPlanner.Controllers
             if (newEventInfo.Id != null)
                 return BadRequest();
 
+            if (DateTime.Now > newEventInfo.StartDate)
+                return BadRequest(new { Errors = new { StartDate = "Некорректная дата" } });
             if (newEventInfo.StartDate > newEventInfo.EndDate)
                 return BadRequest(new { Errors = new { EndDate = "Некорректная дата" } });
 
-            int? addressId = null;
-            if (newEventInfo.Address != null) 
-            {
-                var address = newEventInfo.Address.Split(", ");
-                if (address.Length != 5)
-                    return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
-
-                var newAddress = new Address()
-                {
-                    Country = address[0],
-                    Region = address[1],
-                    City = address[2],
-                    Street = address[3],
-                    Building = address[4],
-                };
-                newAddress = await _eventStorageService.AddAddressAsync(newAddress);
-                addressId = newAddress.Id;
-            }
-
-            var cover = await UploadImage(newEventInfo.Cover);
-            var newEvent = new Event() {
-                Title = newEventInfo.Title,
-                Description = newEventInfo.Description,
-                FullDescription = newEventInfo.FullDescription,
-                Cover = cover,
-                CreationTime = DateTime.Now,
-                StartDate = newEventInfo.StartDate,
-                EndDate = newEventInfo.EndDate,
-                CategoryId = newEventInfo.Category,
-                TypeId = newEventInfo.Type,
-                CreatorId = int.Parse(rowId),
-                AddressId = addressId
-            };
-
+            
+            var newEvent = await PrepareEvent(int.Parse(rowId), newEventInfo);
+            if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
+                return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
+            
             var created = await _eventStorageService.CreateAsync(newEvent);
 
             return new JsonResult(new { id = created.Id });
+        }
+    
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateEvent([FromForm] EventModel eventInfo)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            if (eventInfo.Id == null)
+                return BadRequest();
+
+            var e = await _eventStorageService.GetAsync((int)eventInfo.Id);
+            if (e?.CreatorId != int.Parse(rowId))
+                return Forbid(); 
+
+            if (DateTime.Now > eventInfo.StartDate)
+                return BadRequest(new { Errors = new { StartDate = "Некорректная дата" } });
+            if (eventInfo.StartDate > eventInfo.EndDate)
+                return BadRequest(new { Errors = new { EndDate = "Некорректная дата" } });
+
+            var newEvent = await PrepareEvent(int.Parse(rowId), eventInfo);
+            if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
+                return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
+
+            if (newEvent.Cover == PlaceholderLink)
+                newEvent.Cover = e.Cover;
+            
+            _context.Entry(e).CurrentValues.SetValues(newEvent);
+            await _eventStorageService.UpdateAsync(e);
+
+            return Ok();
         }
     }
 }

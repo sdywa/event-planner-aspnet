@@ -28,7 +28,7 @@ export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favorit
         >
             <div className="w-full h-44 relative bg-lightgray rounded-t-xl overflow-hidden">
                 {
-                    event.cover && <img src={"data:image/png;base64," + event.cover} className="absolute -translate-y-1/2 top-1/2" alt={event.title} />
+                    event.cover && <img src={"data:image/png;base64," + event.cover} className="absolute -translate-y-1/2 top-1/2 w-full" alt={event.title} />
                 }
                 {
                     isAuth && <Bookmark isFavorite={event.isFavorite} className={"absolute top-4 right-4 text-2xl"} favoriteCallback={favoriteCallback} />

@@ -9,4 +9,5 @@ public interface IEventStorageService : IDataService<int, Event>
 {
     Task<List<Event>> GetByCreatorAsync(int creatorId);
     Task<Address> AddAddressAsync(Address entity);
+    Task UpdateAddressAsync(Address entity);
 }
