@@ -247,7 +247,7 @@ const Event: FC = () => {
                                     </div>
                                     <ul>
                                         {
-                                            event?.tickets.map(({id, name, until, price}, i) => 
+                                            event?.tickets.map(({id, title: name, until, price}, i) => 
                                                 <RadioButton key={name} name="tickets" id={name} value={id.toString()} defaultChecked={i === 0} callBack={updateInputStatuses}>
                                                     <div className="flex justify-between gap-4">
                                                         <div className="w-60">
@@ -273,7 +273,7 @@ const Event: FC = () => {
                             <SubmitButton disabled={hasError} isPrimary={true} 
                                 buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                 {
-                                    event?.tickets.find((t) => t.id === getInputStatus("tickets")?.value)?.price
+                                    (event?.tickets.find((t) => t.id === getInputStatus("tickets")?.value)?.price ?? 0) > 0
                                     ?
                                     "Купить билет"
                                     :

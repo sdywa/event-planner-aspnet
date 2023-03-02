@@ -91,7 +91,6 @@ export const QuestionsPage: FC = () => {
                 isEditable: questions.find(q => q.id === id)?.isEditable
             };
         });
-        console.log(result);
 
         let errors = {};
         try {
@@ -153,9 +152,9 @@ export const QuestionsPage: FC = () => {
                                     buttonStyle={questionForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                     Продолжить
                                 </SubmitButton>
-                                <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GRAY}>
+                                {/* <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GRAY}>
                                     Сохранить черновик
-                                </Button>
+                                </Button> */}
                             </div>
                             <Button link="/events">
                                 <div className="text-gray hover:text-red">Отмена</div>

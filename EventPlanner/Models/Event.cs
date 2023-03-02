@@ -28,4 +28,5 @@ public class Event : CommonModel<int>
     public Address? Address { get; set; }
 
     public ICollection<Question> Questions { get; set; } = null!;
+    public ICollection<Ticket> Tickets { get; set; } = null!;
 }

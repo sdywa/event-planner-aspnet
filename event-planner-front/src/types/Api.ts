@@ -83,7 +83,7 @@ export interface IEventQuestion {
 
 export interface IEventTicket{
     id: number,
-    name: string,
+    title: string,
     limit?: number,
     until: string,
     price: number

@@ -1,5 +1,5 @@
 import api from "..";
-import { IEventQuestion, IEventResponse } from "../../types/Api";
+import { IEventQuestion, IEventResponse, IEventTicket } from "../../types/Api";
 
 const EventService = {
     getAll: async () => 
@@ -37,6 +37,10 @@ const EventService = {
         api.get<IEventQuestion[]>(`/event/${id}/questions`),
     sendQuestions: async (id: number, questions: IEventQuestion[]) => 
         api.post(`/event/${id}/questions`, questions),
+    getTickets: async (id: number) =>
+        api.get<IEventTicket[]>(`/event/${id}/tickets`),
+    sendTickets: async (id: number, tickets: IEventTicket[]) => 
+        api.post(`/event/${id}/tickets`, tickets),
 }
 
 export default EventService;

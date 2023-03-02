@@ -15,4 +15,9 @@ public interface IEventStorageService : IDataService<int, Event>
     Task<Question> CreateQuestionAsync(Question entity);
     Task UpdateQuestionAsync(Question entity);
     Task DeleteQuestionAsync(int id);
+    Task<Ticket?> GetTicketAsync(int id);
+    Task<List<Ticket>> GetTicketsByEventAcyns (int eventId);
+    Task<Ticket> CreateTicketAsync(Ticket entity);
+    Task UpdateTicketAsync(Ticket entity);
+    Task DeleteTicketAsync(int id);
 }

@@ -64,7 +64,7 @@ export const EditEvent: FC = () => {
         let errors = {};
         try {
             if (eventId) {
-                const response = await EventService.updateEvent(Number(eventId), Object.fromEntries(result));
+                await EventService.updateEvent(Number(eventId), Object.fromEntries(result));
                 navigate(`/events/${eventId}/questions`);
             }
             else {

@@ -13,6 +13,7 @@ public class Context : DbContext
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Question> Questions { get; set; } = null!;
+    public DbSet<Ticket> Tickets { get; set; } = null!;
 
     public DbSet<FavEvent> FavEvents { get; set; } = null!;
 

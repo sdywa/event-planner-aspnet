@@ -98,11 +98,14 @@ namespace EventPlanner.Controllers
                 EventsCount = e.Creator.CreatedEvents.Count,
                 Rating = 5
             };
-            e.Tickets = new List<Object>
+            var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
+            e.Tickets = tickets.Select(t => new 
             {
-                new { Id = 1, Name = "Входной билет", Price = 0 },
-                new { Id = 2, Name = "Очень длинное название билетаfffffffffааааааа", Price = 100 },
-            };
+                Id = t.Id,
+                Title = t.Title,
+                Limit = t.Limit,
+                Price = t.Price
+            });
             var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
             e.Questions = questions.Select(q => new 
             {
@@ -122,15 +125,39 @@ namespace EventPlanner.Controllers
 
             var e = await _eventStorageService.GetAsync(id);
             if (e == null)
-                return BadRequest();
+                return NotFound(new { ErrorText = "Мероприятие не найдено" });
             if (e?.CreatorId != int.Parse(rowId))
                 return Forbid(); 
             
-            var question = await _eventStorageService.GetQuestionsByEventAcyns(id);
-            return new JsonResult(question.Select(q => new {
+            var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
+            return new JsonResult(questions.Select(q => new {
                 Id = q.Id,
                 Title = q.Title,
                 IsEditable = q.IsEditable
+            }));
+        }
+
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpGet("{id}/tickets")]
+        public async Task<IActionResult> GetTickets(int id)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var e = await _eventStorageService.GetAsync(id);
+            if (e == null)
+                return NotFound(new { ErrorText = "Мероприятие не найдено" });
+            if (e?.CreatorId != int.Parse(rowId))
+                return Forbid(); 
+            
+            var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
+            return new JsonResult(tickets.Select(t => new {
+                Id = t.Id,
+                Title = t.Title,
+                Limit = t.Limit,
+                Price = t.Price,
+                Until = t.Until
             }));
         }
 
@@ -347,9 +374,12 @@ namespace EventPlanner.Controllers
 
             var e = await _eventStorageService.GetAsync(id);
             if (e == null)
-                return BadRequest();
-            if (e?.CreatorId != int.Parse(rowId))
+                return NotFound(new { ErrorText = "Мероприятие не найдено" });
+            if (e.CreatorId != int.Parse(rowId))
                 return Forbid(); 
+
+            if (questions.Count == 0)
+                return BadRequest(new { ErrorText = "Добавьте билеты" });
 
             var currentQuestions = await _eventStorageService.GetQuestionsByEventAcyns(e.Id);            
             foreach (var question in questions)
@@ -385,6 +415,56 @@ namespace EventPlanner.Controllers
             // Удаляем оставшиеся вопросы
             foreach (var question in currentQuestions)
                 await _eventStorageService.DeleteQuestionAsync(question.Id);
+
+            return Ok();
+        }
+    
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpPost("{id}/tickets")]
+        public async Task<IActionResult> ProcessTickets(int id, [FromBody] List<TicketModel> tickets)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var e = await _eventStorageService.GetAsync(id);
+            if (e == null)
+                return NotFound(new { ErrorText = "Мероприятие не найдено" });
+            if (e.CreatorId != int.Parse(rowId))
+                return Forbid(); 
+
+            if (tickets.Count == 0)
+                return BadRequest(new { ErrorText = "Добавьте билеты" });
+
+            var currentTickets = await _eventStorageService.GetTicketsByEventAcyns(e.Id);            
+            foreach (var ticket in tickets)
+            {
+                if (ticket.Id > 0)
+                {
+                    var index = currentTickets.FindIndex(e => e.Id == ticket.Id);
+                    currentTickets.RemoveAt(index);
+                    var originalTicket = await _eventStorageService.GetTicketAsync(ticket.Id);
+                    if (originalTicket != null)
+                    {
+                        _context.Entry(originalTicket).CurrentValues.SetValues(ticket);
+                        await _eventStorageService.UpdateTicketAsync(originalTicket);
+                        continue;
+                    }
+                }
+                var newTicket = new Ticket
+                {
+                    EventId = id,
+                    Title = ticket.Title,
+                    Limit = ticket.Limit,
+                    Price = ticket.Price,
+                    Until = ticket.Until
+                };
+                await _eventStorageService.CreateTicketAsync(newTicket);
+            }
+
+            // Удаляем оставшиеся вопросы
+            foreach (var ticket in currentTickets)
+                await _eventStorageService.DeleteTicketAsync(ticket.Id);
 
             return Ok();
         }
