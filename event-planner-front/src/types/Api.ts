@@ -21,6 +21,7 @@ export enum UserRoles {
 
 export interface IUser {
     id: number,
+    email: string,
     name: string;
     surname: string;
     role: UserRoles;
@@ -88,3 +89,13 @@ export interface IEventTicket{
     until: string,
     price: number
 };
+
+export interface IAnswer {
+    questionId: number,
+    text: string
+}
+
+export interface IParticipationModel {
+    answers: IAnswer[],
+    ticketId: number
+}

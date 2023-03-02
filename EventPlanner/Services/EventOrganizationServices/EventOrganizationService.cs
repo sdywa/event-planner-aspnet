@@ -21,9 +21,6 @@ public class EventOrganizationService : IEventOrganizationService
 
     public async Task<Sale> CreateAsync(Sale entity) 
     {
-        foreach (var answer in entity.Answers)
-            await _commonAnswer.CreateAsync(answer);
-
         return await _common.CreateAsync(entity);
     }
 

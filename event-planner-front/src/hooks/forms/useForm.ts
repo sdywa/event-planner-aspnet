@@ -12,6 +12,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
         if (name in inputStatuses) 
             return inputStatuses[name];
     }
+
     const hideInputStatus = (name: string, hidden: Boolean) => {
         if (hidden) {
             if (!(name in inputStatuses))

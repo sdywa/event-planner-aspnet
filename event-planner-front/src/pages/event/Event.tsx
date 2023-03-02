@@ -1,6 +1,6 @@
 import React, { FC, useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
 import { Bookmark } from "../../components/UI/bookmark/Bookmark";
 import { Button, ButtonStyles } from "../../components/UI/button/Button";
@@ -13,17 +13,23 @@ import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
 import { IFormInputStatus, IFormInputData, IServerError } from "../../types";
-import { IExtendedEventResponse } from "../../types/Api";
+import { IExtendedEventResponse, IAnswer, IParticipationModel } from "../../types/Api";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 import { DropdownMenu } from "../../components/UI/dropdown-menu/DropdownMenu";
 import { Context } from "../..";
 import { observer } from "mobx-react-lite";
 import EventService from "../../api/services/EventService";
+import { getErrors } from "../../api";
+
+interface IEvent extends IExtendedEventResponse {
+    isParticipated: boolean
+}
 
 const Event: FC = () => {
+    const navigate = useNavigate();
     const {eventId} = useParams();
     const {user} = useContext(Context);
-    const [event, setEvent] = useState<IExtendedEventResponse>();
+    const [event, setEvent] = useState<IEvent>();
     const {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
     const questionForm = useForm(sendQuestionFormData);
     const [modalActive, setActive] = useState(false);
@@ -38,7 +44,30 @@ const Event: FC = () => {
 
     async function sendFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("sent!");
-        return {};
+
+        const parsed = Object.fromEntries(Object.entries(data).map(([key, d]) => [key, d.value]));
+        const result: IParticipationModel = {
+            ticketId: Number(parsed["ticket"]),
+            answers: Object.keys(parsed).filter((k) => k !== "ticket").map((k): IAnswer => {
+                const key = Number(k);
+                return {
+                    questionId: key,
+                    text: parsed[k]
+                };
+            })
+        };
+
+        let errors = {};
+        try {
+            console.log(result);
+            await EventService.participate(Number(eventId), result);
+            if (event)
+                setEvent({...event, isParticipated: true});
+        } catch (e) {
+            errors = getErrors(e);
+        }
+
+        return errors;
     }
 
     async function sendQuestionFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
@@ -109,12 +138,23 @@ const Event: FC = () => {
                 const events = await EventService.get(Number(eventId));
                 setEvent(events.data);
             } catch (e) {
+                navigate("/");
                 return;
             }
         } 
 
         getEvent();
     }, []);
+
+    function getQuestionInitialValue(index: number) {
+        if (index === 0)
+            return user.user.email;
+        else if (index === 1)
+            return user.user.name;
+        else if (index === 2)
+            return user.user.surname;
+        return "";
+    }
 
     return (
         <PageLayout title={event?.title ?? ""} isCentered={true} header={ user.isAuth &&
@@ -161,7 +201,7 @@ const Event: FC = () => {
                             </WithIcon>
                         </Button>
                     </DropdownMenu>
-                    <DropdownMenu items={[
+                    {/* <DropdownMenu items={[
                         {label: "Статистика", link: `/events/${eventId}/edit`}, 
                         {label: "Участники", link: `/events/${eventId}/edit`},
                         {label: "Обратная связь", link: `/events/${eventId}/edit`}
@@ -171,7 +211,7 @@ const Event: FC = () => {
                                 <span className="text-base font-semibold">Управление</span>
                             </WithIcon>
                         </Button>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                 </div>
             }
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-x-4">
@@ -225,62 +265,71 @@ const Event: FC = () => {
                 {
                     user.isAuth &&
                     <div className="m-auto">
-                        <h3 className="heading--tertiary mb-2">Регистрация</h3>
-                        <form onSubmit={onSubmit} onChange={onChange}>
-                            <div className="flex gap-8 pb-2">
-                                <div className="w-80 max-w-xs">
-                                    {
-                                        event?.questions.map(({title: text}) => <FormInput
-                                            key={text} 
-                                            name={text}
-                                            data={defaultFormInputData(text)}
-                                            serverError={serverErrors[text]}
-                                            isSubmitted={isSubmitted}
-                                            callBack={updateInputStatuses}
-                                        />)
-                                    }
-                                </div>
-                                <div className="min-w-[20rem] max-w-sm">
-                                    <div className="flex justify-between font-bold pb-5">
-                                        <div>Название билета</div>
-                                        <div className="w-24 text-center">Цена</div>
-                                    </div>
-                                    <ul>
+                        {
+                        event?.isParticipated 
+                        ?
+                            <h3 className="heading--tertiary mb-2">Вы уже зарегистрировались на мероприятие</h3>
+                        :
+                        <>
+                            <h3 className="heading--tertiary mb-2">Регистрация</h3>
+                            <form onSubmit={onSubmit} onChange={onChange}>
+                                <div className="flex gap-8 pb-2">
+                                    <div className="w-80 max-w-xs">
                                         {
-                                            event?.tickets.map(({id, title: name, until, price}, i) => 
-                                                <RadioButton key={name} name="tickets" id={name} value={id.toString()} defaultChecked={i === 0} callBack={updateInputStatuses}>
-                                                    <div className="flex justify-between gap-4">
-                                                        <div className="w-60">
-                                                                <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>
-                                                                <div className="text-sm">до {until}</div>
-                                                            </div>
-                                                            <div className="w-24 text-center">
-                                                                {
-                                                                    price
-                                                                    ?
-                                                                        <div><span className="font-bold">{price}</span> руб.</div>
-                                                                    :
-                                                                    <span className="font-bold">Бесплатно</span>
-                                                                }
-                                                            </div>
-                                                    </div>
-                                                </RadioButton>
-                                            )
+                                            event?.questions.map((question, i) => <FormInput
+                                                key={question.id} 
+                                                name={question.id.toString()}
+                                                data={defaultFormInputData(question.title)}
+                                                initialValue={getQuestionInitialValue(i)}
+                                                serverError={serverErrors[question.id.toString()]}
+                                                isSubmitted={isSubmitted}
+                                                callBack={updateInputStatuses}
+                                            />)
                                         }
-                                    </ul>
+                                    </div>
+                                    <div className="min-w-[20rem] max-w-sm">
+                                        <div className="flex justify-between font-bold pb-5">
+                                            <div>Название билета</div>
+                                            <div className="w-24 text-center">Цена</div>
+                                        </div>
+                                        <ul>
+                                            {
+                                                event?.tickets.map(({id, title: name, until, price}, i) => 
+                                                    <RadioButton key={name} name="ticket" id={name} value={id.toString()} defaultChecked={i === 0} callBack={updateInputStatuses}>
+                                                        <div className="flex justify-between gap-4">
+                                                            <div className="w-60">
+                                                                    <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>
+                                                                    <div className="text-sm">до {until}</div>
+                                                                </div>
+                                                                <div className="w-24 text-center">
+                                                                    {
+                                                                        price
+                                                                        ?
+                                                                            <div><span className="font-bold">{price}</span> руб.</div>
+                                                                        :
+                                                                        <span className="font-bold">Бесплатно</span>
+                                                                    }
+                                                                </div>
+                                                        </div>
+                                                    </RadioButton>
+                                                )
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                            <SubmitButton disabled={hasError} isPrimary={true} 
-                                buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
-                                {
-                                    (event?.tickets.find((t) => t.id === getInputStatus("tickets")?.value)?.price ?? 0) > 0
-                                    ?
-                                    "Купить билет"
-                                    :
-                                    "Зарегистрироваться"
-                                }
-                            </SubmitButton>
-                        </form>
+                                <SubmitButton disabled={hasError} isPrimary={true} 
+                                    buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
+                                    {
+                                        event?.tickets.find((t) => t.id === Number(getInputStatus("tickets")?.value))?.price
+                                        ?
+                                        "Купить билет"
+                                        :
+                                        "Зарегистрироваться"
+                                    }
+                                </SubmitButton>
+                            </form>
+                        </>
+                        }
                     </div>
                 }
             </div>

@@ -186,7 +186,6 @@ export const TicketsPage: FC = () => {
 
         let errors = {};
         try {
-            console.log(result);
             await EventService.sendTickets(Number(eventId), result);
             navigate(`/events/${eventId}`);
         } catch (e) {

@@ -70,6 +70,7 @@ namespace EventPlanner.Controllers
                         refreshToken = refreshToken, 
                         user = new {
                             id = user.Id,
+                            email = user.Email,
                             name = user.Name,
                             surname = user.Surname,
                             role = user.Role.Name,

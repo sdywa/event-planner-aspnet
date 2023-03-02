@@ -1,5 +1,5 @@
 import api from "..";
-import { IEventQuestion, IEventResponse, IEventTicket } from "../../types/Api";
+import { IEventQuestion, IEventResponse, IEventTicket, IParticipationModel } from "../../types/Api";
 
 const EventService = {
     getAll: async () => 
@@ -41,6 +41,8 @@ const EventService = {
         api.get<IEventTicket[]>(`/event/${id}/tickets`),
     sendTickets: async (id: number, tickets: IEventTicket[]) => 
         api.post(`/event/${id}/tickets`, tickets),
+    participate: async (id: number, participation: IParticipationModel) => 
+        api.post(`/event/${id}/participate`, participation),
 }
 
 export default EventService;

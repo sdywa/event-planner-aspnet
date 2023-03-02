@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using EventPlanner.Models;
 using EventPlanner.Controllers.Models;
 using EventPlanner.Services.EventStorageServices;
+using EventPlanner.Services.EventOrganizationServices;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
@@ -17,17 +18,21 @@ namespace EventPlanner.Controllers
 
         private Context _context;
         private IEventStorageService _eventStorageService;
+        private IEventOrganizationService _eventOrganizationService;
         private IUserService _userService;
         private IWebHostEnvironment _appEnvironment;
 
         public EventController(
             Context context,
-            IEventStorageService eventStorageService, IUserService userService,
+            IEventStorageService eventStorageService, 
+            IEventOrganizationService eventOrganizationService,
+            IUserService userService,
             IWebHostEnvironment appEnvironment) 
         {
             _appEnvironment = appEnvironment;
             _context = context;
             _eventStorageService = eventStorageService;
+            _eventOrganizationService = eventOrganizationService;   
             _userService = userService;
         }
 
@@ -112,6 +117,7 @@ namespace EventPlanner.Controllers
                 Id = q.Id,
                 Title = q.Title
             });
+            e.IsParticipated = user != null ? await _eventOrganizationService.GetAsync(user.Id, eventInfo.Id) != null : false;
             return new JsonResult(e);
         }
 
@@ -465,6 +471,37 @@ namespace EventPlanner.Controllers
             // Удаляем оставшиеся вопросы
             foreach (var ticket in currentTickets)
                 await _eventStorageService.DeleteTicketAsync(ticket.Id);
+
+            return Ok();
+        }
+    
+        [Authorize]
+        [HttpPost("{id}/participate")]
+        public async Task<IActionResult> Participate(int id, [FromBody] ParticipationModel patricipation)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var e = await _eventStorageService.GetAsync(id);
+            if (e == null)
+                return NotFound(new { ErrorText = "Мероприятие не найдено" });
+
+            if (await _eventOrganizationService.GetAsync(int.Parse(rowId), e.Id) != null)
+                return BadRequest(new { ErrorText = "Участник уже принимает участие в данном мероприятии" });
+
+            var newSale = new Sale
+            {
+                TicketId = patricipation.TicketId,
+                UserId = Int16.Parse(rowId),
+                SaleDate = DateTime.Now,
+                Answers = patricipation.Answers.Select(a => new Answer
+                {
+                    QuestionId = a.QuestionId,
+                    Text = a.Text
+                }).ToList()
+            };
+            await _eventOrganizationService.CreateAsync(newSale);
 
             return Ok();
         }
