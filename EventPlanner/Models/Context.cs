@@ -15,6 +15,9 @@ public class Context : DbContext
     public DbSet<Question> Questions { get; set; } = null!;
     public DbSet<Ticket> Tickets { get; set; } = null!;
 
+    public DbSet<Answer> Answers { get; set; } = null!;
+    public DbSet<Sale> Sales { get; set; } = null!;
+
     public DbSet<FavEvent> FavEvents { get; set; } = null!;
 
     public Context(DbContextOptions<Context> options) : base(options)
