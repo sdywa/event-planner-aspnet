@@ -11,12 +11,14 @@ public class EventOrganizationService : IEventOrganizationService
     private Context _context;
     private CommonQueries<int, Sale> _common;
     private CommonQueries<int, Answer> _commonAnswer;
+    private CommonQueries<int, Review> _commonReview;
 
     public EventOrganizationService(Context context) 
     {
         _context = context;
         _common = new CommonQueries<int, Sale>(_context);
         _commonAnswer = new CommonQueries<int, Answer>(_context);
+        _commonReview = new CommonQueries<int, Review>(_context);
     }
 
     public async Task<Sale> CreateAsync(Sale entity) 
@@ -29,6 +31,9 @@ public class EventOrganizationService : IEventOrganizationService
 
     public async Task<Sale?> GetAsync(int userId, int eventId) =>
         await _context.Sales.Include(s => s.Ticket).FirstOrDefaultAsync(e => e.UserId == userId && e.Ticket.EventId == eventId);
+
+    public async Task<List<Sale>> GetAllAsync(int userId) =>
+        await _context.Sales.Include(s => s.Ticket).ThenInclude(t => t.Event).Where(e => e.UserId == userId).ToListAsync();
 
     public async Task<List<Sale>> GetAllAsync() =>
         await _common.GetAllAsync(_context.Sales);
@@ -50,4 +55,19 @@ public class EventOrganizationService : IEventOrganizationService
         _context.Remove(entity);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<Review>> GetReviewsByEventAcync(int eventId) =>
+        await _context
+            .Reviews
+            .Include(r => r.Sale)
+            .ThenInclude(s => s.Ticket)
+            .Where(r => r.Sale.Ticket.EventId == eventId)
+            .ToListAsync();
+    
+    public async Task<Review?> GetReviewBySaleAcyns(int saleId) =>
+        await _context.Reviews.FirstOrDefaultAsync(r => r.SaleId == saleId);
+
+
+    public async Task<Review> CreateReviewAsync(Review entity) =>
+        await _commonReview.CreateAsync(entity);
 }

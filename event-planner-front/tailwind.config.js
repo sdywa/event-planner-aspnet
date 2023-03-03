@@ -30,7 +30,7 @@ module.exports = {
     },
     plugins: [],
     safelist: [{
-            pattern: /(bg|text|border)-(green|darkgreen|red|darkred|blue|darkblue|gray|darkgray)/,
+            pattern: /(bg|text|border)-(green|darkgreen|red|darkred|blue|darkblue|gray|darkgray|yellow)/,
             variants: ['hover']
         }
     ]

@@ -17,6 +17,7 @@ public class Context : DbContext
 
     public DbSet<Answer> Answers { get; set; } = null!;
     public DbSet<Sale> Sales { get; set; } = null!;
+    public DbSet<Review> Reviews { get; set; } = null!;
 
     public DbSet<FavEvent> FavEvents { get; set; } = null!;
 
@@ -111,6 +112,86 @@ public class Context : DbContext
                 RoleId = UserRole.Participant
             }
         );
+
+        builder.Entity<Event>().HasData(
+            new Event
+            {
+                Id = 1,
+                Title = "Онлайн-семинар по навыкам эффективного общения",
+                Description = "Узнайте, как улучшить свои коммуникативные навыки и наладить отношения как в личной, так и в профессиональной среде.",
+                FullDescription = @"В современном быстро меняющемся мире навыки эффективного общения важны как никогда. Независимо от того, пытаетесь ли вы установить связь с друзьями и семьей или построить отношения с коллегами и клиентами, способность четко и эффективно общаться имеет важное значение. Вот почему мы рады объявить о нашем предстоящем виртуальном семинаре по навыкам эффективного общения.
+На этом семинаре вы узнаете практические советы и приемы по улучшению своих коммуникативных навыков, включая активное слушание, невербальное общение и разрешение конфликтов. Наши опытные фасилитаторы проведут интерактивные дискуссии и увлекательные упражнения, призванные помочь вам развить навыки, необходимые для достижения успеха как в личной, так и в профессиональной жизни.
+Не упустите эту возможность инвестировать в себя и научиться общаться более эффективно. Зарегистрируйтесь сейчас и присоединяйтесь к нам [укажите дату и время] на этом увлекательном семинаре!",
+                CreationTime = new DateTime(2022, 11, 12, 9, 21, 20),
+                StartDate = new DateTime(2023, 01, 18, 16, 0, 0),
+                EndDate = new DateTime(2023, 01, 18, 17, 30, 0),
+                Cover = "/Uploads/306193353.jpg",
+                TypeId = EventPlanner.EventType.Online,
+                CreatorId = 1,
+                CategoryId = 11
+            }
+        );
+
+        builder.Entity<Ticket>().HasData(
+            new Ticket
+            {
+                Id = 1,
+                EventId = 1,
+                Title = "Входной билет",
+                Limit = 10,
+                Price = 0,
+                Until = new DateTime(2023, 01, 12, 0, 0, 0)
+            }
+        );
+
+        builder.Entity<Question>().HasData(
+            new Question
+            {
+                Id = 1,
+                EventId = 1,
+                Title = "Email",
+                IsEditable = false
+            },
+            new Question
+            {
+                Id = 2,
+                EventId = 1,
+                Title = "Ваше Имя",
+                IsEditable = false
+            },
+            new Question
+            {
+                Id = 3,
+                EventId = 1,
+                Title = "Ваша Фамилия",
+                IsEditable = false
+            }
+        );
+
+        builder.Entity<Sale>().HasData(
+            new Sale
+            {
+                Id = 1,
+                TicketId = 1,
+                UserId = 4,
+                SaleDate = new DateTime(2022, 12, 21, 0, 0, 0)
+            },
+            new Sale
+            {
+                Id = 2,
+                TicketId = 1,
+                UserId = 6,
+                SaleDate = new DateTime(2022, 12, 21, 0, 0, 0)
+            }
+        );
+
+        // builder.Entity<Review>().HasData(
+        //     new Review
+        //     {
+        //         SaleId = 1,
+
+        //     }
+        // );
 
         // builder.Entity<Address>().HasData(
         //     new Address {

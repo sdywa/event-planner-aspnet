@@ -2,8 +2,8 @@ import api from "..";
 import { IEventQuestion, IEventResponse, IEventTicket, IParticipationModel } from "../../types/Api";
 
 const EventService = {
-    getAll: async () => 
-        api.get<IEventResponse[]>("event"),
+    getAll: async <T>() => 
+        api.get<T>("event"),
     setFavorite: async (id: Number, data: {isFavorite: boolean}) =>
         api.post(`/event/${id}/fav`, data),
     search: async (params: {search: string}) =>
@@ -43,6 +43,8 @@ const EventService = {
         api.post(`/event/${id}/tickets`, tickets),
     participate: async (id: number, participation: IParticipationModel) => 
         api.post(`/event/${id}/participate`, participation),
+    makeReview: async (id: number, data: { rating: number, text?: string}) =>
+        api.post(`/event/${id}/review`, data)
 }
 
 export default EventService;

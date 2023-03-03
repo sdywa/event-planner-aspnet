@@ -81,7 +81,32 @@ namespace EventPlanner.Controllers
         public async Task<IActionResult> GetAllAsync() 
         {
             var events = await _eventStorageService.GetAllAsync();
-            return new JsonResult(await PrepareEventsAsync(events));
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            Event? reviewEvent = null;
+            if (rowId != null)
+            {
+                var userSales = await _eventOrganizationService.GetAllAsync(int.Parse(rowId));
+                //Достаём все продажи для одного пользователя и сортируем их
+                var sales = userSales
+                    .Where(s => s.Ticket.Event.EndDate < DateTime.Now)
+                    .OrderByDescending(s => s.Ticket.Event.EndDate);
+
+                foreach (var sale in sales) {
+                    Console.WriteLine($"sale: {sale.Id} {(await _eventOrganizationService.GetReviewBySaleAcyns(sale.Id))}");
+                    // Берём первую продажу без отзыва
+                    if (await _eventOrganizationService.GetReviewBySaleAcyns(sale.Id) == null)
+                    {
+                        reviewEvent = sale.Ticket.Event;
+                        break;
+                    }
+                }
+            }
+            return new JsonResult(new 
+            {
+                Events = await PrepareEventsAsync(events.Where(e => e.EndDate > DateTime.Now).ToList()),
+                Review = reviewEvent != null ? PrepareEvent(null, reviewEvent) : null
+            });
         }
 
         [HttpGet("{id}")]
@@ -502,6 +527,33 @@ namespace EventPlanner.Controllers
                 }).ToList()
             };
             await _eventOrganizationService.CreateAsync(newSale);
+
+            return Ok();
+        }
+    
+        [Authorize]
+        [HttpPost("{id}/review")]
+        public async Task<IActionResult> MakeReviewAsync(int id, [FromBody] ReviewModel review)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+            
+            var userSales = await _eventOrganizationService.GetAllAsync(int.Parse(rowId));
+            var sale = userSales.FirstOrDefault(s => s.Ticket.EventId == id);
+            if (sale == null)
+                return Forbid();
+
+            if (await _eventOrganizationService.GetReviewBySaleAcyns(sale.Id) != null)
+                return BadRequest();
+
+            var newReview = new Review
+            {
+                SaleId = sale.Id,
+                Rating = review.Rating
+            };
+
+            await _eventOrganizationService.CreateReviewAsync(newReview);
 
             return Ok();
         }

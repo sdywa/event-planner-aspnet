@@ -10,10 +10,17 @@ import useFilter from "../../hooks/useFilter";
 import { EmptyPlaceholder } from "../../components/UI/empty-placeholder/EmptyPlaceholder";
 import { Context } from "../..";
 import { observer } from "mobx-react-lite";
+import { EventRating } from "../../components/UI/events/EventRating";
 import EventService from "../../api/services/EventService";
+
+interface IExtendedEventResponse {
+    review?: IEventResponse
+    events: IEventResponse[]
+}
 
 const Events: FC = () => {
     const {user} = useContext(Context);
+    const [review, setReview] = useState<IEventResponse>();
     const [allEvents, setAllEvents] = useState<IEventResponse[]>([]);
     const [events, setEvents] = useState<IEventResponse[]>([]);
     const {filteredItems, toggleFilter} = useFilter<IEventResponse>(events);
@@ -38,9 +45,10 @@ const Events: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         const getEvents = async () => {
             try {
-                const events = await EventService.getAll();
-                setEvents(events.data);
-                setAllEvents(events.data);
+                const events = await EventService.getAll<IExtendedEventResponse>();
+                setReview(events.data.review);
+                setEvents(events.data.events);
+                setAllEvents(events.data.events);
             } catch (e) {
                 return;
             }
@@ -62,6 +70,11 @@ const Events: FC = () => {
         }
     }, [searchText]);
 
+    const reviewCallback = (rating: number) => {
+        if (review)
+            EventService.makeReview(review.id, {rating: rating});
+    }
+
     return (
         <PageLayout title="Мероприятия" header={
             <div className="w-full flex justify-between items-center ml-10">
@@ -79,6 +92,9 @@ const Events: FC = () => {
             {
                 showingFilter && <EventFilter filtersCallback={toggleFilter} /> 
             }
+            <div className="pb-6">
+                { review && <EventRating event={review} reviewCallback={reviewCallback}></EventRating> }
+            </div>
             {
                 filteredItems.length
                 ?
