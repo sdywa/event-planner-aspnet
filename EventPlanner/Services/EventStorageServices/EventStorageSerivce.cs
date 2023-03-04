@@ -94,5 +94,6 @@ public class EventStorageService : IEventStorageService
             .Include(e => e.Type)
             .Include(e => e.Creator)
             .Include(e => e.Category)
-            .Include(e => e.Address);
+            .Include(e => e.Address)
+            .Include(e => e.Tickets);
 }

@@ -94,7 +94,7 @@ namespace EventPlanner.Controllers
 
                 foreach (var sale in sales) {
                     // Берём первую продажу без отзыва
-                    if (await _eventOrganizationService.GetReviewBySaleAcyns(sale.Id) == null)
+                    if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) == null)
                     {
                         reviewEvent = sale.Ticket.Event;
                         break;
@@ -125,8 +125,8 @@ namespace EventPlanner.Controllers
                 Id = e.Creator.Id,
                 Name = e.Creator.Name,
                 Surname = e.Creator.Surname,
-                EventsCount = e.Creator.CreatedEvents.Count,
-                Rating = 5
+                EventsCount = (await _eventStorageService.GetByCreatorAsync(e.Creator.Id)).Count,
+                Rating = await _eventOrganizationService.GetAverageRatingAsync(e.Creator.Id)
             };
             var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
             e.Tickets = tickets.Select(t => new 
@@ -544,7 +544,7 @@ namespace EventPlanner.Controllers
             if (sale == null)
                 return Forbid();
 
-            if (await _eventOrganizationService.GetReviewBySaleAcyns(sale.Id) != null)
+            if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) != null)
                 return BadRequest();
 
             var newReview = new Review

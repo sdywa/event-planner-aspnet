@@ -244,7 +244,7 @@ const Event: FC = () => {
                             {event?.creator.eventsCount} {getNounPluralForm(event?.creator.eventsCount ?? 0, "мероприятие", "мероприятия", "мероприятий")}
                         </div>
                         <div className="flex justify-center items-center gap-1 text-base">
-                            <span className="font-medium">{(event?.creator.rating ?? 5).toLocaleString(undefined, { minimumFractionDigits: 1 })}</span>
+                            <span className="font-medium">{(event?.creator.rating ?? 5).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</span>
                             <i className="fa-solid fa-star text-yellow"></i>
                         </div>
                     </div>

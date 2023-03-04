@@ -410,7 +410,7 @@ public class Context : DbContext
             new Ticket
             {
                 Id = 4,
-                EventId = 1,
+                EventId = 4,
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 2500,
