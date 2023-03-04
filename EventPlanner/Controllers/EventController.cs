@@ -93,7 +93,6 @@ namespace EventPlanner.Controllers
                     .OrderByDescending(s => s.Ticket.Event.EndDate);
 
                 foreach (var sale in sales) {
-                    Console.WriteLine($"sale: {sale.Id} {(await _eventOrganizationService.GetReviewBySaleAcyns(sale.Id))}");
                     // Берём первую продажу без отзыва
                     if (await _eventOrganizationService.GetReviewBySaleAcyns(sale.Id) == null)
                     {
@@ -104,7 +103,7 @@ namespace EventPlanner.Controllers
             }
             return new JsonResult(new 
             {
-                Events = await PrepareEventsAsync(events.Where(e => e.EndDate > DateTime.Now).ToList()),
+                Events = await PrepareEventsAsync(events.Where(e => e.EndDate == null || e.EndDate > DateTime.Now).ToList()),
                 Review = reviewEvent != null ? PrepareEvent(null, reviewEvent) : null
             });
         }
@@ -125,6 +124,7 @@ namespace EventPlanner.Controllers
             e.Creator = new {
                 Id = e.Creator.Id,
                 Name = e.Creator.Name,
+                Surname = e.Creator.Surname,
                 EventsCount = e.Creator.CreatedEvents.Count,
                 Rating = 5
             };

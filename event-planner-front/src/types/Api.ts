@@ -69,6 +69,7 @@ export interface IExtendedEventResponse extends IEventResponse {
     creator: {
         id: number,
         name: string,
+        surname: string,
         eventsCount: number,
         rating: number
     },

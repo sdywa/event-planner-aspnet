@@ -238,7 +238,7 @@ const Event: FC = () => {
                     <div className="relative px-4 py-6 w-72 flex flex-col justify-center items-center border-2 border-lightgray rounded-md">
                         {/* <div className="absolute -top-1/2 translate-y-1/2 w-28 h-28 bg-lightgray rounded-full border-4 border-white"></div> */}
                         <h3 className="text-2xl text-center">
-                            {event?.creator.name}
+                            {event?.creator.name} {event?.creator.surname}
                         </h3>
                         <div className="text-base">
                             {event?.creator.eventsCount} {getNounPluralForm(event?.creator.eventsCount ?? 0, "мероприятие", "мероприятия", "мероприятий")}
