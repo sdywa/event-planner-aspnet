@@ -22,4 +22,5 @@ public class User : CommonModel<int>
 
     public ICollection<FavEvent> FavEvents { get; set; } = null!;
     public ICollection<Event> CreatedEvents { get; set; } = null!;
+    public ICollection<Sale> Sales { get; set; } = null!;
 }

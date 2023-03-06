@@ -14,13 +14,15 @@ import { EventRating } from "../../components/UI/events/EventRating";
 import EventService from "../../api/services/EventService";
 
 interface IExtendedEventResponse {
-    review?: IEventResponse
+    advertising: IEventResponse[],
+    review?: IEventResponse,
     events: IEventResponse[]
 }
 
 const Events: FC = () => {
     const {user} = useContext(Context);
     const [review, setReview] = useState<IEventResponse>();
+    const [advertising, setAdvertising] = useState<IEventResponse[]>();
     const [allEvents, setAllEvents] = useState<IEventResponse[]>([]);
     const [events, setEvents] = useState<IEventResponse[]>([]);
     const {filteredItems, toggleFilter} = useFilter<IEventResponse>(events);
@@ -46,6 +48,7 @@ const Events: FC = () => {
         const getEvents = async () => {
             try {
                 const events = await EventService.getAll<IExtendedEventResponse>();
+                setAdvertising(events.data.advertising);
                 setReview(events.data.review);
                 setEvents(events.data.events);
                 setAllEvents(events.data.events);
@@ -92,7 +95,7 @@ const Events: FC = () => {
             {
                 showingFilter && <EventFilter filtersCallback={toggleFilter} /> 
             }
-            <div className="pb-6">
+            <div className="pb-2">
                 { review && <EventRating event={review} reviewCallback={reviewCallback}></EventRating> }
             </div>
             {
@@ -100,11 +103,30 @@ const Events: FC = () => {
                 ?
                 <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
                     {
-                        filteredItems.map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
+                        filteredItems.slice(0, 9).map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
                     }
                 </div>
                 :
                 <EmptyPlaceholder text="Мероприятия не найдены" />
+            }
+            {
+                advertising && advertising?.length !== 0 &&
+                <div className="pt-3 mt-10 border-t-2 border-lightgray">
+                    <h3 className="text-2xl pb-2">Рекомендуем</h3>
+                    <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
+                        {
+                            advertising.map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} />)
+                        }
+                    </div>
+                </div>
+            }
+            {
+                filteredItems.length > 6 && 
+                <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center pt-8 mt-10 border-t-2 border-lightgray">
+                    {
+                        filteredItems.slice(6).map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
+                    }
+                </div>
             }
         </PageLayout>
     );

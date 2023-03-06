@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using EventPlanner.Models;
 using EventPlanner.Controllers.Models;
+using EventPlanner.Services.AdvertisingServices;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
 using EventPlanner.Services.UserServices;
@@ -17,20 +18,23 @@ namespace EventPlanner.Controllers
         private static readonly string PlaceholderLink = "/Uploads/placeholder.png";
 
         private Context _context;
+        private IAdvertisingService _advertisingService;
         private IEventStorageService _eventStorageService;
         private IEventOrganizationService _eventOrganizationService;
         private IUserService _userService;
         private IWebHostEnvironment _appEnvironment;
 
         public EventController(
+            IWebHostEnvironment appEnvironment,
             Context context,
+            IAdvertisingService advertisingService,
             IEventStorageService eventStorageService, 
             IEventOrganizationService eventOrganizationService,
-            IUserService userService,
-            IWebHostEnvironment appEnvironment) 
+            IUserService userService) 
         {
             _appEnvironment = appEnvironment;
             _context = context;
+            _advertisingService = advertisingService;
             _eventStorageService = eventStorageService;
             _eventOrganizationService = eventOrganizationService;   
             _userService = userService;
@@ -86,25 +90,33 @@ namespace EventPlanner.Controllers
             Event? reviewEvent = null;
             if (rowId != null)
             {
-                var userSales = await _eventOrganizationService.GetAllAsync(int.Parse(rowId));
-                //Достаём все продажи для одного пользователя и сортируем их
-                var sales = userSales
-                    .Where(s => s.Ticket.Event.EndDate < DateTime.Now)
-                    .OrderByDescending(s => s.Ticket.Event.EndDate);
+                var user = await _userService.GetAsync(int.Parse(rowId));
+                if (user != null)
+                {
+                    var userSales = await _eventOrganizationService.GetAllAsync(user.Id);
+                    //Достаём все продажи для одного пользователя и сортируем их
+                    var sales = userSales
+                        .Where(s => s.Ticket.Event.EndDate < DateTime.Now)
+                        .OrderByDescending(s => s.Ticket.Event.EndDate);
 
-                foreach (var sale in sales) {
-                    // Берём первую продажу без отзыва
-                    if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) == null)
-                    {
-                        reviewEvent = sale.Ticket.Event;
-                        break;
+                    foreach (var sale in sales) {
+                        // Берём первую продажу без отзыва
+                        if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) == null)
+                        {
+                            reviewEvent = sale.Ticket.Event;
+                            break;
+                        }
                     }
                 }
             }
+
+            var advertising = await _advertisingService.GetAdvertising(rowId != null ? int.Parse(rowId) : null, 3);
+
             return new JsonResult(new 
             {
                 Events = await PrepareEventsAsync(events.Where(e => e.EndDate == null || e.EndDate > DateTime.Now).ToList()),
-                Review = reviewEvent != null ? PrepareEvent(null, reviewEvent) : null
+                Review = reviewEvent != null ? PrepareEvent(null, reviewEvent) : null,
+                Advertising = await PrepareEventsAsync(advertising)
             });
         }
 

@@ -51,5 +51,7 @@ public class UserService : IUserService
             .Include(u => u.CreatedEvents)
                 .ThenInclude(e => e.Type)
             .Include(u => u.CreatedEvents)
-                .ThenInclude(e => e.Category);
+                .ThenInclude(e => e.Category)
+            .Include(u => u.Sales)
+                .ThenInclude(s => s.Ticket);
 }

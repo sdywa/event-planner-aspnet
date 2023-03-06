@@ -6,6 +6,7 @@ using Newtonsoft.Json.Serialization;
 using EventPlanner;
 using EventPlanner.Models;
 using EventPlanner.Services.UserServices;
+using EventPlanner.Services.AdvertisingServices;
 using EventPlanner.Services.AuthenticationServices;
 using EventPlanner.Services.AuthorizationService;
 using EventPlanner.Services.EventStorageServices;
@@ -59,6 +60,8 @@ builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 
 builder.Services.AddTransient<IEventStorageService, EventStorageService>();
 builder.Services.AddTransient<IEventOrganizationService, EventOrganizationService>();
+builder.Services.AddTransient<IAdvertisingService, AdvertisingService>();
+
 
 var app = builder.Build();
 

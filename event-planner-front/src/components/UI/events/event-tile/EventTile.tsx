@@ -8,10 +8,10 @@ interface IEventTileProps {
     isAuth: Boolean;
     minPrice: number;
     event: IEventResponse;
-    favoriteCallback: (value: boolean) => void;
+    favoriteCallback?: (value: boolean) => void;
 };
 
-export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favoriteCallback}) => { 
+export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favoriteCallback=null}) => { 
     function parseDate(date: Date) {
         const currentYear = new Date().getFullYear();
         const options: Intl.DateTimeFormatOptions = {
@@ -31,7 +31,7 @@ export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favorit
                     event.cover && <img src={"data:image/png;base64," + event.cover} className="absolute -translate-y-1/2 top-1/2 w-full" alt={event.title} />
                 }
                 {
-                    isAuth && <Bookmark isFavorite={event.isFavorite} className={"absolute top-4 right-4 text-2xl"} favoriteCallback={favoriteCallback} />
+                    isAuth && favoriteCallback && <Bookmark isFavorite={event.isFavorite} className={"absolute top-4 right-4 text-2xl"} favoriteCallback={favoriteCallback} />
                 }
             </div>
             <div className="flex flex-col gap-1 max-h-[11.5rem] py-4 px-3">

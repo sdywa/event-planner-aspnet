@@ -63,7 +63,7 @@ public class EventOrganizationService : IEventOrganizationService
     public async Task<double> GetAverageRatingAsync(int creatorId) 
     {
         var events = await _eventStorageService.GetByCreatorAsync(creatorId);
-        double rating = 5;
+        double rating = 0;
 
         foreach (var e in events) 
         {
@@ -71,10 +71,13 @@ public class EventOrganizationService : IEventOrganizationService
             .Where(r => r.Sale.Ticket.Event.CreatorId == creatorId)
             .Select(r => r.Rating);
             if (ratings.Count() != 0)
-                rating = (rating + ratings.Average()) / 2;
+                if (rating == 0)
+                    rating = ratings.Average();
+                else 
+                    rating = (rating + ratings.Average()) / 2;
         }
         
-        return rating;
+        return rating == 0 ? 5 : rating;
     }
 
     public async Task<List<Review>> GetReviewsByEventAsync(int eventId) =>

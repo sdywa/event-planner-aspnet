@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { FC, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../../..";
 import { Button } from "../button/Button";
 import { DropdownMenu } from "../dropdown-menu/DropdownMenu";
@@ -7,6 +8,7 @@ import { Logo, LogoTypes } from "../logo/Logo";
 
 const Header: FC = () => {
     const {user} = useContext(Context);
+    const navigate = useNavigate();
 
     return (
         <header className="flex justify-center items-center">
@@ -16,7 +18,7 @@ const Header: FC = () => {
                 ?
                     <DropdownMenu items={[
                         {label: "Настройки", link: "/account/settings", icon: <i className="fa-solid fa-gear"></i>}, 
-                        {label: "Выход", onClick: () => user.logout(), icon: <i className="fa-solid fa-right-from-bracket"></i>}
+                        {label: "Выход", onClick: () => { user.logout(); navigate("/")}, icon: <i className="fa-solid fa-right-from-bracket"></i>}
                         ]}>
                             <Button>
                                 <div className="flex justify-between items-center gap-2 text-lg py-2">
