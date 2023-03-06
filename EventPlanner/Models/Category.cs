@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class Category : CommonModel
+public class Category : CommonModel<int>
 {
 
     [StringLength(45)]

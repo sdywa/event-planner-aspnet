@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Models;
 
-public class Address : CommonModel
+public class Address : CommonModel<int>
 {
     [StringLength(40)]
     public string Country { get; set; } = null!;
@@ -14,6 +14,4 @@ public class Address : CommonModel
     public string Street { get; set; } = null!;
     [StringLength(5)]
     public string Building { get; set; } = null!;
-    [StringLength(100)]
-    public String Title { get; set; } = null!;
 }

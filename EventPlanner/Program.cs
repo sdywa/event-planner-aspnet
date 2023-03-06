@@ -1,51 +1,91 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using EventPlanner;
 using EventPlanner.Models;
 using EventPlanner.Services.UserServices;
+using EventPlanner.Services.AdvertisingServices;
 using EventPlanner.Services.AuthenticationServices;
+using EventPlanner.Services.AuthorizationService;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
-
+// Add services to the container.
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<PlannerContext>(options => options
+builder.Services.AddDbContext<Context>(options => options
     .UseMySql(connection, ServerVersion.AutoDetect(connection)));
+
+builder.Services.AddControllers()
+.AddNewtonsoftJson(options => {
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+});
+
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy(name: "test", policy => {
+        policy.WithOrigins("http://localhost:3000");
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.AllowCredentials();
+    }); 
+});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => {
+        options.RequireHttpsMetadata = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = AuthOptions.ISSUER,
+
+            ValidateAudience = true,
+            ValidAudience = AuthOptions.AUDIENCE,
+            ValidateLifetime = true,
+
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+        };
+    });
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<EventPlanner.Services.AuthenticationServices.IAuthenticationService,
-    EventPlanner.Services.AuthenticationServices.AuthenticationService>();
+builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
+
 builder.Services.AddTransient<IEventStorageService, EventStorageService>();
 builder.Services.AddTransient<IEventOrganizationService, EventOrganizationService>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => options.LoginPath = "/auth/login");
-builder.Services.AddAuthorization();
+builder.Services.AddTransient<IAdvertisingService, AdvertisingService>();
 
-builder.Services.Configure<RouteOptions>(option =>
-    {
-        option.LowercaseUrls = true;
-        option.LowercaseQueryStrings = true;
-    });
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+// Create DB if not exist.
+using(var scope = app.Services.CreateScope())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    var context = scope.ServiceProvider.GetRequiredService<Context>();
+    var isCreated = await context.Database.EnsureCreatedAsync();
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-app.UseRouting();
+app.UseCors("test");
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.MapControllers();
 
 app.Run();

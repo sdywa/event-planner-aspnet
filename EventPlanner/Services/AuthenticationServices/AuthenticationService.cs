@@ -1,7 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
 using EventPlanner.Services.UserServices;
@@ -17,18 +13,15 @@ public class AuthenticationService : IAuthenticationService
         _userService = userService;
     }
 
-    public async Task<User> LoginAsync(
-        string email, 
-        string password, 
-        CancellationToken cancellationToken)
+    public async Task<User> LoginAsync(string email, string password)
     {
-        var user = await _userService.GetByEmailAsync(email, cancellationToken);
+        var user = await _userService.GetByEmailAsync(email);
         if (user is null)
-            throw new NullReferenceException();
+            throw new UserNotFoundException();
 
         if (BCrypt.Net.BCrypt.Verify(password, user.Password))
             return user;
-        throw new InvalidPasswordException(email, password);
+        throw new InvalidPasswordException();
     }
 
     public async Task RegisterAsync(
@@ -36,19 +29,18 @@ public class AuthenticationService : IAuthenticationService
         string lastName, 
         string email, 
         string password,
-        int roleId, 
-        CancellationToken cancellationToken)
+        UserRole roleId)
     {
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
         var user = new User() {
-            FirstName = firstName,
-            LastName = lastName,
+            Name = firstName,
+            Surname = lastName,
             Email = email,
             Password = hashedPassword,
             RegTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
             RoleId = roleId
         };
         
-        await _userService.CreateAsync(user, cancellationToken);
+        await _userService.CreateAsync(user);
     }
 }

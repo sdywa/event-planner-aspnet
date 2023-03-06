@@ -1,6 +1,6 @@
 namespace EventPlanner.Models;
 
-public class CommonModel 
+public class CommonModel<TId> 
 {
-    public int Id { get; set; }
+    public TId Id { get; set; } = default(TId)!;
 }
