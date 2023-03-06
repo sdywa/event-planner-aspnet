@@ -95,10 +95,10 @@ const Event: FC = () => {
             document.body.classList.remove("overflow-hidden");
     }
 
-    function parseDate(date: Date) {
+    function parseDate(date: Date, weekday=true) {
         const currentYear = new Date().getFullYear();
         const options: Intl.DateTimeFormatOptions = {
-            weekday: "long",
+            weekday: weekday ? "long" : undefined,
             day: "numeric",
             month: "long",
             year: currentYear !== date.getFullYear() ? "numeric" : undefined
@@ -299,7 +299,7 @@ const Event: FC = () => {
                                                         <div className="flex justify-between gap-4">
                                                             <div className="w-60">
                                                                     <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>
-                                                                    <div className="text-sm">до {until}</div>
+                                                                    <div className="text-sm">до {parseDate(new Date(until), false)}</div>
                                                                 </div>
                                                                 <div className="w-24 text-center">
                                                                     {
@@ -320,7 +320,7 @@ const Event: FC = () => {
                                 <SubmitButton disabled={hasError} isPrimary={true} 
                                     buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                     {
-                                        event?.tickets.find((t) => t.id === Number(getInputStatus("tickets")?.value))?.price
+                                        event?.tickets.find((t) => t.id === Number(getInputStatus("ticket")?.value))?.price
                                         ?
                                         "Купить билет"
                                         :

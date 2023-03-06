@@ -146,7 +146,8 @@ namespace EventPlanner.Controllers
                 Id = t.Id,
                 Title = t.Title,
                 Limit = t.Limit,
-                Price = t.Price
+                Price = t.Price,
+                Until = t.Until
             });
             var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
             e.Questions = questions.Select(q => new 

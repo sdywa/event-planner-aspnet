@@ -53,6 +53,7 @@ api.interceptors.response.use((config) => config, async (error) => {
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
                 console.log("не авторизован");
+                window.location.reload();
             }
         }
     }
