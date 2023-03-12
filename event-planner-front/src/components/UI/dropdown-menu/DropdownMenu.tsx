@@ -4,7 +4,7 @@ import { SimpleListItem } from "../list/SimpleListItem";
 
 interface IDropdownMenuProps {
     children: React.ReactNode;
-    items: {label: string, link?: string, icon?: React.ReactNode, onClick?: (e: React.MouseEvent<HTMLLIElement>) => void}[];
+    items: {label: React.ReactNode, link?: string, icon?: React.ReactNode, onClick?: (e: React.MouseEvent<HTMLLIElement>) => void}[];
 };
 
 export const DropdownMenu: FC<IDropdownMenuProps> = ({children, items}) => {
@@ -15,10 +15,10 @@ export const DropdownMenu: FC<IDropdownMenuProps> = ({children, items}) => {
                 <List>
                     {
                         items.map((item, index) =>
-                            <SimpleListItem 
-                                key={index} 
-                                label={item.label} 
-                                link={item.link} 
+                            <SimpleListItem
+                                key={index}
+                                label={item.label}
+                                link={item.link}
                                 icon={item.icon}
                                 onClick={item.onClick}
                                 className="text-darkgray hover:text-gray"

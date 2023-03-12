@@ -28,22 +28,22 @@ namespace EventPlanner.Controllers
             IWebHostEnvironment appEnvironment,
             Context context,
             IAdvertisingService advertisingService,
-            IEventStorageService eventStorageService, 
+            IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
-            IUserService userService) 
+            IUserService userService)
         {
             _appEnvironment = appEnvironment;
             _context = context;
             _advertisingService = advertisingService;
             _eventStorageService = eventStorageService;
-            _eventOrganizationService = eventOrganizationService;   
+            _eventOrganizationService = eventOrganizationService;
             _userService = userService;
         }
 
-        private string? LoadImage(string path) 
+        private string? LoadImage(string path)
         {
             var fullPath = $"{_appEnvironment.WebRootPath}{path}";
-            if (System.IO.File.Exists(fullPath)) 
+            if (System.IO.File.Exists(fullPath))
             {
                 var bytes = System.IO.File.ReadAllBytes(fullPath);
                 return Convert.ToBase64String(bytes);
@@ -51,8 +51,8 @@ namespace EventPlanner.Controllers
             return null;
         }
 
-        private Object PrepareEvent(User? user, Event e) 
-        {          
+        private Object PrepareEvent(User? user, Event e)
+        {
             dynamic result = new ExpandoObject();
             result.Id = e.Id;
             result.Title = e.Title;
@@ -70,21 +70,26 @@ namespace EventPlanner.Controllers
             return result;
         }
 
-        private async Task<Object> PrepareEventsAsync(List<Event> events) 
+        private async Task<Object> PrepareEventsAsync(List<Event> events)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-           
+
             User? user = null;
             if (userId != null)
                 user = await _userService.GetAsync(int.Parse(userId));
-            
-            return events.Select(e => PrepareEvent(user, e));
+
+            return events.Select(e =>
+            {
+                dynamic prepared = PrepareEvent(user, e);
+                prepared.MinPrice = e.Tickets.Count > 0 ? e.Tickets.Min(t => t.Price) : 0;
+                return prepared;
+            });
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync() 
+        public async Task<IActionResult> GetAllAsync()
         {
-            var events = await _eventStorageService.GetAllAsync();
+            var events = await _eventStorageService.GetAllAvailableAsync();
             var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             Event? reviewEvent = null;
@@ -110,18 +115,15 @@ namespace EventPlanner.Controllers
                 }
             }
 
-            var advertising = await _advertisingService.GetAdvertising(rowId != null ? int.Parse(rowId) : null, 3);
-
-            return new JsonResult(new 
+            return new JsonResult(new
             {
-                Events = await PrepareEventsAsync(events.Where(e => e.EndDate == null || e.EndDate > DateTime.Now).ToList()),
+                Events = await PrepareEventsAsync(events),
                 Review = reviewEvent != null ? PrepareEvent(null, reviewEvent) : null,
-                Advertising = await PrepareEventsAsync(advertising)
             });
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(int id) 
+        public async Task<IActionResult> GetAsync(int id)
         {
             var eventInfo = await _eventStorageService.GetAsync(id);
             if (eventInfo == null)
@@ -131,7 +133,7 @@ namespace EventPlanner.Controllers
             User? user = null;
             if (userId != null)
                 user = await _userService.GetAsync(int.Parse(userId));
-            
+
             dynamic e = PrepareEvent(user, eventInfo);
             e.Creator = new {
                 Id = e.Creator.Id,
@@ -141,22 +143,33 @@ namespace EventPlanner.Controllers
                 Rating = await _eventOrganizationService.GetAverageRatingAsync(e.Creator.Id)
             };
             var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
-            e.Tickets = tickets.Select(t => new 
-            {
-                Id = t.Id,
-                Title = t.Title,
-                Limit = t.Limit,
-                Price = t.Price,
-                Until = t.Until
-            });
+            var sales = await _eventOrganizationService.GetAllByEventAsync(id);
+            e.Tickets = tickets
+                .Where(t => t.Until > DateTime.Now && t.Limit > sales.Count)
+                .Select(t => new
+                {
+                    Id = t.Id,
+                    Title = t.Title,
+                    Limit = t.Limit,
+                    Price = t.Price,
+                    Until = t.Until
+                });
             var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
-            e.Questions = questions.Select(q => new 
+            e.Questions = questions.Select(q => new
             {
                 Id = q.Id,
                 Title = q.Title
             });
             e.IsParticipated = user != null ? await _eventOrganizationService.GetAsync(user.Id, eventInfo.Id) != null : false;
-            return new JsonResult(e);
+
+            var events = (await _eventStorageService.GetAllAvailableAsync())
+                .Where(ev => ev.CategoryId == e.Category.Id && ev.Id != e.Id)
+                .ToList();
+            var advertising = await _advertisingService.GetAdvertising(user?.Id, events, 3);
+            return new JsonResult(new {
+                Event = e,
+                Advertising = await PrepareEventsAsync(advertising)
+            });
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
@@ -171,8 +184,8 @@ namespace EventPlanner.Controllers
             if (e == null)
                 return NotFound(new { ErrorText = "Мероприятие не найдено" });
             if (e?.CreatorId != int.Parse(rowId))
-                return Forbid(); 
-            
+                return Forbid();
+
             var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
             return new JsonResult(questions.Select(q => new {
                 Id = q.Id,
@@ -193,8 +206,8 @@ namespace EventPlanner.Controllers
             if (e == null)
                 return NotFound(new { ErrorText = "Мероприятие не найдено" });
             if (e?.CreatorId != int.Parse(rowId))
-                return Forbid(); 
-            
+                return Forbid();
+
             var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
             return new JsonResult(tickets.Select(t => new {
                 Id = t.Id,
@@ -207,29 +220,29 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("{id}/fav")]
-        public async Task<IActionResult> ChangeFavAsync(int id, [FromBody] FavEventInfo favEventInfo) 
+        public async Task<IActionResult> ChangeFavAsync(int id, [FromBody] FavEventInfo favEventInfo)
         {
             var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (rowId == null)
                 return Unauthorized();
-            
+
             var eventItem = await _eventStorageService.GetAsync(id);
             if (eventItem == null)
                 return BadRequest(new { ErrorText = "Мероприятие не найдено" });
-            
+
             var userId = int.Parse(rowId);
             var favEvent = _context.FavEvents.FirstOrDefault(f => f.EventId == eventItem.Id && f.UserId == userId);
 
             // Если стало избранным, а favEvent не найден
-            if (favEventInfo.IsFavorite && favEvent == null) 
+            if (favEventInfo.IsFavorite && favEvent == null)
             {
-                var newFavEvent = new FavEvent 
+                var newFavEvent = new FavEvent
                 {
                     UserId = userId,
                     EventId = eventItem.Id
                 };
                 await _context.AddAsync(newFavEvent);
-            }             
+            }
             else if (!favEventInfo.IsFavorite && favEvent != null)
             {
                 _context.Remove(favEvent);
@@ -238,7 +251,7 @@ namespace EventPlanner.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-    
+
         [HttpGet("search")]
         public async Task<IActionResult> SearchAsync(string search)
         {
@@ -246,30 +259,30 @@ namespace EventPlanner.Controllers
             if (search == string.Empty)
                 return BadRequest(new { ErrorText = "Пустая строка поиска" });
 
-            var events = await _eventStorageService.GetAllAsync();
+            var events = await _eventStorageService.GetAllAvailableAsync();
             events = events
-                .Where(e => e.Title.ToLower().Contains(search) || 
+                .Where(e => e.Title.ToLower().Contains(search) ||
                     e.Description.ToLower().Contains(search))
                 .ToList();
-            
+
             return new JsonResult(await PrepareEventsAsync(events));
         }
 
-        private void CreateUploadIfNotExist() 
+        private void CreateUploadIfNotExist()
         {
             var path = $"{_appEnvironment.WebRootPath}/Uploads";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
         }
 
-        private async Task<string> UploadImage(IFormFile? image) 
+        private async Task<string> UploadImage(IFormFile? image)
         {
             CreateUploadIfNotExist();
             if (image != null)
             {
                 string ex = System.IO.Path.GetExtension(image.FileName);
                 string path = $"/Uploads/{Math.Abs(image.FileName.GetHashCode())}{ex}";
-                
+
                 using (var fileStream = new FileStream($"{_appEnvironment.WebRootPath}/{path}", FileMode.Create))
                     await image.CopyToAsync(fileStream);
                 return path;
@@ -277,46 +290,40 @@ namespace EventPlanner.Controllers
             return PlaceholderLink;
         }
 
-        private async Task<int?> ProcessAddressAsync(int? eventId, string address) 
+        private async Task<int?> ProcessAddressAsync(int? eventId, string address)
         {
-            int? addressId = null;
+            var newAddress = new Address();
             if (eventId != null)
             {
                 var e = await _eventStorageService.GetAsync((int)eventId);
-                addressId = e?.AddressId;
+                if (e?.Address != null)
+                    newAddress = e.Address;
             }
-            
+
             var splitted = address.Split(", ");
             if (splitted.Length != 5)
                 return null;
-            
-            var newAddress = new Address()
-            {
-                Country = splitted[0],
-                Region = splitted[1],
-                City = splitted[2],
-                Street = splitted[3],
-                Building = splitted[4]
-            };
 
-            if (addressId != null)
+            newAddress.Country = splitted[0];
+            newAddress.Region = splitted[1];
+            newAddress.City = splitted[2];
+            newAddress.Street = splitted[3];
+            newAddress.Building = splitted[4];
+
+            if (newAddress.Id != default)
             {
-                newAddress.Id = (int)addressId;
                 await _eventStorageService.UpdateAddressAsync(newAddress);
-            }
-            else
-            {
-                var created = await _eventStorageService.CreateAddressAsync(newAddress);
-                addressId = created.Id;
+                return newAddress.Id;
             }
 
-            return addressId;
+            var created = await _eventStorageService.CreateAddressAsync(newAddress);
+            return created.Id;
         }
 
         private async Task<Event> PrepareEvent(int userId, int? eventId, EventModel eventInfo)
         {
             int? addressId = null;
-            if (eventInfo.Address != null) 
+            if (eventInfo.Address != null)
                 addressId = await ProcessAddressAsync(eventId, eventInfo.Address);
 
             var cover = await UploadImage(eventInfo.Cover);
@@ -342,7 +349,7 @@ namespace EventPlanner.Controllers
 
         private async Task CreateDefaultQuestion(int eventId, string title)
         {
-            var question = new Question() 
+            var question = new Question()
             {
                 EventId = eventId,
                 Title = title,
@@ -354,7 +361,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("new")]
-        public async Task<IActionResult> CreateEvent([FromForm] EventModel newEventInfo) 
+        public async Task<IActionResult> CreateEvent([FromForm] EventModel newEventInfo)
         {
             var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (rowId == null)
@@ -365,11 +372,11 @@ namespace EventPlanner.Controllers
             if (newEventInfo.StartDate > newEventInfo.EndDate)
                 return BadRequest(new { Errors = new { EndDate = "Некорректная дата" } });
 
-            
+
             var newEvent = await PrepareEvent(int.Parse(rowId), null, newEventInfo);
             if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
                 return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
-            
+
             var created = await _eventStorageService.CreateAsync(newEvent);
             await CreateDefaultQuestion(created.Id, "Email");
             await CreateDefaultQuestion(created.Id, "Ваше Имя");
@@ -377,7 +384,7 @@ namespace EventPlanner.Controllers
 
             return new JsonResult(new { id = created.Id });
         }
-    
+
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateEvent(int id, [FromForm] EventModel eventInfo)
@@ -388,7 +395,7 @@ namespace EventPlanner.Controllers
 
             var e = await _eventStorageService.GetAsync(id);
             if (e?.CreatorId != int.Parse(rowId))
-                return Forbid(); 
+                return Forbid();
 
             if (DateTime.Now > eventInfo.StartDate)
                 return BadRequest(new { Errors = new { StartDate = "Некорректная дата" } });
@@ -401,13 +408,29 @@ namespace EventPlanner.Controllers
 
             if (newEvent.Cover == PlaceholderLink)
                 newEvent.Cover = e.Cover;
-            
+
             _context.Entry(e).CurrentValues.SetValues(newEvent);
             await _eventStorageService.UpdateAsync(e);
 
             return Ok();
         }
-    
+
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEvent(int id)
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var e = await _eventStorageService.GetAsync(id);
+            if (e?.CreatorId != int.Parse(rowId))
+                return Forbid();
+
+            await _eventStorageService.DeleteAsync(id);
+            return Ok();
+        }
+
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("{id}/questions")]
         public async Task<IActionResult> ProcessQuestions(int id, [FromBody] List<QuestionModel> questions)
@@ -420,12 +443,12 @@ namespace EventPlanner.Controllers
             if (e == null)
                 return NotFound(new { ErrorText = "Мероприятие не найдено" });
             if (e.CreatorId != int.Parse(rowId))
-                return Forbid(); 
+                return Forbid();
 
             if (questions.Count == 0)
                 return BadRequest(new { ErrorText = "Добавьте билеты" });
 
-            var currentQuestions = await _eventStorageService.GetQuestionsByEventAcyns(e.Id);            
+            var currentQuestions = await _eventStorageService.GetQuestionsByEventAcyns(e.Id);
             foreach (var question in questions)
             {
                 if (question.Id > 0)
@@ -447,7 +470,7 @@ namespace EventPlanner.Controllers
                         continue;
                     }
                 }
-                var newQuestion = new Question 
+                var newQuestion = new Question
                 {
                     EventId = id,
                     Title = question.Title,
@@ -462,7 +485,7 @@ namespace EventPlanner.Controllers
 
             return Ok();
         }
-    
+
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("{id}/tickets")]
         public async Task<IActionResult> ProcessTickets(int id, [FromBody] List<TicketModel> tickets)
@@ -475,12 +498,21 @@ namespace EventPlanner.Controllers
             if (e == null)
                 return NotFound(new { ErrorText = "Мероприятие не найдено" });
             if (e.CreatorId != int.Parse(rowId))
-                return Forbid(); 
+                return Forbid();
 
             if (tickets.Count == 0)
                 return BadRequest(new { ErrorText = "Добавьте билеты" });
 
-            var currentTickets = await _eventStorageService.GetTicketsByEventAcyns(e.Id);            
+            foreach (var ticket in tickets)
+            {
+                if (ticket.Until < DateTime.Now || ticket.Until > e.StartDate)
+                    return BadRequest(new { ErrorText = "Некорректная дата"});
+
+                if (ticket.Limit < 5 && ticket.Limit > 999)
+                    return BadRequest(new { ErrorText = "Некорректный лимит"});
+            }
+
+            var currentTickets = await _eventStorageService.GetTicketsByEventAcyns(e.Id);
             foreach (var ticket in tickets)
             {
                 if (ticket.Id > 0)
@@ -512,7 +544,7 @@ namespace EventPlanner.Controllers
 
             return Ok();
         }
-    
+
         [Authorize]
         [HttpPost("{id}/participate")]
         public async Task<IActionResult> Participate(int id, [FromBody] ParticipationModel patricipation)
@@ -543,7 +575,7 @@ namespace EventPlanner.Controllers
 
             return Ok();
         }
-    
+
         [Authorize]
         [HttpPost("{id}/review")]
         public async Task<IActionResult> MakeReviewAsync(int id, [FromBody] ReviewModel review)
@@ -551,7 +583,7 @@ namespace EventPlanner.Controllers
             var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (rowId == null)
                 return Unauthorized();
-            
+
             var userSales = await _eventOrganizationService.GetAllAsync(int.Parse(rowId));
             var sale = userSales.FirstOrDefault(s => s.Ticket.EventId == id);
             if (sale == null)

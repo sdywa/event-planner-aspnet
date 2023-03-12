@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Controllers.Models;
 
-public class EventModel 
+public class EventModel
 {
     [Required(ErrorMessage = "Укажите название")]
     [StringLength(70, ErrorMessage = "Используйте менее 70 символов")]

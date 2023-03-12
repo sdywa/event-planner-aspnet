@@ -14,6 +14,7 @@ import { ListItem } from "../components/UI/list/ListItem";
 import { DraggableItem } from "../components/UI/DraggableItem";
 import { FormInput } from "../components/UI/forms/form-input/FormInput";
 import { DateTimeInput } from "../components/UI/inputs/DateTimeInput";
+import { IDefaultEvent } from "../types/Api";
 import EventService from "../api/services/EventService";
 import { getErrors } from "../api";
 
@@ -43,22 +44,22 @@ export const TicketsPage: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (eventId) {
             // Sending request to server
-            
+
             const getEvent = async () => {
                 if (!eventId)
                     return;
 
                 try {
-                    const event = await EventService.get(Number(eventId));
+                    const event = await EventService.get<IDefaultEvent>(Number(eventId));
                     setTitle(event.data.title);
                     const tickets = await EventService.getTickets(Number(eventId));
                     setTickets(tickets.data);
                 } catch {
                     navigate("/");
                 }
-            } 
+            }
             getEvent();
-        } 
+        }
     }, []);
 
     function createTicket() {
@@ -122,7 +123,7 @@ export const TicketsPage: FC = () => {
                             <DateTimeInput initialValue={ticket.until.toString()} name={getName(ticket.id, "until")} serverError={ticketForm.serverErrors[getName(ticket.id, "until")]} isFormSubmitted={ticketForm.isSubmitted} callBack={ticketCallback(ticket.id, "until")} showError={false} />
                         </div>
                     </div>
-                } 
+                }
                 defaultState={
                     <div className="flex justify-between w-full">
                         <div className="w-64 whitespace-nowrap overflow-hidden text-ellipsis">
@@ -173,7 +174,7 @@ export const TicketsPage: FC = () => {
         console.log("sent!");
         const result: IEventTicket[] = Object.entries(values).map(([key, d]): IEventTicket | null => {
             const id = Number(key);
-            if (tickets.filter(t => t.id == id).length === 0)
+            if (tickets.filter(t => t.id === id).length === 0)
                 return null;
             return {
                 id: id,
@@ -259,13 +260,13 @@ export const TicketsPage: FC = () => {
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-6">
-                                <SubmitButton disabled={ticketForm.hasError} isPrimary={true} 
+                                <SubmitButton disabled={ticketForm.hasError} isPrimary={true}
                                     buttonStyle={ticketForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                     Продолжить
                                 </SubmitButton>
-                                <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GRAY}>
+                                {/* <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GRAY}>
                                     Сохранить черновик
-                                </Button>
+                                </Button> */}
                             </div>
                             <Button link="/events">
                                 <div className="text-gray hover:text-red">Отмена</div>

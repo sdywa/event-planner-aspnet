@@ -16,21 +16,21 @@ interface IFormInputProps {
     [key: string]: any;
 };
 
-export const FormInput: FC<IFormInputProps> = ({initialValue="", name, data, serverError, isSubmitted, className, showError=true, callBack, ...props}) => {
-    const {value, setValue, errorText, getClassName, ...inputData} = useFormInput<HTMLInputElement>(
-        initialValue, 
-        name, 
-        data.validation, 
-        isSubmitted, 
-        serverError, 
+export const FormInput: FC<IFormInputProps> = ({ initialValue = "", name, data, serverError, isSubmitted, className, showError = true, callBack, ...props }) => {
+    const { value, setValue, errorText, getClassName, ...inputData } = useFormInput<HTMLInputElement>(
+        initialValue,
+        name,
+        data.validation,
+        isSubmitted,
+        serverError,
         {
             default: data.label ? "pt-6" : "",
             active: "input--active",
             dirty: "input--dirty",
             error: "input--error"
         },
-    callBack);
-  
+        callBack);
+
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
         setValue(initialValue);

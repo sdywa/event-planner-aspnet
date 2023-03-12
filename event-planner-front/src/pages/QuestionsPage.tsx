@@ -13,6 +13,7 @@ import { Button, ButtonStyles } from "../components/UI/button/Button";
 import { WithIcon } from "../components/UI/with-icon/WithIcon";
 import { SubmitButton } from "../components/UI/button/SubmitButton";
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../hooks/useValidation";
+import { IDefaultEvent } from "../types/Api";
 import EventService from "../api/services/EventService";
 import { getErrors } from "../api";
 
@@ -42,16 +43,16 @@ export const QuestionsPage: FC = () => {
                     return;
 
                 try {
-                    const event = await EventService.get(Number(eventId));
+                    const event = await EventService.get<IDefaultEvent>(Number(eventId));
                     setTitle(event.data.title);
                     const questions = await EventService.getQuestions(Number(eventId));
                     setQuestions(questions.data);
                 } catch {
                     navigate("/");
                 }
-            } 
+            }
             getEvent();
-        } 
+        }
     }, []);
 
     function createQuestion() {
@@ -73,7 +74,7 @@ export const QuestionsPage: FC = () => {
                 open={() => openQuestion(question.id)} close={() => closeQuestion(question.id)} remove={() => removeQuestion(question.id)}
                 activeState={
                     <FormInput initialValue={questionForm.getInputStatus(question.id.toString())?.value || question.title} name={question.id.toString()} data={defaultFormInputData} serverError={questionForm.serverErrors[question.id.toString()]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} showError={false} className="p-0" />
-                } 
+                }
                 defaultState={
                     <span className="font-medium">{questionForm.getInputStatus(question.id.toString())?.value || question.title}</span>
                 } />
@@ -148,7 +149,7 @@ export const QuestionsPage: FC = () => {
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-6">
-                                <SubmitButton disabled={questionForm.hasError} isPrimary={true} 
+                                <SubmitButton disabled={questionForm.hasError} isPrimary={true}
                                     buttonStyle={questionForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                     Продолжить
                                 </SubmitButton>

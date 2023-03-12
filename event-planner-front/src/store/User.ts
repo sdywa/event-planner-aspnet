@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { getErrors } from "../api";
-import AuthService from "../api/services/AuthService";
-import { IUser, IToken } from "../types/Api";
+import UserService from "../api/services/UserService";
+import { IUser, IToken, UserRoles } from "../types/Api";
 
 export default class User {
     user = {} as IUser;
@@ -25,9 +25,9 @@ export default class User {
         localStorage.setItem("user", JSON.stringify(value));
     }
 
-    async signup(data: {name: string, surname: string, email: string, password: string}) {
+    async signup(data: {name: string, surname: string, email: string, password: string, passwordConfirm: string}) {
         try {
-            await AuthService.signup(data);
+            await UserService.signup(data);
         } catch (e) {
             return getErrors(e);
         }
@@ -35,7 +35,7 @@ export default class User {
 
     async login(data: {email: string, password: string}) {
         try {
-            const response = await AuthService.login(data);
+            const response = await UserService.login(data);
             if (response.data.user === undefined)
                 return;
 
@@ -51,7 +51,7 @@ export default class User {
     async logout() {
         try {
             const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToken") || "{}");
-            await AuthService.logout({token: refreshToken.token});
+            await UserService.logout({token: refreshToken.token});
         } catch (e) {
             return;
         } finally {
@@ -59,6 +59,28 @@ export default class User {
             localStorage.removeItem("refreshToken");
             this.setAuth(false);
             this.setUser({} as IUser);
+        }
+    }
+
+    async update(data: {name: string, surname: string, email: string, password: string, passwordConfirm: string}) {
+        try {
+            await UserService.update(data);
+            this.user.email = data.email;
+            this.user.name = data.name;
+            this.user.surname = data.surname;
+            this.setUser(this.user);
+        } catch (e) {
+            return getErrors(e);
+        }
+    }
+
+    async promote() {
+        try {
+            await UserService.promote();
+            this.user.role = UserRoles.Organizer;
+            this.setUser(this.user);
+        } catch (e) {
+            return getErrors(e);
         }
     }
 }

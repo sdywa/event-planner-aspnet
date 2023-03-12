@@ -23,12 +23,12 @@ export const EditableItem: FC<IEditableItemProps> = ({isActive, activeState, def
             <div className={clsx(["flex justify-between items-center gap-2 w-full", !isActive ? "flex" : "hidden"])}>
                 {defaultState}
                 {
-                    showButtons && 
+                    showButtons &&
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-200">
                         <i className="fa-solid fa-pen text-lg cursor-pointer" onClick={() => open()}></i>
                         <i className="fa-solid fa-xmark text-red text-2xl cursor-pointer" onClick={() => remove()}></i>
                     </div>
-                }  
+                }
             </div>
         </div>
     );

@@ -9,7 +9,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
     const [hiddenInputStatuses, setHiddenInputStatuses] = useState<{[key: string]: IFormInputStatus}>({});
 
     const getInputStatus = (name: string) => {
-        if (name in inputStatuses) 
+        if (name in inputStatuses)
             return inputStatuses[name];
     }
 
@@ -17,7 +17,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
         if (hidden) {
             if (!(name in inputStatuses))
                 return;
-                
+
             const newHidden = {...hiddenInputStatuses};
             newHidden[name] = inputStatuses[name];
             const newStatuses = {...inputStatuses};
@@ -25,7 +25,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
             setHiddenInputStatuses(newHidden);
             setInputStatuses(newStatuses);
         } else {
-            if (!(name in hiddenInputStatuses)) 
+            if (!(name in hiddenInputStatuses))
                 return;
 
             const newStatuses = {...inputStatuses};
@@ -46,10 +46,10 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
     const checkErrors = () => {
         let hasError = false;
         let isDirty = true;
-        
+
         for (const key in inputStatuses) {
             const status = inputStatuses[key];
-            
+
             if (status.hasError)
                 hasError = true;
 
@@ -80,7 +80,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
             const errors = await sendFormData(inputStatuses);
             console.log("sent");
             if (!errors)
-                return; 
+                return;
             setServerErrors(errors);
             for (const key in errors) {
                 inputStatuses[key.toLowerCase()].removeDirty();

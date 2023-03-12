@@ -19,7 +19,7 @@ export const EventRating: FC<IEventRatingProps> = ({event, reviewCallback}) => {
             e.preventDefault();
             if (!isClicked)
                 reviewCallback(index + 1);
-            
+
             setClicked(true);
         }
     }
@@ -40,8 +40,8 @@ export const EventRating: FC<IEventRatingProps> = ({event, reviewCallback}) => {
 
     const onMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
         if (isClicked)
-            return; 
-        
+            return;
+
         for (let i = 0; i < starCount; i++) {
             starsRef[i].current?.classList.remove(colorClass);
         }
@@ -66,7 +66,7 @@ export const EventRating: FC<IEventRatingProps> = ({event, reviewCallback}) => {
                 </div>
                 <div className="flex gap-1 text-3xl text-lightgray">
                     {
-                        starsRef.map((ref, i) => 
+                        starsRef.map((ref, i) =>
                             <div ref={ref} key={i} className="transition-colors duration-150 ease-in" onClick={getOnStarClick(i)} onMouseEnter={getOnStarHover(i)} onMouseLeave={onMouseLeave}>
                                 <i className="fa-solid fa-star"></i>
                             </div>)

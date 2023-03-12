@@ -25,14 +25,14 @@ builder.Services.AddControllers()
     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 });
 
-builder.Services.AddCors(options => 
+builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "test", policy => {
         policy.WithOrigins("http://localhost:3000");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
-    }); 
+    });
 });
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => {

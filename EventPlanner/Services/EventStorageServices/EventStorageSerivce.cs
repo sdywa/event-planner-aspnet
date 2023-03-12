@@ -31,7 +31,10 @@ public class EventStorageService : IEventStorageService
         await _common.GetAsync(id, IncludeValues());
 
     public async Task<List<Event>> GetAllAsync() =>
-        await _common.GetAllAsync(IncludeValues());
+        (await _common.GetAllAsync(IncludeValues())).Where(e => e.Tickets.Count > 0).ToList();
+
+    public async Task<List<Event>> GetAllAvailableAsync() =>
+        (await GetAllAsync()).Where(e => e.EndDate == null || e.EndDate > DateTime.Now).ToList();
 
     public async Task<List<Event>> GetByCreatorAsync(int creatorId)
     {
@@ -44,7 +47,7 @@ public class EventStorageService : IEventStorageService
     public async Task UpdateAsync(Event entity) =>
         await _common.UpdateAsync(entity);
 
-    public async Task DeleteAsync(int id) => 
+    public async Task DeleteAsync(int id) =>
         await _common.DeleteAsync(id);
 
     public async Task<Address> CreateAddressAsync(Address entity) =>
@@ -56,7 +59,7 @@ public class EventStorageService : IEventStorageService
     public async Task<Question?> GetQuestionAsync(int id) =>
         await _commonQuestion.GetAsync(id, _context.Questions);
 
-    public async Task<List<Question>> GetQuestionsByEventAcyns(int eventId) 
+    public async Task<List<Question>> GetQuestionsByEventAcyns(int eventId)
     {
         var e = await _context.Events.Include(e => e.Questions).FirstOrDefaultAsync(e => e.Id == eventId);
         if (e == null)
@@ -74,7 +77,7 @@ public class EventStorageService : IEventStorageService
     public async Task<Ticket?> GetTicketAsync(int id) =>
         await _commonTicket.GetAsync(id, _context.Tickets);
 
-    public async Task<List<Ticket>> GetTicketsByEventAcyns(int eventId) 
+    public async Task<List<Ticket>> GetTicketsByEventAcyns(int eventId)
     {
         var e = await _context.Events.Include(e => e.Tickets).FirstOrDefaultAsync(e => e.Id == eventId);
         if (e == null)

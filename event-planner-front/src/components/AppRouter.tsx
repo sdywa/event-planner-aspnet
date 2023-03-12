@@ -8,7 +8,7 @@ const AppRouter: FC = () => {
     return (
         <Routes>
             <Route element={<AuthLayout />}>
-                {authRoutes.map((route) => 
+                {authRoutes.map((route) =>
                     <Route
                         key={route.path}
                         path={route.path}
@@ -17,7 +17,7 @@ const AppRouter: FC = () => {
                 )}
             </Route>
             <Route element={<Layout hideHeaderPath={["/signup", "/login"]}/>}>
-                {routes.map((route) => 
+                {routes.map((route) =>
                     <Route
                         key={route.path}
                         path={route.path}

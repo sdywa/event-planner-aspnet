@@ -25,22 +25,33 @@ public class AuthenticationService : IAuthenticationService
     }
 
     public async Task RegisterAsync(
-        string firstName, 
-        string lastName, 
-        string email, 
+        string name,
+        string surname,
+        string email,
         string password,
         UserRole roleId)
     {
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
         var user = new User() {
-            Name = firstName,
-            Surname = lastName,
+            Name = name,
+            Surname = surname,
             Email = email,
             Password = hashedPassword,
-            RegTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+            RegTime = DateTime.Now,
             RoleId = roleId
         };
-        
+
         await _userService.CreateAsync(user);
+    }
+
+    public async Task UpdatePasswordAsync(int userId, string password)
+    {
+        var user = await _userService.GetAsync(userId);
+
+        if (user == null)
+            return;
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(password);
+        await _userService.UpdateAsync(user);
     }
 }

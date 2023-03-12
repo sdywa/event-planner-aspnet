@@ -12,7 +12,7 @@ public class User : CommonModel<int>
     public string Email { get; set; } = null!;
     [StringLength(70)]
     public string Password { get; set; } = null!;
-    public long RegTime { get; set; }
+    public DateTime RegTime { get; set; }
 
     public UserRole RoleId { get; set; }
     public Role Role { get; set; } = null!;

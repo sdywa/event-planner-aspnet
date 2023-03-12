@@ -5,7 +5,7 @@ interface ISelectOptionProps {
     isActive: boolean;
     value: string;
     children: React.ReactNode;
-    callBack: (v: string) => void; 
+    callBack: (v: string) => void;
 };
 
 export const SelectOption: FC<ISelectOptionProps> = ({isActive, value, children, callBack}) => {

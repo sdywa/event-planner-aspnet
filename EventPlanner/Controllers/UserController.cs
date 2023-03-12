@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace EventPlanner.Controllers
             IAuthenticationService authenticationService,
             EventPlanner.Services.AuthorizationService.IAuthorizationService authorizationService,
             Context context,
-            IUserService userService) 
+            IUserService userService)
         {
             _authenticationService = authenticationService;
             _authorizationService = authorizationService;
@@ -48,7 +49,7 @@ namespace EventPlanner.Controllers
                 return new JsonResult(
                     await _authorizationService.RefreshTokens(user, model.Token)
                 );
-            } 
+            }
             catch (InvalidRefreshToken)
             {
                 return BadRequest();
@@ -67,7 +68,7 @@ namespace EventPlanner.Controllers
                 return new JsonResult(
                     new {
                         accessToken = accessToken,
-                        refreshToken = refreshToken, 
+                        refreshToken = refreshToken,
                         user = new {
                             id = user.Id,
                             email = user.Email,
@@ -122,11 +123,59 @@ namespace EventPlanner.Controllers
 
                 await _authorizationService.RemoveRefreshToken(user, model.Token);
                 return Ok();
-            } 
+            }
             catch (InvalidRefreshToken)
             {
                 return BadRequest();
             }
+        }
+
+        [Authorize]
+        [HttpPost("role")]
+        public async Task<IActionResult> PromoteUserAsync()
+        {
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var user = await _userService.GetAsync(int.Parse(rowId));
+            if (user == null)
+                return Unauthorized();
+
+            if (user.RoleId == UserRole.Participant)
+            {
+                user.RoleId = UserRole.Organizer;
+                await _userService.UpdateAsync(user);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [Authorize]
+        [HttpPatch]
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UserModel model)
+        {
+            if (model.Password != null && model.Password != string.Empty && model.Password.Length < 8)
+                return BadRequest(new { Errors = new { Password = "Используйте не менее 8 символов", PasswordConfirm = "Используйте не менее 8 символов" } });
+
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var user = await _userService.GetAsync(int.Parse(rowId));
+            if (user == null)
+                return Unauthorized();
+
+            user.Name = model.Name;
+            user.Surname = model.Surname;
+            user.Email = model.Email;
+            await _userService.UpdateAsync(user);
+
+            if (model.Password != null && model.Password != string.Empty)
+                await _authenticationService.UpdatePasswordAsync(user.Id, model.Password);
+
+            return Ok();
         }
     }
 }

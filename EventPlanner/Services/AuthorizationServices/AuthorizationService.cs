@@ -30,9 +30,9 @@ public class AuthorizationService : IAuthorizationService
             new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name)
         };
         ClaimsIdentity identity = new ClaimsIdentity(
-            claims, 
-            "Token", 
-            ClaimsIdentity.DefaultNameClaimType, 
+            claims,
+            "Token",
+            ClaimsIdentity.DefaultNameClaimType,
             ClaimsIdentity.DefaultRoleClaimType);
         return identity;
     }
@@ -50,7 +50,7 @@ public class AuthorizationService : IAuthorizationService
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
         );
         var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-        return new 
+        return new
         {
             Token = encodedJwt,
             Created = now,
@@ -69,7 +69,7 @@ public class AuthorizationService : IAuthorizationService
         user.RefreshToken = refreshToken;
         await _userService.UpdateAsync(user);
 
-        return new 
+        return new
         {
             Token = refreshToken.Id,
             Created = refreshToken.Created,
@@ -89,7 +89,7 @@ public class AuthorizationService : IAuthorizationService
 
         var jwt = GetAccessToken(foundUser);
         var newRefreshToken = await GetRefreshToken(foundUser);
-        return new 
+        return new
         {
             accessToken = jwt,
             refreshToken = newRefreshToken

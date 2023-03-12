@@ -10,7 +10,7 @@ interface IEventSearchProps {
     isAuth: boolean;
     setSearchText: (value: string) => void,
     showingFilterCallback: (value: boolean) => void;
-    filtersCallback: (value: IFilter<IEventResponse>) => void;
+    filtersCallback: (value: IFilter<IEventResponse>, force: boolean) => void;
 };
 
 export const EventSearch: FC<IEventSearchProps> = ({isAuth, setSearchText, showingFilterCallback, filtersCallback}) => {
@@ -36,14 +36,14 @@ export const EventSearch: FC<IEventSearchProps> = ({isAuth, setSearchText, showi
 
     function onFavoriteClick(e: React.MouseEvent<HTMLAnchorElement>) {
         e.preventDefault();
-        filtersCallback(IS_FAVORITE);
+        filtersCallback(IS_FAVORITE(), !showingFavorite);
         setFavorite(!showingFavorite);
     }
 
     return (
         <div className="w-[35rem] flex justify-center items-center gap-4">
             <Input type="text" name="search" className={"pl-8"} value={value} style={InputStyle.WITH_ICON} onChange={onChange} placeholder="Поиск" autoComplete="off">
-                <i className="fa-solid fa-magnifying-glass"></i>    
+                <i className="fa-solid fa-magnifying-glass"></i>
             </Input>
             <div className="flex justify-center items-center gap-2">
                 <ActionButton isShowing={showingFilter} onClick={onFilterClick}>

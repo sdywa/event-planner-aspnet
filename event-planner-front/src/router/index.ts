@@ -7,6 +7,7 @@ import { Signup } from "../pages/signup/Signup";
 import { EditEvent } from "../pages/newEvent/EditEvent";
 import { QuestionsPage } from "../pages/QuestionsPage";
 import { TicketsPage } from "../pages/TicketsPage";
+import Settings from "../pages/Settings";
 
 interface route {
     path: string;
@@ -21,6 +22,7 @@ export const routes: route[] = [
     { path: "/events/:eventId/questions", component: QuestionsPage },
     { path: "/events/:eventId/tickets", component: TicketsPage },
     { path: "/learn", component: Learn },
+    { path: "/settings", component: Settings }
 ];
 
 export const authRoutes: route[] = [

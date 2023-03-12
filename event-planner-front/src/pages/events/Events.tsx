@@ -13,19 +13,21 @@ import { observer } from "mobx-react-lite";
 import { EventRating } from "../../components/UI/events/EventRating";
 import EventService from "../../api/services/EventService";
 
-interface IExtendedEventResponse {
-    advertising: IEventResponse[],
-    review?: IEventResponse,
-    events: IEventResponse[]
+interface IExtendedEventResponse extends IEventResponse {
+    minPrice: number;
+}
+
+interface IEventListResponse {
+    review?: IEventResponse;
+    events: IExtendedEventResponse[]
 }
 
 const Events: FC = () => {
     const {user} = useContext(Context);
     const [review, setReview] = useState<IEventResponse>();
-    const [advertising, setAdvertising] = useState<IEventResponse[]>();
-    const [allEvents, setAllEvents] = useState<IEventResponse[]>([]);
-    const [events, setEvents] = useState<IEventResponse[]>([]);
-    const {filteredItems, toggleFilter} = useFilter<IEventResponse>(events);
+    const [allEvents, setAllEvents] = useState<IExtendedEventResponse[]>([]);
+    const [events, setEvents] = useState<IExtendedEventResponse[]>([]);
+    const {filteredItems, toggleFilter} = useFilter<IExtendedEventResponse>(events);
     const [showingFilter, setShowingFilter] = useState(false);
     const [searchText, setSearchText] = useState("");
 
@@ -47,22 +49,21 @@ const Events: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         const getEvents = async () => {
             try {
-                const events = await EventService.getAll<IExtendedEventResponse>();
-                setAdvertising(events.data.advertising);
+                const events = await EventService.getAll<IEventListResponse>();
                 setReview(events.data.review);
                 setEvents(events.data.events);
                 setAllEvents(events.data.events);
             } catch (e) {
                 return;
             }
-        } 
+        }
 
         getEvents();
     }, []);
 
     useEffect(() => {
         const searchEvents = async () => {
-            const events = await EventService.search({search: searchText});
+            const events = await EventService.search<IExtendedEventResponse>({search: searchText});
             setEvents(events.data);
         }
 
@@ -82,51 +83,34 @@ const Events: FC = () => {
         <PageLayout title="Мероприятия" header={
             <div className="w-full flex justify-between items-center ml-10">
                 <EventSearch isAuth={user.isAuth} setSearchText={setSearchText} showingFilterCallback={setShowingFilter} filtersCallback={toggleFilter} />
-                { 
-                    user.isCreator && 
+                {
+                    user.isCreator &&
                     <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new">
                         <WithIcon icon={<i className="fa-solid fa-plus"></i>}>
                             Добавить
                         </WithIcon>
                     </Button>
-                }  
+                }
             </div>
         }>
             {
-                showingFilter && <EventFilter filtersCallback={toggleFilter} /> 
+                showingFilter && <EventFilter className="px-6" filtersCallback={toggleFilter} />
             }
-            <div className="pb-2">
-                { review && <EventRating event={review} reviewCallback={reviewCallback}></EventRating> }
-            </div>
+            { review &&
+                <div className="pb-8">
+                    <EventRating event={review} reviewCallback={reviewCallback}></EventRating>
+                </div>
+            }
             {
                 filteredItems.length
                 ?
                 <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
                     {
-                        filteredItems.slice(0, 9).map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
+                        filteredItems.map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={v.minPrice} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
                     }
                 </div>
                 :
                 <EmptyPlaceholder text="Мероприятия не найдены" />
-            }
-            {
-                advertising && advertising?.length !== 0 &&
-                <div className="pt-3 mt-10 border-t-2 border-lightgray">
-                    <h3 className="text-2xl pb-2">Рекомендуем</h3>
-                    <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
-                        {
-                            advertising.map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} />)
-                        }
-                    </div>
-                </div>
-            }
-            {
-                filteredItems.length > 6 && 
-                <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center pt-8 mt-10 border-t-2 border-lightgray">
-                    {
-                        filteredItems.slice(6).map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={0} event={v} favoriteCallback={(value: boolean) => setFavorite(v.id, value)} />)
-                    }
-                </div>
             }
         </PageLayout>
     );

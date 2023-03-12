@@ -17,8 +17,8 @@ export const RadioButton: FC<IRadioButtonProps> = ({id, name, value, children, c
             name: name,
             value: value,
             removeDirty: () => {},
-            hasError: false, 
-            isDirty: false, 
+            hasError: false,
+            isDirty: false,
             isActive: false
         });
     }
@@ -30,7 +30,7 @@ export const RadioButton: FC<IRadioButtonProps> = ({id, name, value, children, c
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
-        if (defaultChecked) 
+        if (defaultChecked)
             update();
         }, []);
 

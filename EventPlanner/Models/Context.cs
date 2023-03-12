@@ -23,7 +23,7 @@ public class Context : DbContext
 
     public Context(DbContextOptions<Context> options) : base(options)
     {
-        
+
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -36,17 +36,17 @@ public class Context : DbContext
         );
 
         builder.Entity<Category>().HasData(
-            new Category { Id = 1, Name = "Business", Title = "Бизнес" },//
+            new Category { Id = 1, Name = "Business", Title = "Бизнес" },
             new Category { Id = 2, Name = "IT", Title = "ИТ и интернет" },
             new Category { Id = 3, Name = "Science", Title = "Наука" },
             new Category { Id = 4, Name = "Hobby", Title = "Хобби и творчество" },
             new Category { Id = 5, Name = "Languages", Title = "Иностранные языки" },
             new Category { Id = 6, Name = "Culture", Title = "Искусство и культура" },
             new Category { Id = 7, Name = "Movie", Title = "Кино" },
-            new Category { Id = 8, Name = "Sport", Title = "Спорт" },//
+            new Category { Id = 8, Name = "Sport", Title = "Спорт" },
             new Category { Id = 9, Name = "Exhibition", Title = "Выставки" },
-            new Category { Id = 10, Name = "Concert", Title = "Концентры" },
-            new Category { Id = 11, Name = "Other", Title = "Другие события" },//
+            new Category { Id = 10, Name = "Concert", Title = "Концерты" },
+            new Category { Id = 11, Name = "Other", Title = "Другие события" },
             new Category { Id = 12, Name = "OtherEntertaiment", Title = "Другие развлечения" }
         );
 
@@ -57,106 +57,118 @@ public class Context : DbContext
         );
 
         builder.Entity<User>().HasData(
-            new User {
+            new User
+            {
                 Id = 1,
                 Name = "Каролина",
                 Surname = "Назарова",
                 Email = "cardso@rhyta.com",
                 Password = "$2a$11$CSZkDopk8ppLYKci3F3Hku16o5NNMob7bjSXztVpUYqfOjsVhCViu", //eeHee7xugoh
-                RegTime = 1648022798,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Organizer
             },
-            new User {
+            new User
+            {
                 Id = 2,
                 Name = "Роберт",
                 Surname = "Алиев",
                 Email = "feek1993@rhyta.com",
                 Password = "$2a$11$I.byg3ATg9FPi1nMVrzXXedjwLTPezFZdkJiP0x0FPEs59Fc8qtIi", // aS9AhN1u
-                RegTime = 1648050294,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Organizer
             },
-            new User {
+            new User
+            {
                 Id = 3,
                 Name = "Сергей",
                 Surname = "Озёров",
                 Email = "hencomitair@armyspy.com",
                 Password = "$2a$11$ikyy6AcYekdAdEmEwN7fFOnojaEY6YhWSE5RS1frvamuoQxHvI9qe", // Yaecha9te1
-                RegTime = 1648125670,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Participant
             },
-            new User {
+            new User
+            {
                 Id = 4,
                 Name = "Всеволод",
                 Surname = "Балашов",
                 Email = "dered37@armyspy.com",
                 Password = "$2a$11$EtGWjaVugK2aOrh/4r1jPuWJydM5Z/WNz.1wfk3GytOl4fcohqfHK", // ceiqu0Lae
-                RegTime = 1648150448,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Organizer
             },
-            new User {
+            new User
+            {
                 Id = 5,
                 Name = "Анатолий",
                 Surname = "Харламов",
                 Email = "hathead@teleworm.us",
                 Password = "$2a$11$NRYDDkO88A9vX/BTf0PWGen3p1DiWOkw47/fN7JYBv9lndQxREou2", // seiQuoh7ohp
-                RegTime = 1648185723,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Participant
             },
-            new User {
+            new User
+            {
                 Id = 6,
                 Name = "Алла",
                 Surname = "Соломина",
                 Email = "Noures96@jourrapide.com",
                 Password = "$2a$11$U6YsXt2Cj5lB9MF/FZ2OSewNBd3lMmmTrv.BWwxZ7MQymUIGcPoZq", // Oor5fooquuQu
-                RegTime = 1648207626,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Participant
             },
-            new User {
+            new User
+            {
                 Id = 7,
                 Name = "Савва",
                 Surname = "Грибков",
                 Email = "savva1969@rambler.ru",
                 Password = "$2a$11$pM8toFrDeeO2m2iYxEi3mO0ajvZ8E29x.034KKILnaXOa747FpaBq", // 9263bbc28
-                RegTime = 1677873080,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Organizer
             },
-            new User {
+            new User
+            {
                 Id = 8,
                 Name = "Людмила",
                 Surname = "Дасаева",
                 Email = "lyudmila4797@mail.ru",
                 Password = "$2a$11$nuBg7nEFAgmJ.WAwZdhj6.hRppS5tDgtLbEOKgmMpxh212GNhiEmO", // d4e1bd628
-                RegTime = 1677873161,
+                RegTime = DateTime.Now.AddDays(-120),
                 RoleId = UserRole.Organizer
             }
         );
 
         builder.Entity<Address>().HasData(
-            new Address {
-                Id = 1, 
+            new Address
+            {
+                Id = 1,
                 Country = "Россия",
                 Region = "Нижегородская область",
                 City = "Подольск",
                 Street = "въезд Космонавтов",
                 Building = "27",
             },
-            new Address {
-                Id = 2, 
+            new Address
+            {
+                Id = 2,
                 Country = "Россия",
                 Region = "Московская область",
                 City = "Клин",
                 Street = "пл. Домодедовская",
                 Building = "52",
             },
-            new Address {
-                Id = 3, 
+            new Address
+            {
+                Id = 3,
                 Country = "Россия",
                 Region = "Тюменская область",
                 City = "Егорьевск",
                 Street = "спуск Гоголя",
                 Building = "70",
             },
-            new Address {
+            new Address
+            {
                 Id = 4,
                 Country = "Россия",
                 Region = "Омская область",
@@ -164,7 +176,8 @@ public class Context : DbContext
                 Street = "проезд Космонавтов",
                 Building = "55",
             },
-            new Address {
+            new Address
+            {
                 Id = 5,
                 Country = "Россия",
                 Region = "Москва",
@@ -172,7 +185,8 @@ public class Context : DbContext
                 Street = "1-я Тверская-Ямская",
                 Building = "12/23",
             },
-            new Address {
+            new Address
+            {
                 Id = 6,
                 Country = "Россия",
                 Region = "Москва",
@@ -180,7 +194,8 @@ public class Context : DbContext
                 Street = "Коммунистическая",
                 Building = "8",
             },
-            new Address {
+            new Address
+            {
                 Id = 7,
                 Country = "Россия",
                 Region = "Рязанская область",
@@ -188,13 +203,23 @@ public class Context : DbContext
                 Street = "Ленина",
                 Building = "16",
             },
-            new Address {
+            new Address
+            {
                 Id = 8,
                 Country = "Россия",
                 Region = "Амурская область",
                 City = "Зарайск",
                 Street = "Будапештсткая",
                 Building = "48",
+            },
+            new Address
+            {
+                Id = 9,
+                Country = "Россия",
+                Region = "Москва",
+                City = "Москва",
+                Street = "2-ая Останкинская улица",
+                Building = "3",
             }
         );
 
@@ -376,6 +401,24 @@ public class Context : DbContext
                 CreatorId = 8,
                 CategoryId = 11,
                 AddressId = 8
+            },
+            new Event
+            {
+                Id = 11,
+                Title = "Открытие большого колеса",
+                Description = "Торжественное открытие самого новейшего колесного колеса нашего города",
+                FullDescription = @"Ожидание закончилось! Новейшая достопримечательность нашего города, возвышающееся колесо обозрения, наконец-то готова к его торжественному открытию. Это захватывающее новое дополнение к городскому горизонту предлагает захватывающий дух вид на окрестности, и, несомненно, станет местом посещения как для местных жителей, так и для посетителей.
+Благодаря его впечатляющему размеру и современному дизайну, колесо обозрения является настоящим инженерным чудом. Он предлагает удобные, кондиционированные гондолы, которые могут вместить до шести пассажиров, и гладкую, нежную поездку, которая подходит для всех возрастов. С вершины колеса гонщики смогут увидеть город с совершенно новой точки зрения, с потрясающим видом на горизонт, реку и окружающую сельскую местность.
+Чтобы отпраздновать торжественное открытие этой захватывающей новой достопримечательности, мы проводим специальное мероприятие, которое будет включать музыку, еду и веселье для всей семьи. Там будут раскраска лица и скручивание воздушного шара для детей, живую музыку и развлечения, а также широкий спектр вариантов еды и напитков для удовлетворения любого аппетита. И, конечно же, главной достопримечательностью будет само колесо обозрения, которое будет открыто для поездок в течение дня и в ночь.
+Независимо от того, ищете ли вы острые ощущения, ищете прилив адреналина или просто ищете уникальный способ увидеть город, большое колесо нельзя пропустить. Так что присоединяйтесь к нам на день веселья, волнения и приключений на торжественном открытии новой достопримечательности нашего города.",
+                CreationTime = new DateTime(2023, 03, 2, 9, 54, 18),
+                StartDate = new DateTime(2023, 05, 15, 16, 0, 0),
+                EndDate = new DateTime(2023, 05, 15, 17, 0, 0),
+                Cover = "/Uploads/1225857044.jpg",
+                TypeId = EventPlanner.EventType.Offline,
+                CreatorId = 4,
+                CategoryId = 11,
+                AddressId = 9
             }
         );
 
@@ -505,6 +548,15 @@ public class Context : DbContext
                 Limit = 10,
                 Price = 1000,
                 Until = new DateTime(2023, 03, 23, 0, 0, 0)
+            },
+            new Ticket
+            {
+                Id = 15,
+                EventId = 11,
+                Title = "Входной билет",
+                Limit = 10,
+                Price = 150,
+                Until = new DateTime(2023, 05, 05, 0, 0, 0)
             }
         );
 
@@ -716,6 +768,27 @@ public class Context : DbContext
             {
                 Id = 30,
                 EventId = 10,
+                Title = "Ваша Фамилия",
+                IsEditable = false
+            },
+            new Question
+            {
+                Id = 31,
+                EventId = 11,
+                Title = "Email",
+                IsEditable = false
+            },
+            new Question
+            {
+                Id = 32,
+                EventId = 11,
+                Title = "Ваше Имя",
+                IsEditable = false
+            },
+            new Question
+            {
+                Id = 33,
+                EventId = 11,
                 Title = "Ваша Фамилия",
                 IsEditable = false
             }

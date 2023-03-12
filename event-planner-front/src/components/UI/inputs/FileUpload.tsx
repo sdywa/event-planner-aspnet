@@ -10,7 +10,7 @@ export enum AcceptedTypes {
 interface IFileUploadProps {
     name: string;
     title: string;
-    acceptedType?: AcceptedTypes; 
+    acceptedType?: AcceptedTypes;
     isFormSubmitted: boolean;
     serverError: string;
     callBack: (name: string, value: IFormInputStatus) => void;
@@ -27,8 +27,8 @@ export const FileUpload: FC<IFileUploadProps> = ({name, title, isFormSubmitted, 
             name: name,
             value: value,
             removeDirty: () => {},
-            hasError: false, 
-            isDirty: Boolean(value), 
+            hasError: false,
+            isDirty: Boolean(value),
             isActive: false
         });
     }

@@ -22,20 +22,20 @@ export const AuthForm: FC<IAuthFormProps> = ({selectedTabIndex, data, sendFormDa
             <LinkSwitcher activeTab={activeTab} tabs={tabs}></LinkSwitcher>
             <div className="flex flex-col justify-content items-center px-8 w-full">
                 {
-                    Object.entries(data).map(([k, v]) => 
-                    <FormInput 
-                        key={k} 
-                        name={k} 
-                        data={v} 
-                        serverError={serverErrors[k]} 
+                    Object.entries(data).map(([k, v]) =>
+                    <FormInput
+                        key={k}
+                        name={k}
+                        data={v}
+                        serverError={serverErrors[k]}
                         isSubmitted={isSubmitted}
                         callBack={updateInputStatuses} />)
                 }
             </div>
             <div className="flex justify-end w-full px-8">
-                <SubmitButton disabled={hasError} isPrimary={true} 
+                <SubmitButton disabled={hasError} isPrimary={true}
                     buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
-                    {tabs[selectedTabIndex].button} 
+                    {tabs[selectedTabIndex].button}
                 </SubmitButton>
             </div>
         </form>

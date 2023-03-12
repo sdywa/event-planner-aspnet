@@ -11,7 +11,7 @@ interface IEventTileProps {
     favoriteCallback?: (value: boolean) => void;
 };
 
-export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favoriteCallback=null}) => { 
+export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favoriteCallback=null}) => {
     function parseDate(date: Date) {
         const currentYear = new Date().getFullYear();
         const options: Intl.DateTimeFormatOptions = {

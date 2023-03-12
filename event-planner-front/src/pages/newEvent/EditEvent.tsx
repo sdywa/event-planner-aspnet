@@ -47,7 +47,7 @@ export const EditEvent: FC = () => {
         { id: 7, name: "Movie", title: "Кино" },
         { id: 8, name: "Sport", title: "Спорт" },
         { id: 9, name: "Exhibition", title: "Выставки" },
-        { id: 10, name: "Concert", title: "Концентры" },
+        { id: 10, name: "Concert", title: "Концерты" },
         { id: 11, name: "Other", title: "Другие события" },
         { id: 12, name: "OtherEntertaiment", title: "Другие развлечения" }
     ];
@@ -84,15 +84,15 @@ export const EditEvent: FC = () => {
             const getEvent = async () => {
                 if (!eventId)
                     return;
-    
+
                 try {
-                    const events = await EventService.get(Number(eventId));
+                    const events = await EventService.get<IExtendedEventResponse>(Number(eventId));
                     setEvent(events.data);
                 } catch (e) {
                     return;
                 }
-            } 
-    
+            }
+
             getEvent();
         }
     }, []);
@@ -152,15 +152,19 @@ export const EditEvent: FC = () => {
                             infoForm.getInputStatus("type")?.value === eventType[0].id &&
                             <div className="flex flex-col">
                                 <div className="mx-2">
-                                    <FormInput initialValue={Object.values(event?.address || {}).join(", ")} name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                    <FormInput initialValue={
+                                        Object.entries(event?.address || {})
+                                            .filter(([v]) => v !== "id").map(([v, key]) => key)
+                                            .join(", ")
+                                        } name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                 </div>
-                                <div className="w-full h-96 bg-lightgray rounded-md"></div>
+                                {/* <div className="w-full h-96 bg-lightgray rounded-md"></div> */}
                             </div>
                         }
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-6">
-                            <SubmitButton disabled={infoForm.hasError} isPrimary={true} 
+                            <SubmitButton disabled={infoForm.hasError} isPrimary={true}
                                 buttonStyle={infoForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                 Продолжить
                             </SubmitButton>

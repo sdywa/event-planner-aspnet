@@ -1,6 +1,6 @@
 namespace EventPlanner;
 
-public enum EventType 
+public enum EventType
 {
     Offline,
     Online

@@ -38,15 +38,15 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
             name: name,
             value: value,
             removeDirty: () => {},
-            hasError: hasError, 
-            isDirty: isDirty, 
+            hasError: hasError,
+            isDirty: isDirty,
             isActive: false
         });
     }
 
     function getClassName(classes: {default: string, active: string, error: string}) {
         const className = [classes.default];
-        if (isActive) 
+        if (isActive)
             className.push(classes.active);
 
         if (errorText)
@@ -61,7 +61,6 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
     const optionCallback = (value: string) => {
         setError(false);
         setValue(value);
-        update(value);
         const isDirty = value !== prevValue;
         setDirty(isDirty);
         setErrorText(getError(value, isDirty));
@@ -72,7 +71,6 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
     }
 
     function getError(value: string, isDirty: Boolean) {
-        console.log(value);
         if (value === "") {
             setError(true);
             return defaultTitle ? defaultTitle : "Выберите пункт";
@@ -99,7 +97,7 @@ export const Select: FC<ISelectProps> = ({name, options, callBack, isFormSubmitt
     }
 
     useEffect(() => {
-        /* eslint-disable react-hooks/exhaustive-deps */ 
+        /* eslint-disable react-hooks/exhaustive-deps */
         if (isFormSubmitted) {
             setErrorText(getError(value, false));
             setPrevValue(value);

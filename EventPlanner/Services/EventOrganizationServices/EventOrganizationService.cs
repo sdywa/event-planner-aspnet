@@ -16,7 +16,7 @@ public class EventOrganizationService : IEventOrganizationService
     private IEventStorageService _eventStorageService;
 
 
-    public EventOrganizationService(Context context, IEventStorageService eventStorageService) 
+    public EventOrganizationService(Context context, IEventStorageService eventStorageService)
     {
         _context = context;
         _common = new CommonQueries<int, Sale>(_context);
@@ -25,7 +25,7 @@ public class EventOrganizationService : IEventOrganizationService
         _eventStorageService = eventStorageService;
     }
 
-    public async Task<Sale> CreateAsync(Sale entity) 
+    public async Task<Sale> CreateAsync(Sale entity)
     {
         return await _common.CreateAsync(entity);
     }
@@ -48,7 +48,7 @@ public class EventOrganizationService : IEventOrganizationService
     public async Task UpdateAsync(Sale entity) =>
         await _common.UpdateAsync(entity);
 
-    public async Task DeleteAsync(int id) => 
+    public async Task DeleteAsync(int id) =>
         await _common.DeleteAsync(id);
 
     public async Task DeleteAsync(int userId, int eventId)
@@ -60,12 +60,12 @@ public class EventOrganizationService : IEventOrganizationService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<double> GetAverageRatingAsync(int creatorId) 
+    public async Task<double> GetAverageRatingAsync(int creatorId)
     {
         var events = await _eventStorageService.GetByCreatorAsync(creatorId);
         double rating = 0;
 
-        foreach (var e in events) 
+        foreach (var e in events)
         {
             var ratings = (await GetReviewsByEventAsync(e.Id))
             .Where(r => r.Sale.Ticket.Event.CreatorId == creatorId)
@@ -73,10 +73,10 @@ public class EventOrganizationService : IEventOrganizationService
             if (ratings.Count() != 0)
                 if (rating == 0)
                     rating = ratings.Average();
-                else 
+                else
                     rating = (rating + ratings.Average()) / 2;
         }
-        
+
         return rating == 0 ? 5 : rating;
     }
 
@@ -88,7 +88,7 @@ public class EventOrganizationService : IEventOrganizationService
             .ThenInclude(t => t.Event)
             .Where(r => r.Sale.Ticket.EventId == eventId)
             .ToListAsync();
-    
+
     public async Task<Review?> GetReviewBySaleAsync(int saleId) =>
         await _context.Reviews.FirstOrDefaultAsync(r => r.SaleId == saleId);
 

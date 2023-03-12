@@ -1,7 +1,7 @@
 import axios from "axios";
 import { AxiosError } from "axios";
 import { IServerResponse, IToken } from "../types/Api";
-import AuthService from "./services/AuthService";
+import UserService from "./services/UserService";
 
 export const API_URL = `https://localhost:7222/api`;
 
@@ -33,7 +33,7 @@ api.interceptors.request.use((config) => {
 
     let accessToken: IToken = JSON.parse(localStorage.getItem("accessToken") || "{}");
     config.headers.Authorization = `Bearer ${accessToken.token}`;
-    
+
     return config;
 });
 
@@ -44,7 +44,7 @@ api.interceptors.response.use((config) => config, async (error) => {
         if (Object.keys(refreshToken).length > 0) {
             originalRequest._isRetry = true;
             try {
-                const response = await AuthService.refreshToken({token: refreshToken.token});
+                const response = await UserService.refreshToken({token: refreshToken.token});
                 localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
                 localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
                 return api.request(originalRequest);

@@ -13,10 +13,11 @@ import { IS_NOT_EMPTY } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
 import { IFormInputStatus, IFormInputData, IServerError } from "../../types";
-import { IExtendedEventResponse, IAnswer, IParticipationModel } from "../../types/Api";
+import { IEventResponse, IExtendedEventResponse, IAnswer, IParticipationModel } from "../../types/Api";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 import { DropdownMenu } from "../../components/UI/dropdown-menu/DropdownMenu";
 import { Context } from "../..";
+import { EventTile } from "../../components/UI/events/event-tile/EventTile";
 import { observer } from "mobx-react-lite";
 import EventService from "../../api/services/EventService";
 import { getErrors } from "../../api";
@@ -25,11 +26,21 @@ interface IEvent extends IExtendedEventResponse {
     isParticipated: boolean
 }
 
+interface IEventWithPrice extends IEventResponse {
+    minPrice: number;
+}
+
+interface IEventDataResponse {
+    event: IEvent;
+    advertising: IEventWithPrice[];
+}
+
 const Event: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
     const {user} = useContext(Context);
     const [event, setEvent] = useState<IEvent>();
+    const [advertising, setAdvertising] = useState<IEventWithPrice[]>();
     const {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
     const questionForm = useForm(sendQuestionFormData);
     const [modalActive, setActive] = useState(false);
@@ -135,13 +146,14 @@ const Event: FC = () => {
                 return;
 
             try {
-                const events = await EventService.get(Number(eventId));
-                setEvent(events.data);
+                const events = await EventService.get<IEventDataResponse>(Number(eventId));
+                setEvent(events.data.event);
+                setAdvertising(events.data.advertising);
             } catch (e) {
                 navigate("/");
                 return;
             }
-        } 
+        }
 
         getEvent();
     }, []);
@@ -179,7 +191,7 @@ const Event: FC = () => {
                                 <Button onClick={() => setModal(false)}>
                                     <div className="text-gray">Отмена</div>
                                 </Button>
-                                <SubmitButton disabled={questionForm.hasError} isPrimary={true} 
+                                <SubmitButton disabled={questionForm.hasError} isPrimary={true}
                                     buttonStyle={questionForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                     Отправить
                                 </SubmitButton>
@@ -188,12 +200,19 @@ const Event: FC = () => {
                     </Modal>
             }
             {
-                user.isAuth && user.user.id === event?.creator.id && 
+                user.isAuth && user.user.id === event?.creator.id &&
                 <div className="flex items-center justify-center">
                     <DropdownMenu items={[
-                        {label: "Информация", link: `/events/${eventId}/edit`}, 
+                        {label: "Информация", link: `/events/${eventId}/edit`},
                         {label: "Анкета", link: `/events/${eventId}/questions`},
-                        {label: "Билеты", link: `/events/${eventId}/tickets`}
+                        {label: "Билеты", link: `/events/${eventId}/tickets`},
+                        {label: <span className="text-red">Удалить</span>, onClick:
+                            async (e: React.MouseEvent<HTMLLIElement>) => {
+                                if (window.confirm("Удалить мероприятие?")) {
+                                    await EventService.deleteEvent(event.id);
+                                    navigate("/");
+                                }
+                            }}
                     ]}>
                         <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">
                             <WithIcon icon={<i className="fa-solid fa-pen"></i>}>
@@ -202,7 +221,7 @@ const Event: FC = () => {
                         </Button>
                     </DropdownMenu>
                     {/* <DropdownMenu items={[
-                        {label: "Статистика", link: `/events/${eventId}/edit`}, 
+                        {label: "Статистика", link: `/events/${eventId}/edit`},
                         {label: "Участники", link: `/events/${eventId}/edit`},
                         {label: "Обратная связь", link: `/events/${eventId}/edit`}
                     ]}>
@@ -248,14 +267,14 @@ const Event: FC = () => {
                             <i className="fa-solid fa-star text-yellow"></i>
                         </div>
                     </div>
-                    {
+                    {/* {
                         user.isAuth &&
                             <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
                                 <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
                                     <span className="text-base">Связаться с организатором</span>
                                 </WithIcon>
                             </Button>
-                    }
+                    } */}
                 </div>
             </div>
             <div className="flex flex-col gap-8">
@@ -263,73 +282,86 @@ const Event: FC = () => {
                     {event?.fullDescription}
                 </div>
                 {
+                    advertising && advertising?.length !== 0 &&
+                    <div className="py-2 border-t-2 border-lightgray">
+                        <h3 className="text-2xl pb-2">Рекомендуем</h3>
+                        <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
+                            {
+                                advertising.map((v) => <EventTile key={v.id} isAuth={user.isAuth} minPrice={v.minPrice} event={v} />)
+                            }
+                        </div>
+                    </div>
+                }
+                {
                     user.isAuth &&
-                    <div className="m-auto">
+                    <div className="py-2 border-t-2 border-lightgray flex justify-center">
+                        <div>
                         {
-                        event?.isParticipated 
-                        ?
-                            <h3 className="heading--tertiary mb-2">Вы уже зарегистрировались на мероприятие</h3>
-                        :
-                        <>
-                            <h3 className="heading--tertiary mb-2">Регистрация</h3>
-                            <form onSubmit={onSubmit} onChange={onChange}>
-                                <div className="flex gap-8 pb-2">
-                                    <div className="w-80 max-w-xs">
-                                        {
-                                            event?.questions.map((question, i) => <FormInput
-                                                key={question.id} 
-                                                name={question.id.toString()}
-                                                data={defaultFormInputData(question.title)}
-                                                initialValue={getQuestionInitialValue(i)}
-                                                serverError={serverErrors[question.id.toString()]}
-                                                isSubmitted={isSubmitted}
-                                                callBack={updateInputStatuses}
-                                            />)
-                                        }
-                                    </div>
-                                    <div className="min-w-[20rem] max-w-sm">
-                                        <div className="flex justify-between font-bold pb-5">
-                                            <div>Название билета</div>
-                                            <div className="w-24 text-center">Цена</div>
-                                        </div>
-                                        <ul>
+                            event?.isParticipated
+                            ?
+                                <h3 className="heading--tertiary mb-2">Вы уже зарегистрировались на мероприятие</h3>
+                            :
+                            <>
+                                <h3 className="heading--tertiary mb-2">Регистрация</h3>
+                                <form onSubmit={onSubmit} onChange={onChange}>
+                                    <div className="flex gap-8 pb-2">
+                                        <div className="w-80 max-w-xs">
                                             {
-                                                event?.tickets.map(({id, title: name, until, price}, i) => 
-                                                    <RadioButton key={name} name="ticket" id={name} value={id.toString()} defaultChecked={i === 0} callBack={updateInputStatuses}>
-                                                        <div className="flex justify-between gap-4">
-                                                            <div className="w-60">
-                                                                    <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>
-                                                                    <div className="text-sm">до {parseDate(new Date(until), false)}</div>
-                                                                </div>
-                                                                <div className="w-24 text-center">
-                                                                    {
-                                                                        price
-                                                                        ?
-                                                                            <div><span className="font-bold">{price}</span> руб.</div>
-                                                                        :
-                                                                        <span className="font-bold">Бесплатно</span>
-                                                                    }
-                                                                </div>
-                                                        </div>
-                                                    </RadioButton>
-                                                )
+                                                event?.questions.map((question, i) => <FormInput
+                                                    key={question.id}
+                                                    name={question.id.toString()}
+                                                    data={defaultFormInputData(question.title)}
+                                                    initialValue={getQuestionInitialValue(i)}
+                                                    serverError={serverErrors[question.id.toString()]}
+                                                    isSubmitted={isSubmitted}
+                                                    callBack={updateInputStatuses}
+                                                />)
                                             }
-                                        </ul>
+                                        </div>
+                                        <div className="min-w-[20rem] max-w-sm">
+                                            <div className="flex justify-between font-bold pb-5">
+                                                <div>Название билета</div>
+                                                <div className="w-24 text-center">Цена</div>
+                                            </div>
+                                            <ul>
+                                                {
+                                                    event?.tickets.map(({id, title: name, until, price}, i) =>
+                                                        <RadioButton key={name} name="ticket" id={name} value={id.toString()} defaultChecked={i === 0} callBack={updateInputStatuses}>
+                                                            <div className="flex justify-between gap-4">
+                                                                <div className="w-60">
+                                                                        <div className="font-ubuntu font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{name}</div>
+                                                                        <div className="text-sm">до {parseDate(new Date(until), false)}</div>
+                                                                    </div>
+                                                                    <div className="w-24 text-center">
+                                                                        {
+                                                                            price
+                                                                            ?
+                                                                                <div><span className="font-bold">{price}</span> руб.</div>
+                                                                            :
+                                                                            <span className="font-bold">Бесплатно</span>
+                                                                        }
+                                                                    </div>
+                                                            </div>
+                                                        </RadioButton>
+                                                    )
+                                                }
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
-                                <SubmitButton disabled={hasError} isPrimary={true} 
-                                    buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
-                                    {
-                                        event?.tickets.find((t) => t.id === Number(getInputStatus("ticket")?.value))?.price
-                                        ?
-                                        "Купить билет"
-                                        :
-                                        "Зарегистрироваться"
-                                    }
-                                </SubmitButton>
-                            </form>
-                        </>
-                        }
+                                    <SubmitButton disabled={hasError} isPrimary={true}
+                                        buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
+                                        {
+                                            event?.tickets.find((t) => t.id === Number(getInputStatus("ticket")?.value))?.price
+                                            ?
+                                            "Купить билет"
+                                            :
+                                            "Зарегистрироваться"
+                                        }
+                                    </SubmitButton>
+                                </form>
+                            </>
+                            }
+                        </div>
                     </div>
                 }
             </div>

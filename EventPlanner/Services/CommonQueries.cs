@@ -3,7 +3,7 @@ using EventPlanner.Models;
 
 namespace EventPlanner.Services;
 
-public class CommonQueries<TId, T> 
+public class CommonQueries<TId, T>
     where TId : IEquatable<TId>
     where T : CommonModel<TId>
 {
@@ -22,7 +22,7 @@ public class CommonQueries<TId, T>
         return created.Entity;
     }
 
-    public async Task<T?> GetAsync(TId id, IQueryable<T> collection) => 
+    public async Task<T?> GetAsync(TId id, IQueryable<T> collection) =>
         await collection.FirstOrDefaultAsync(e => Equals(e.Id, id));
 
     public async Task<List<T>> GetAllAsync(IQueryable<T> collection) =>

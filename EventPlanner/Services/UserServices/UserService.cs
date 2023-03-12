@@ -33,14 +33,14 @@ public class UserService : IUserService
     public async Task UpdateAsync(User entity) =>
         await _common.UpdateAsync(entity);
 
-    public async Task DeleteAsync(int id) => 
+    public async Task DeleteAsync(int id) =>
         await _common.DeleteAsync(id);
 
     private IQueryable<User> IncludeValues() =>
         _context.Users
             .Include(u => u.Role);
 
-    private IQueryable<User> IncludeValuesWithEvents() => 
+    private IQueryable<User> IncludeValuesWithEvents() =>
         IncludeValues()
             .Include(u => u.FavEvents)
                 .ThenInclude(f => f.Event)

@@ -38,17 +38,17 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
             name: name,
             value: resultDate,
             removeDirty: resetInput,
-            hasError: hasError, 
-            isDirty: isDirty, 
+            hasError: hasError,
+            isDirty: isDirty,
             isActive: false
         });
     }, [date, time, hasError, isDirty]);
 
     function getClassName() {
         const className = [defaultClass];
-        if (isActive) 
+        if (isActive)
             className.push("input--active");
-        
+
         if (errorText)
             className.push("input--error");
 
@@ -60,11 +60,11 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
 
     function getError(isDirty: boolean, isSubmitted: boolean) {
         const isDateUsed = date > -1 || isSubmitted;
-        if (!dateRef.current?.value && isDateUsed) { 
+        if (!dateRef.current?.value && isDateUsed) {
             setError(true);
             return "Введите дату";
         }
-        
+
         const parsed = parsedDate();
         if (new Date(parsed) < new Date() && isDateUsed) {
             setError(true);
@@ -105,11 +105,11 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
         const isDirty = newDate !== prevDate;
         setDirty(isDirty);
         setDate(!isNaN(newDate) ? newDate : 0);
-        
+
         const newTime = parsedTime();
         if (!isNaN(newTime))
             setTime(newTime);
-        
+
         const errors = getError(isDirty, false);
         setErrorText(errors);
     };

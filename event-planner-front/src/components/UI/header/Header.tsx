@@ -17,8 +17,8 @@ const Header: FC = () => {
                 {user.isAuth
                 ?
                     <DropdownMenu items={[
-                        {label: "Настройки", link: "/account/settings", icon: <i className="fa-solid fa-gear"></i>}, 
-                        {label: "Выход", onClick: () => { user.logout(); navigate("/")}, icon: <i className="fa-solid fa-right-from-bracket"></i>}
+                        {label: "Настройки", link: "/settings", icon: <i className="fa-solid fa-gear"></i>},
+                        {label: "Выход", onClick: async () => { await user.logout(); navigate("/")}, icon: <i className="fa-solid fa-right-from-bracket"></i>}
                         ]}>
                             <Button>
                                 <div className="flex justify-between items-center gap-2 text-lg py-2">

@@ -26,11 +26,11 @@ export const Textarea: FC<ITextareaProps> = ({initialValue="", name, label, serv
     if (maxLength > 0 && maxLength > minLength)
         validation.push(MAX_LENGTH(maxLength));
     const {value, setValue, errorText, getClassName, ...inputData} = useFormInput<HTMLTextAreaElement>(
-        initialValue, 
-        name, 
-        validation, 
-        isSubmitted, 
-        serverError, 
+        initialValue,
+        name,
+        validation,
+        isSubmitted,
+        serverError,
         {
             default: "textarea",
             active: "textarea--active",
@@ -54,7 +54,7 @@ export const Textarea: FC<ITextareaProps> = ({initialValue="", name, label, serv
             </div>
             <div className="font-roboto font-bold text-xs h-6 pb-2">
                 {
-                    errorText 
+                    errorText
                     ?
                     <span className="text-red">{errorText}</span>
                     :

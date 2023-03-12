@@ -10,8 +10,8 @@ interface StatusClasses {
 }
 
 function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
-    initialValue: string, 
-    inputName: string, 
+    initialValue: string,
+    inputName: string,
     validations: IValidation[],
     isFormSubmitted: boolean,
     serverError: string,
@@ -19,7 +19,7 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
     callBack: (name: string, value: IFormInputStatus) => void) {
     const [value, setValue] = useState(initialValue);
     const [prevValue, setPrevValue] = useState(initialValue);
-    
+
     const [isActive, setActive] = useState(false);
     const [isDirty, setDirty] = useState(false);
 
@@ -42,8 +42,8 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
             name: inputName,
             value: value,
             removeDirty: resetInput,
-            hasError, 
-            isDirty, 
+            hasError,
+            isDirty,
             isActive
         });
     }
@@ -57,19 +57,19 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
         if (isFormSubmitted)
             setErrorText(getError(false));
     }, [isFormSubmitted]);
-    
+
     useEffect(() => {
         setErrorText(getError(isDirty));
     }, [serverError]);
 
     function getClassName() {
         const className = [classes.default];
-        if (isActive) 
+        if (isActive)
             className.push(classes.active);
 
         if (isDirty && value)
             className.push(classes.dirty);
-        
+
         if (errorText)
             className.push(classes.error);
 
@@ -104,7 +104,7 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
         setError(!Boolean(newValue));
     }
 
-    return { 
+    return {
         value, setValue: set, errorText, onChange, onFocus, onBlur, getClassName
     };
 }
