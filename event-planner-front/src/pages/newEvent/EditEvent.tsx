@@ -17,6 +17,10 @@ import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../hooks/useValidation"
 import EventService from "../../api/services/EventService";
 import { getErrors } from "../../api";
 
+interface Response {
+    event: IExtendedEventResponse;
+}
+
 export const EditEvent: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
@@ -84,10 +88,10 @@ export const EditEvent: FC = () => {
             const getEvent = async () => {
                 if (!eventId)
                     return;
-
                 try {
-                    const events = await EventService.get<IExtendedEventResponse>(Number(eventId));
-                    setEvent(events.data);
+                    const events = await EventService.get<Response>(Number(eventId));
+                    setEvent(events.data.event);
+                    console.log(events.data);
                 } catch (e) {
                     return;
                 }

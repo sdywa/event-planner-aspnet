@@ -299,7 +299,7 @@ const Event: FC = () => {
                         {
                             event?.isParticipated
                             ?
-                                <h3 className="heading--tertiary mb-2">Вы уже зарегистрировались на мероприятие</h3>
+                                <h3 className="heading--tertiary mt-2">Вы уже зарегистрировались на мероприятие</h3>
                             :
                             <>
                                 <h3 className="heading--tertiary mb-2">Регистрация</h3>
