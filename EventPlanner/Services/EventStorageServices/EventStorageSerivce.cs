@@ -34,7 +34,7 @@ public class EventStorageService : IEventStorageService
         (await _common.GetAllAsync(IncludeValues())).Where(e => e.Tickets.Count > 0).ToList();
 
     public async Task<List<Event>> GetAllAvailableAsync() =>
-        (await GetAllAsync()).Where(e => e.EndDate == null || e.EndDate > DateTime.Now).ToList();
+        (await GetAllAsync()).Where(e => e.StartDate > DateTime.Now).ToList();
 
     public async Task<List<Event>> GetByCreatorAsync(int creatorId)
     {

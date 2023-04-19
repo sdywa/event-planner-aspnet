@@ -156,7 +156,7 @@ const Event: FC = () => {
         }
 
         getEvent();
-    }, []);
+    }, [eventId]);
 
     function getQuestionInitialValue(index: number) {
         if (index === 0)
