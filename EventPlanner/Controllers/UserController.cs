@@ -50,9 +50,9 @@ namespace EventPlanner.Controllers
                     await _authorizationService.RefreshTokens(user, model.Token)
                 );
             }
-            catch (InvalidRefreshToken)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return ExceptionHandler.Handle(ex);
             }
         }
 
@@ -79,13 +79,9 @@ namespace EventPlanner.Controllers
                     }
                 );
             }
-            catch (UserNotFoundException)
+            catch (Exception ex)
             {
-                return NotFound(new { Errors = new { Email = "Пользователь не найден" } });
-            }
-            catch (InvalidPasswordException)
-            {
-                return BadRequest(new { Errors = new { Password = "Неправильный пароль" } });
+                return ExceptionHandler.Handle(ex);
             }
         }
 
@@ -124,9 +120,9 @@ namespace EventPlanner.Controllers
                 await _authorizationService.RemoveRefreshToken(user, model.Token);
                 return Ok();
             }
-            catch (InvalidRefreshToken)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return ExceptionHandler.Handle(ex);
             }
         }
 
