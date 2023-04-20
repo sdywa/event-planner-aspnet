@@ -89,7 +89,7 @@ namespace EventPlanner.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var events = await _eventStorageService.GetAllAvailableAsync();
+            var events = await _eventStorageService.GetAvailableAsync();
             var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             Event? reviewEvent = null;
@@ -154,7 +154,7 @@ namespace EventPlanner.Controllers
                     Price = t.Price,
                     Until = t.Until
                 });
-            var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
+            var questions = await _eventStorageService.GetQuestionsByEventAsync(id);
             e.Questions = questions.Select(q => new
             {
                 Id = q.Id,
@@ -162,7 +162,7 @@ namespace EventPlanner.Controllers
             });
             e.IsParticipated = user != null ? await _eventOrganizationService.GetAsync(user.Id, eventInfo.Id) != null : false;
 
-            var events = (await _eventStorageService.GetAllAvailableAsync())
+            var events = (await _eventStorageService.GetAvailableAsync())
                 .Where(ev => ev.CategoryId == e.Category.Id && ev.Id != e.Id)
                 .ToList();
             var advertising = await _advertisingService.GetAdvertising(user?.Id, events, 3);
@@ -186,7 +186,7 @@ namespace EventPlanner.Controllers
             if (e?.CreatorId != int.Parse(rowId))
                 return Forbid();
 
-            var questions = await _eventStorageService.GetQuestionsByEventAcyns(id);
+            var questions = await _eventStorageService.GetQuestionsByEventAsync(id);
             return new JsonResult(questions.Select(q => new {
                 Id = q.Id,
                 Title = q.Title,
@@ -259,7 +259,7 @@ namespace EventPlanner.Controllers
             if (search == string.Empty)
                 return BadRequest(new { ErrorText = "Пустая строка поиска" });
 
-            var events = await _eventStorageService.GetAllAvailableAsync();
+            var events = await _eventStorageService.GetAvailableAsync();
             events = events
                 .Where(e => e.Title.ToLower().Contains(search) ||
                     e.Description.ToLower().Contains(search))
@@ -312,11 +312,11 @@ namespace EventPlanner.Controllers
 
             if (newAddress.Id != default)
             {
-                await _eventStorageService.UpdateAddressAsync(newAddress);
+                await _eventStorageService.UpdateAsync(newAddress);
                 return newAddress.Id;
             }
 
-            var created = await _eventStorageService.CreateAddressAsync(newAddress);
+            var created = await _eventStorageService.CreateAsync(newAddress);
             return created.Id;
         }
 
@@ -356,7 +356,7 @@ namespace EventPlanner.Controllers
                 IsEditable = false
             };
 
-            await _eventStorageService.CreateQuestionAsync(question);
+            await _eventStorageService.CreateAsync(question);
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
@@ -448,7 +448,7 @@ namespace EventPlanner.Controllers
             if (questions.Count == 0)
                 return BadRequest(new { ErrorText = "Добавьте билеты" });
 
-            var currentQuestions = await _eventStorageService.GetQuestionsByEventAcyns(e.Id);
+            var currentQuestions = await _eventStorageService.GetQuestionsByEventAsync(e.Id);
             foreach (var question in questions)
             {
                 if (question.Id > 0)
@@ -466,7 +466,7 @@ namespace EventPlanner.Controllers
                     if (originalQuestion != null)
                     {
                         _context.Entry(originalQuestion).CurrentValues.SetValues(question);
-                        await _eventStorageService.UpdateQuestionAsync(originalQuestion);
+                        await _eventStorageService.UpdateAsync(originalQuestion);
                         continue;
                     }
                 }
@@ -476,7 +476,7 @@ namespace EventPlanner.Controllers
                     Title = question.Title,
                     IsEditable = question.IsEditable
                 };
-                await _eventStorageService.CreateQuestionAsync(newQuestion);
+                await _eventStorageService.CreateAsync(newQuestion);
             }
 
             // Удаляем оставшиеся вопросы
@@ -523,7 +523,7 @@ namespace EventPlanner.Controllers
                     if (originalTicket != null)
                     {
                         _context.Entry(originalTicket).CurrentValues.SetValues(ticket);
-                        await _eventStorageService.UpdateTicketAsync(originalTicket);
+                        await _eventStorageService.UpdateAsync(originalTicket);
                         continue;
                     }
                 }
@@ -535,7 +535,7 @@ namespace EventPlanner.Controllers
                     Price = ticket.Price,
                     Until = ticket.Until
                 };
-                await _eventStorageService.CreateTicketAsync(newTicket);
+                await _eventStorageService.CreateAsync(newTicket);
             }
 
             // Удаляем оставшиеся вопросы
@@ -598,7 +598,7 @@ namespace EventPlanner.Controllers
                 Rating = review.Rating
             };
 
-            await _eventOrganizationService.CreateReviewAsync(newReview);
+            await _eventOrganizationService.CreateAsync(newReview);
 
             return Ok();
         }

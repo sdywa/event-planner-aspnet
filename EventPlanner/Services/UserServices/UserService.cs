@@ -3,25 +3,20 @@ using EventPlanner.Models;
 
 namespace EventPlanner.Services.UserServices;
 
-public class UserService : IUserService
+public class UserService : CommonQueries<int, User>, IUserService
 {
     private Context _context;
-    private CommonQueries<int, User> _common;
 
-    public UserService(Context context)
+    public UserService(Context context) : base(context)
     {
         _context = context;
-        _common = new CommonQueries<int, User>(_context);
     }
 
-    public async Task<User> CreateAsync(User entity) =>
-        await _common.CreateAsync(entity);
-
     public async Task<User?> GetAsync(int id) =>
-        await _common.GetAsync(id, IncludeValuesWithEvents());
+        await base.GetAsync(id, IncludeValuesWithEvents());
 
     public async Task<List<User>> GetAllAsync() =>
-        await _common.GetAllAsync(IncludeValues());
+        await base.GetAllAsync(IncludeValues());
 
     public async Task<User?> GetByEmailAsync(string email)
     {
@@ -29,12 +24,6 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(u => u.Email == email);
         return entity;
     }
-
-    public async Task UpdateAsync(User entity) =>
-        await _common.UpdateAsync(entity);
-
-    public async Task DeleteAsync(int id) =>
-        await _common.DeleteAsync(id);
 
     private IQueryable<User> IncludeValues() =>
         _context.Users
