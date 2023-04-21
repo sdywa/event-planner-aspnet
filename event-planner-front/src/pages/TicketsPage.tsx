@@ -50,10 +50,9 @@ export const TicketsPage: FC = () => {
                     return;
 
                 try {
-                    const event = await EventService.get<IDefaultEvent>(Number(eventId));
-                    setTitle(event.data.title);
-                    const tickets = await EventService.getTickets(Number(eventId));
-                    setTickets(tickets.data);
+                    const response = await EventService.getTickets(Number(eventId));
+                    setTitle(response.data.title)
+                    setTickets(response.data.tickets);
                 } catch {
                     navigate("/");
                 }

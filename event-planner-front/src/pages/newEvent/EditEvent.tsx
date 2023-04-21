@@ -106,7 +106,7 @@ export const EditEvent: FC = () => {
     }, [infoForm.getInputStatus("type")]);
 
     return (
-        <PageLayout title="Новое мероприятие">
+        <PageLayout title={event ? "Настройка мероприятия" : "Новое мероприятие"}>
             <div className="flex gap-12">
                 <List className="w-48 text-black">
                     <ListItem className="text-green">Информация</ListItem>

@@ -83,13 +83,23 @@ export interface IEventQuestion {
     isEditable?: Boolean
 }
 
-export interface IEventTicket{
+export interface IEventQuestionResponse {
+    title: string,
+    questions: IEventQuestion[]
+}
+
+export interface IEventTicket {
     id: number,
     title: string,
     limit?: number,
     until: string,
     price: number
 };
+
+export interface IEventTicketResponse {
+    title: string,
+    tickets: IEventTicket[]
+}
 
 export interface IAnswer {
     questionId: number,

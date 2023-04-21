@@ -43,10 +43,9 @@ export const QuestionsPage: FC = () => {
                     return;
 
                 try {
-                    const event = await EventService.get<IDefaultEvent>(Number(eventId));
-                    setTitle(event.data.title);
-                    const questions = await EventService.getQuestions(Number(eventId));
-                    setQuestions(questions.data);
+                    const response = await EventService.getQuestions(Number(eventId));
+                    setTitle(response.data.title)
+                    setQuestions(response.data.questions);
                 } catch {
                     navigate("/");
                 }

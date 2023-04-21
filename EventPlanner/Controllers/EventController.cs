@@ -225,11 +225,14 @@ namespace EventPlanner.Controllers
                     return Forbid();
 
                 var questions = await _eventStorageService.GetQuestionsByEventAsync(id);
-                return new JsonResult(questions.Select(q => new {
-                    Id = q.Id,
-                    Title = q.Title,
-                    IsEditable = q.IsEditable
-                }));
+                return new JsonResult(new {
+                    title = e.Title,
+                    questions = questions.Select(q => new {
+                        Id = q.Id,
+                        Title = q.Title,
+                        IsEditable = q.IsEditable
+                    })
+                });
             }
             catch (Exception ex)
             {
@@ -249,13 +252,16 @@ namespace EventPlanner.Controllers
                     return Forbid();
 
                 var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
-                return new JsonResult(tickets.Select(t => new {
-                    Id = t.Id,
-                    Title = t.Title,
-                    Limit = t.Limit,
-                    Price = t.Price,
-                    Until = t.Until
-                }));
+                return new JsonResult(new {
+                    title = e.Title,
+                    tickets = tickets.Select(t => new {
+                        Id = t.Id,
+                        Title = t.Title,
+                        Limit = t.Limit,
+                        Price = t.Price,
+                        Until = t.Until
+                    })
+                });
             }
             catch (Exception ex)
             {
