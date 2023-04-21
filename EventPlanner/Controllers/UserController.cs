@@ -104,7 +104,6 @@ namespace EventPlanner.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] TokenModel? model)
         {
-            Console.WriteLine($"token: {model?.Token}");
             if (model?.Token == null)
                 return BadRequest();
 

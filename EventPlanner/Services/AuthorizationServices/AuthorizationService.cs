@@ -83,7 +83,6 @@ public class AuthorizationService : IAuthorizationService
             .Include(u => u.RefreshToken)
             .FirstOrDefaultAsync(u => u.Id == user.Id && u.RefreshTokenId == refreshToken);
 
-        Console.WriteLine($"{foundUser?.Name} — \"{foundUser?.RefreshTokenId}\" {user?.Name}: {user?.RefreshToken}");
         if (foundUser == null || foundUser.RefreshToken == null || foundUser.RefreshToken.Expires < DateTime.Now)
             throw new InvalidRefreshToken();
 

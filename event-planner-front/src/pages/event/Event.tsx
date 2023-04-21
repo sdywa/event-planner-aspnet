@@ -149,6 +149,7 @@ const Event: FC = () => {
                 const events = await EventService.get<IEventDataResponse>(Number(eventId));
                 setEvent(events.data.event);
                 setAdvertising(events.data.advertising);
+                window.scrollTo(0, 0);
             } catch (e) {
                 navigate("/");
                 return;

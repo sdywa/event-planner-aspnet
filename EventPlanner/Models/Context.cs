@@ -466,7 +466,7 @@ public class Context : DbContext
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 50,
-                Until = new DateTime(2023, 03, 20, 0, 0, 0)
+                Until = new DateTime(2023, 03, 20, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -475,7 +475,7 @@ public class Context : DbContext
                 Title = "VIP-билет",
                 Limit = 10,
                 Price = 500,
-                Until = new DateTime(2023, 03, 20, 0, 0, 0)
+                Until = new DateTime(2023, 03, 20, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -484,7 +484,7 @@ public class Context : DbContext
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 200,
-                Until = new DateTime(2023, 04, 4, 0, 0, 0)
+                Until = new DateTime(2023, 04, 4, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -493,7 +493,7 @@ public class Context : DbContext
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 100,
-                Until = new DateTime(2023, 03, 21, 0, 0, 0)
+                Until = new DateTime(2023, 03, 21, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -502,7 +502,7 @@ public class Context : DbContext
                 Title = "Премиум билет",
                 Limit = 10,
                 Price = 300,
-                Until = new DateTime(2023, 03, 21, 0, 0, 0)
+                Until = new DateTime(2023, 03, 21, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -511,7 +511,7 @@ public class Context : DbContext
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 0,
-                Until = new DateTime(2023, 03, 20, 0, 0, 0)
+                Until = new DateTime(2023, 03, 20, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -520,7 +520,7 @@ public class Context : DbContext
                 Title = "VIP-билет",
                 Limit = 10,
                 Price = 700,
-                Until = new DateTime(2023, 03, 20, 0, 0, 0)
+                Until = new DateTime(2023, 03, 20, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -529,7 +529,7 @@ public class Context : DbContext
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 0,
-                Until = new DateTime(2023, 04, 4, 0, 0, 0)
+                Until = new DateTime(2023, 04, 4, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -538,7 +538,7 @@ public class Context : DbContext
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 300,
-                Until = new DateTime(2023, 03, 23, 0, 0, 0)
+                Until = new DateTime(2023, 03, 23, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -547,7 +547,7 @@ public class Context : DbContext
                 Title = "Премиум билет",
                 Limit = 10,
                 Price = 1000,
-                Until = new DateTime(2023, 03, 23, 0, 0, 0)
+                Until = new DateTime(2023, 03, 23, 0, 0, 0).AddMonths(3)
             },
             new Ticket
             {
@@ -556,7 +556,7 @@ public class Context : DbContext
                 Title = "Входной билет",
                 Limit = 10,
                 Price = 150,
-                Until = new DateTime(2023, 05, 05, 0, 0, 0)
+                Until = new DateTime(2023, 05, 05, 0, 0, 0).AddMonths(3)
             }
         );
 

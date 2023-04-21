@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using EventPlanner.Exceptions;
 using EventPlanner.Models;
 
 namespace EventPlanner.Services.EventStorageServices;
@@ -18,8 +19,15 @@ public class EventStorageService : CommonQueries<int, Event>, IEventStorageServi
         _ticketService = new TicketService(_context);
     }
 
-    public async Task<Event?> GetAsync(int id) =>
-        await base.GetAsync(id, IncludeValues());
+    public async Task<Event?> GetAsync(int id) => await base.GetAsync(id, IncludeValues());
+
+    public async Task<Event> GetByIdAsync(int id)
+    {
+        var e = await GetAsync(id);
+        if (e == null)
+            throw new EventNotFoundException();
+        return e;
+    }
 
     public async Task<List<Event>> GetByCreatorAsync(int creatorId)
     {
@@ -58,5 +66,6 @@ public class EventStorageService : CommonQueries<int, Event>, IEventStorageServi
             .Include(e => e.Creator)
             .Include(e => e.Category)
             .Include(e => e.Address)
-            .Include(e => e.Tickets);
+            .Include(e => e.Tickets)
+            .Include(e => e.Questions);
 }

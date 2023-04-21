@@ -7,6 +7,7 @@ namespace EventPlanner.Services.EventStorageServices;
 /// </summary>
 public interface IEventStorageService : IDataService<int, Event>
 {
+    Task<Event> GetByIdAsync(int id);
     Task<List<Event>> GetAvailableAsync();
     Task<List<Event>> GetByCreatorAsync(int creatorId);
     Task<Address> CreateAsync(Address entity);

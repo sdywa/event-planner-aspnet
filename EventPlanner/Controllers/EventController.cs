@@ -2,8 +2,9 @@ using System.Dynamic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using EventPlanner.Models;
 using EventPlanner.Controllers.Models;
+using EventPlanner.Exceptions;
+using EventPlanner.Models;
 using EventPlanner.Services.AdvertisingServices;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
@@ -40,6 +41,27 @@ namespace EventPlanner.Controllers
             _userService = userService;
         }
 
+        private async Task<User?> TryGetUserAsync()
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null)
+                return null;
+
+            var user = await _userService.GetAsync(int.Parse(id));
+            if (user == null)
+                return null;
+
+            return user;
+        }
+
+        private async Task<User> GetUserAsync()
+        {
+            var user = await TryGetUserAsync();
+            if (user == null)
+                throw new UserNotFoundException();
+            return user;
+        }
+
         private string? LoadImage(string path)
         {
             var fullPath = $"{_appEnvironment.WebRootPath}{path}";
@@ -51,100 +73,60 @@ namespace EventPlanner.Controllers
             return null;
         }
 
-        private Object PrepareEvent(User? user, Event e)
+        private Dictionary<string, object?> PrepareEvent(Event e, User? user, HashSet<string> fields)
         {
-            dynamic result = new ExpandoObject();
-            result.Id = e.Id;
-            result.Title = e.Title;
-            result.Description = e.Description;
-            result.FullDescription = e.FullDescription;
-            result.Cover = LoadImage(e.Cover ?? "");
-            result.CreationTime = e.CreationTime;
-            result.StartDate = e.StartDate;
-            result.EndDate = e.EndDate;
-            result.Category = e.Category;
-            result.Type = e.Type;
-            result.Creator = e.Creator;
-            result.Address = e.Address;
-            result.IsFavorite = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null;
-            return result;
-        }
+            var type = typeof(Event);
+            var prepared = new Dictionary<string, object?>();
 
-        private async Task<Object> PrepareEventsAsync(List<Event> events)
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            User? user = null;
-            if (userId != null)
-                user = await _userService.GetAsync(int.Parse(userId));
-
-            return events.Select(e =>
+            foreach (var pi in type.GetProperties())
             {
-                dynamic prepared = PrepareEvent(user, e);
-                prepared.MinPrice = e.Tickets.Count > 0 ? e.Tickets.Min(t => t.Price) : 0;
-                return prepared;
-            });
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            var events = await _eventStorageService.GetAvailableAsync();
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            Event? reviewEvent = null;
-            if (rowId != null)
-            {
-                var user = await _userService.GetAsync(int.Parse(rowId));
-                if (user != null)
-                {
-                    var userSales = await _eventOrganizationService.GetAllAsync(user.Id);
-                    //Достаём все продажи для одного пользователя и сортируем их
-                    var sales = userSales
-                        .Where(s => s.Ticket.Event.EndDate < DateTime.Now)
-                        .OrderByDescending(s => s.Ticket.Event.EndDate);
-
-                    foreach (var sale in sales) {
-                        // Берём первую продажу без отзыва
-                        if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) == null)
-                        {
-                            reviewEvent = sale.Ticket.Event;
-                            break;
-                        }
-                    }
-                }
+                if (!fields.Contains(pi.Name))
+                    continue;
+                prepared[pi.Name] = type.GetProperty(pi.Name)?.GetValue(e);
             }
 
-            return new JsonResult(new
-            {
-                Events = await PrepareEventsAsync(events),
-                Review = reviewEvent != null ? PrepareEvent(null, reviewEvent) : null,
+            if (fields.Contains("Cover"))
+                prepared["Cover"] = LoadImage(e.Cover ?? "");
+
+            if (fields.Contains("IsFavorite"))
+                prepared["IsFavorite"] = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null;
+
+            return prepared;
+        }
+
+        private async Task<Dictionary<string, object?>> PrepareEventAsync(Event e)
+        {
+            var user = await TryGetUserAsync();
+            return PrepareEvent(e, user, new HashSet<string> {
+                nameof(e.Id),
+                nameof(e.Title),
+                nameof(e.Cover),
+                nameof(e.Description),
+                nameof(e.Category),
+                nameof(e.Type),
+                nameof(e.StartDate),
+                nameof(e.EndDate),
+                nameof(e.Address),
+                "IsFavorite"
             });
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(int id)
+        private async Task<Dictionary<string, object?>> PrepareExtendedEventAsync(Event e)
         {
-            var eventInfo = await _eventStorageService.GetAsync(id);
-            if (eventInfo == null)
-                return BadRequest();
+            var prepared = await PrepareEventAsync(e);
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            User? user = null;
-            if (userId != null)
-                user = await _userService.GetAsync(int.Parse(userId));
-
-            dynamic e = PrepareEvent(user, eventInfo);
-            e.Creator = new {
+            prepared["FullDescription"] = e.FullDescription;
+            prepared["Creator"] = new
+            {
                 Id = e.Creator.Id,
                 Name = e.Creator.Name,
                 Surname = e.Creator.Surname,
                 EventsCount = (await _eventStorageService.GetByCreatorAsync(e.Creator.Id)).Count,
                 Rating = await _eventOrganizationService.GetAverageRatingAsync(e.Creator.Id)
             };
-            var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
-            var sales = await _eventOrganizationService.GetAllByEventAsync(id);
-            e.Tickets = tickets
+
+            var sales = await _eventOrganizationService.GetAllByEventAsync(e.Id);
+            prepared["Tickets"] = e.Tickets
                 .Where(t => t.Until > DateTime.Now && t.Limit > sales.Count)
                 .Select(t => new
                 {
@@ -154,68 +136,131 @@ namespace EventPlanner.Controllers
                     Price = t.Price,
                     Until = t.Until
                 });
-            var questions = await _eventStorageService.GetQuestionsByEventAsync(id);
-            e.Questions = questions.Select(q => new
+
+            prepared["Questions"] = e.Questions.Select(q => new
             {
                 Id = q.Id,
                 Title = q.Title
             });
-            e.IsParticipated = user != null ? await _eventOrganizationService.GetAsync(user.Id, eventInfo.Id) != null : false;
 
-            var events = (await _eventStorageService.GetAvailableAsync())
-                .Where(ev => ev.CategoryId == e.Category.Id && ev.Id != e.Id)
-                .ToList();
-            var advertising = await _advertisingService.GetAdvertising(user?.Id, events, 3);
-            return new JsonResult(new {
-                Event = e,
-                Advertising = await PrepareEventsAsync(advertising)
+            var user = await TryGetUserAsync();
+            prepared["IsParticipated"] = user != null ? await _eventOrganizationService.GetAsync(user.Id, e.Id) != null : false;
+
+            return prepared;
+        }
+
+        private async Task<Object> PrepareEventsAsync(List<Event> events)
+        {
+            var result = new List<Dictionary<string, object?>>();
+            foreach (var e in events)
+            {
+                var prepared = await PrepareEventAsync(e);
+                prepared["MinPrice"] = e.Tickets.Count > 0 ? e.Tickets.Min(t => t.Price) : 0;
+                result.Add(prepared);
+            }
+            return result;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            object? eventForReview = null;
+            var events = await _eventStorageService.GetAvailableAsync();
+            var user = await TryGetUserAsync();
+            if (user != null)
+            {
+                // В случае входа в аккаунт нужно показать отзыв
+                var userSales = await _eventOrganizationService.GetAllAsync(user.Id);
+                var sales = userSales
+                    .Where(s => s.Ticket.Event.StartDate < DateTime.Now)
+                    .OrderByDescending(s => s.Ticket.Event.EndDate);
+
+                foreach (var sale in sales)
+                    if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) == null)
+                    {
+                        eventForReview = await PrepareEventAsync(sale.Ticket.Event);
+                        break;
+                    }
+            }
+
+            return new JsonResult(new
+            {
+                Events = await PrepareEventsAsync(events),
+                Review = eventForReview,
             });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAsync(int id)
+        {
+            try
+            {
+                User? user = await TryGetUserAsync();
+                var eventInfo = await _eventStorageService.GetByIdAsync(id);
+                var e = await PrepareExtendedEventAsync(eventInfo);
+                var events = (await _eventStorageService.GetAvailableAsync())
+                    .Where(ev => ev.CategoryId == eventInfo.Category.Id && ev.Id != eventInfo.Id)
+                    .ToList();
+                var advertising = await _advertisingService.GetAdvertisingFrom(events, 3, user?.Id);
+                return new JsonResult(new {
+                    Event = e,
+                    Advertising = await PrepareEventsAsync(advertising)
+                });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpGet("{id}/questions")]
         public async Task<IActionResult> GetQuestions(int id)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
 
-            var e = await _eventStorageService.GetAsync(id);
-            if (e == null)
-                return NotFound(new { ErrorText = "Мероприятие не найдено" });
-            if (e?.CreatorId != int.Parse(rowId))
-                return Forbid();
-
-            var questions = await _eventStorageService.GetQuestionsByEventAsync(id);
-            return new JsonResult(questions.Select(q => new {
-                Id = q.Id,
-                Title = q.Title,
-                IsEditable = q.IsEditable
-            }));
+                var questions = await _eventStorageService.GetQuestionsByEventAsync(id);
+                return new JsonResult(questions.Select(q => new {
+                    Id = q.Id,
+                    Title = q.Title,
+                    IsEditable = q.IsEditable
+                }));
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpGet("{id}/tickets")]
         public async Task<IActionResult> GetTickets(int id)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
 
-            var e = await _eventStorageService.GetAsync(id);
-            if (e == null)
-                return NotFound(new { ErrorText = "Мероприятие не найдено" });
-            if (e?.CreatorId != int.Parse(rowId))
-                return Forbid();
-
-            var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
-            return new JsonResult(tickets.Select(t => new {
-                Id = t.Id,
-                Title = t.Title,
-                Limit = t.Limit,
-                Price = t.Price,
-                Until = t.Until
-            }));
+                var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
+                return new JsonResult(tickets.Select(t => new {
+                    Id = t.Id,
+                    Title = t.Title,
+                    Limit = t.Limit,
+                    Price = t.Price,
+                    Until = t.Until
+                }));
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
         }
 
         [Authorize]

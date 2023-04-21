@@ -133,7 +133,7 @@ public class AdvertisingService : IAdvertisingService
         return 0.00018 * averagePrice - 0.2;
     }
 
-    public async Task<List<Event>> GetAdvertising(int? userId, List<Event> fromEvents, int limit)
+    public async Task<List<Event>> GetAdvertisingFrom(List<Event> events, int limit, int? userId)
     {
         var averagePrice = 0;
         if (userId != null)
@@ -146,7 +146,7 @@ public class AdvertisingService : IAdvertisingService
 
         var minPriceMultiplier = GetMinPriceMultiplier(averagePrice);
         var maxPriceMultiplier = GetMaxPriceMultiplier(averagePrice);
-        var results = await Calculate(fromEvents, new CriteriaValues
+        var results = await Calculate(events, new CriteriaValues
         {
             MinPrice = minPriceMultiplier,
             MaxPrice = maxPriceMultiplier
