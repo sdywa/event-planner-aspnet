@@ -59,6 +59,10 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
             if (hasError && !isDirty)
                 break;
         }
+
+        if (serverErrors.message && isDirty)
+            hasError = true;
+
         return hasError;
     };
 
@@ -82,8 +86,10 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
             if (!errors)
                 return;
             setServerErrors(errors);
+            setErrors(true);
             for (const key in errors) {
-                inputStatuses[key.toLowerCase()].removeDirty();
+                if (key !== 'message')
+                    inputStatuses[key.toLowerCase()].removeDirty();
             }
         }
     }

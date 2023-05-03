@@ -16,7 +16,8 @@ namespace EventPlanner.Controllers
     [ApiController]
     public class EventController : ControllerBase
     {
-        private static readonly string PlaceholderLink = "/Uploads/placeholder.png";
+        private static readonly string PlaceholderLink = "placeholder.png";
+        private string UploadFolder { get => $"{_appEnvironment.WebRootPath}/Uploads/"; }
 
         private Context _context;
         private IAdvertisingService _advertisingService;
@@ -62,15 +63,36 @@ namespace EventPlanner.Controllers
             return user;
         }
 
-        private string? LoadImage(string path)
+        private string? LoadImage(string filename)
         {
-            var fullPath = $"{_appEnvironment.WebRootPath}{path}";
+            var fullPath = $"{UploadFolder}{filename}";
             if (System.IO.File.Exists(fullPath))
             {
                 var bytes = System.IO.File.ReadAllBytes(fullPath);
                 return Convert.ToBase64String(bytes);
             }
             return null;
+        }
+
+        private void CreateUploadFolderIfNotExist()
+        {
+            if (!Directory.Exists(UploadFolder))
+                Directory.CreateDirectory(UploadFolder);
+        }
+
+        private async Task<string> UploadImage(IFormFile? image)
+        {
+            CreateUploadFolderIfNotExist();
+            if (image != null)
+            {
+                string ex = System.IO.Path.GetExtension(image.FileName);
+                string filename = $"{Math.Abs(image.FileName.GetHashCode())}{ex}";
+
+                using (var fileStream = new FileStream($"{UploadFolder}{filename}", FileMode.Create))
+                    await image.CopyToAsync(fileStream);
+                return filename;
+            }
+            return PlaceholderLink;
         }
 
         private Dictionary<string, object?> PrepareEvent(Event e, User? user, HashSet<string> fields)
@@ -273,33 +295,33 @@ namespace EventPlanner.Controllers
         [HttpPost("{id}/fav")]
         public async Task<IActionResult> ChangeFavAsync(int id, [FromBody] FavEventInfo favEventInfo)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
-
-            var eventItem = await _eventStorageService.GetAsync(id);
-            if (eventItem == null)
-                return BadRequest(new { ErrorText = "Мероприятие не найдено" });
-
-            var userId = int.Parse(rowId);
-            var favEvent = _context.FavEvents.FirstOrDefault(f => f.EventId == eventItem.Id && f.UserId == userId);
-
-            // Если стало избранным, а favEvent не найден
-            if (favEventInfo.IsFavorite && favEvent == null)
+            try
             {
-                var newFavEvent = new FavEvent
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+
+                var favEvent = _context.FavEvents.FirstOrDefault(f => f.EventId == e.Id && f.UserId == user.Id);
+                // Пользователь добавляет мероприятие в избранное
+                if (favEventInfo.IsFavorite && favEvent == null)
                 {
-                    UserId = userId,
-                    EventId = eventItem.Id
-                };
-                await _context.AddAsync(newFavEvent);
-            }
-            else if (!favEventInfo.IsFavorite && favEvent != null)
-            {
-                _context.Remove(favEvent);
-            }
+                    var newFavEvent = new FavEvent
+                    {
+                        UserId = user.Id,
+                        EventId = e.Id
+                    };
+                    await _context.AddAsync(newFavEvent);
+                }
+                else if (!favEventInfo.IsFavorite && favEvent != null)
+                {
+                    _context.Remove(favEvent);
+                }
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
             return Ok();
         }
 
@@ -308,7 +330,7 @@ namespace EventPlanner.Controllers
         {
             search = search.ToLower().Trim();
             if (search == string.Empty)
-                return BadRequest(new { ErrorText = "Пустая строка поиска" });
+                throw new ActionException<BadRequestObjectResult>("Пустая строка поиска");
 
             var events = await _eventStorageService.GetAvailableAsync();
             events = events
@@ -317,28 +339,6 @@ namespace EventPlanner.Controllers
                 .ToList();
 
             return new JsonResult(await PrepareEventsAsync(events));
-        }
-
-        private void CreateUploadIfNotExist()
-        {
-            var path = $"{_appEnvironment.WebRootPath}/Uploads";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-        }
-
-        private async Task<string> UploadImage(IFormFile? image)
-        {
-            CreateUploadIfNotExist();
-            if (image != null)
-            {
-                string ex = System.IO.Path.GetExtension(image.FileName);
-                string path = $"/Uploads/{Math.Abs(image.FileName.GetHashCode())}{ex}";
-
-                using (var fileStream = new FileStream($"{_appEnvironment.WebRootPath}/{path}", FileMode.Create))
-                    await image.CopyToAsync(fileStream);
-                return path;
-            }
-            return PlaceholderLink;
         }
 
         private async Task<int?> ProcessAddressAsync(int? eventId, string address)
@@ -371,11 +371,16 @@ namespace EventPlanner.Controllers
             return created.Id;
         }
 
-        private async Task<Event> PrepareEvent(int userId, int? eventId, EventModel eventInfo)
+        private async Task<Event> MakeNewEvent(int userId, EventModel eventInfo)
         {
+            if (DateTime.Now > eventInfo.StartDate)
+                throw new ActionException<BadRequestObjectResult>("Некорректная дата") { PropertyName = "StartDate"};
+            if (eventInfo.StartDate > eventInfo.EndDate)
+                throw new ActionException<BadRequestObjectResult>("Некорректная дата") { PropertyName = "EndDate"};
+
             int? addressId = null;
             if (eventInfo.Address != null)
-                addressId = await ProcessAddressAsync(eventId, eventInfo.Address);
+                addressId = await ProcessAddressAsync(null, eventInfo.Address);
 
             var cover = await UploadImage(eventInfo.Cover);
             var newEvent = new Event() {
@@ -392,8 +397,8 @@ namespace EventPlanner.Controllers
                 AddressId = addressId
             };
 
-            if (eventId != null)
-                newEvent.Id = (int)eventId;
+            if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
+                throw new ActionException<BadRequestObjectResult>("Некорректный адрес") { PropertyName = "Address"};
 
             return newEvent;
         }
@@ -414,55 +419,46 @@ namespace EventPlanner.Controllers
         [HttpPost("new")]
         public async Task<IActionResult> CreateEvent([FromForm] EventModel newEventInfo)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
+            try
+            {
+                var user = await GetUserAsync();
+                var created = await _eventStorageService.CreateAsync(await MakeNewEvent(user.Id, newEventInfo));
+                await CreateDefaultQuestion(created.Id, "Email");
+                await CreateDefaultQuestion(created.Id, "Ваше Имя");
+                await CreateDefaultQuestion(created.Id, "Ваша Фамилия");
 
-            if (DateTime.Now > newEventInfo.StartDate)
-                return BadRequest(new { Errors = new { StartDate = "Некорректная дата" } });
-            if (newEventInfo.StartDate > newEventInfo.EndDate)
-                return BadRequest(new { Errors = new { EndDate = "Некорректная дата" } });
-
-
-            var newEvent = await PrepareEvent(int.Parse(rowId), null, newEventInfo);
-            if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
-                return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
-
-            var created = await _eventStorageService.CreateAsync(newEvent);
-            await CreateDefaultQuestion(created.Id, "Email");
-            await CreateDefaultQuestion(created.Id, "Ваше Имя");
-            await CreateDefaultQuestion(created.Id, "Ваша Фамилия");
-
-            return new JsonResult(new { id = created.Id });
+                return new JsonResult(new { id = created.Id });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateEvent(int id, [FromForm] EventModel eventInfo)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
 
-            var e = await _eventStorageService.GetAsync(id);
-            if (e?.CreatorId != int.Parse(rowId))
-                return Forbid();
+                var newEvent = await MakeNewEvent(user.Id, eventInfo);
+                newEvent.Id = id;
 
-            if (DateTime.Now > eventInfo.StartDate)
-                return BadRequest(new { Errors = new { StartDate = "Некорректная дата" } });
-            if (eventInfo.StartDate > eventInfo.EndDate)
-                return BadRequest(new { Errors = new { EndDate = "Некорректная дата" } });
+                if (newEvent.Cover == PlaceholderLink)
+                    newEvent.Cover = e.Cover;
 
-            var newEvent = await PrepareEvent(int.Parse(rowId), id, eventInfo);
-            if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
-                return BadRequest(new { Errors = new { Address = "Некорректный адрес" } });
-
-            if (newEvent.Cover == PlaceholderLink)
-                newEvent.Cover = e.Cover;
-
-            _context.Entry(e).CurrentValues.SetValues(newEvent);
-            await _eventStorageService.UpdateAsync(e);
-
+                _context.Entry(e).CurrentValues.SetValues(newEvent);
+                await _eventStorageService.UpdateAsync(e);
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
             return Ok();
         }
 
@@ -470,129 +466,139 @@ namespace EventPlanner.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
 
-            var e = await _eventStorageService.GetAsync(id);
-            if (e?.CreatorId != int.Parse(rowId))
-                return Forbid();
-
-            await _eventStorageService.DeleteAsync(id);
+                await _eventStorageService.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
             return Ok();
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("{id}/questions")]
-        public async Task<IActionResult> ProcessQuestions(int id, [FromBody] List<QuestionModel> questions)
+        public async Task<IActionResult> ProcessQuestions(int id, [FromBody] QuestionModel model)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
+            var questions = model.Questions;
 
-            var e = await _eventStorageService.GetAsync(id);
-            if (e == null)
-                return NotFound(new { ErrorText = "Мероприятие не найдено" });
-            if (e.CreatorId != int.Parse(rowId))
-                return Forbid();
-
-            if (questions.Count == 0)
-                return BadRequest(new { ErrorText = "Добавьте билеты" });
-
-            var currentQuestions = await _eventStorageService.GetQuestionsByEventAsync(e.Id);
-            foreach (var question in questions)
+            try
             {
-                if (question.Id > 0)
-                {
-                    var index = currentQuestions.FindIndex(e => e.Id == question.Id);
-                    currentQuestions.RemoveAt(index);
-                }
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
 
-                if (!question.IsEditable)
-                    continue;
+                if (questions.Count == 0)
+                    throw new ActionException<BadRequestObjectResult>("Добавьте вопросы");
 
-                if (question.Id > 0)
+                var currentQuestions = await _eventStorageService.GetQuestionsByEventAsync(e.Id);
+                foreach (var question in questions)
                 {
-                    var originalQuestion = await _eventStorageService.GetQuestionAsync(question.Id);
-                    if (originalQuestion != null)
+                    if (question.Id > 0)
                     {
-                        _context.Entry(originalQuestion).CurrentValues.SetValues(question);
-                        await _eventStorageService.UpdateAsync(originalQuestion);
-                        continue;
+                        var index = currentQuestions.FindIndex(e => e.Id == question.Id);
+                        currentQuestions.RemoveAt(index);
                     }
+
+                    if (!question.IsEditable)
+                        continue;
+
+                    if (question.Id > 0)
+                    {
+                        var originalQuestion = await _eventStorageService.GetQuestionAsync(question.Id);
+                        if (originalQuestion != null)
+                        {
+                            _context.Entry(originalQuestion).CurrentValues.SetValues(question);
+                            await _eventStorageService.UpdateAsync(originalQuestion);
+                            continue;
+                        }
+                    }
+                    var newQuestion = new Question
+                    {
+                        EventId = id,
+                        Title = question.Title,
+                        IsEditable = question.IsEditable
+                    };
+                    await _eventStorageService.CreateAsync(newQuestion);
                 }
-                var newQuestion = new Question
-                {
-                    EventId = id,
-                    Title = question.Title,
-                    IsEditable = question.IsEditable
-                };
-                await _eventStorageService.CreateAsync(newQuestion);
+
+                // Удаляем оставшиеся вопросы
+                foreach (var question in currentQuestions)
+                    await _eventStorageService.DeleteQuestionAsync(question.Id);
             }
-
-            // Удаляем оставшиеся вопросы
-            foreach (var question in currentQuestions)
-                await _eventStorageService.DeleteQuestionAsync(question.Id);
-
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
             return Ok();
         }
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("{id}/tickets")]
-        public async Task<IActionResult> ProcessTickets(int id, [FromBody] List<TicketModel> tickets)
+        public async Task<IActionResult> ProcessTickets(int id, [FromBody] TicketModel model)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
+            var tickets = model.Tickets;
 
-            var e = await _eventStorageService.GetAsync(id);
-            if (e == null)
-                return NotFound(new { ErrorText = "Мероприятие не найдено" });
-            if (e.CreatorId != int.Parse(rowId))
-                return Forbid();
-
-            if (tickets.Count == 0)
-                return BadRequest(new { ErrorText = "Добавьте билеты" });
-
-            foreach (var ticket in tickets)
+            try
             {
-                if (ticket.Until < DateTime.Now || ticket.Until > e.StartDate)
-                    return BadRequest(new { ErrorText = "Некорректная дата"});
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
 
-                if (ticket.Limit < 5 && ticket.Limit > 999)
-                    return BadRequest(new { ErrorText = "Некорректный лимит"});
-            }
+                if (tickets.Count == 0)
+                    throw new ActionException<BadRequestObjectResult>("Добавьте билеты");
 
-            var currentTickets = await _eventStorageService.GetTicketsByEventAcyns(e.Id);
-            foreach (var ticket in tickets)
-            {
-                if (ticket.Id > 0)
+                foreach (var ticket in tickets)
                 {
-                    var index = currentTickets.FindIndex(e => e.Id == ticket.Id);
-                    currentTickets.RemoveAt(index);
-                    var originalTicket = await _eventStorageService.GetTicketAsync(ticket.Id);
-                    if (originalTicket != null)
-                    {
-                        _context.Entry(originalTicket).CurrentValues.SetValues(ticket);
-                        await _eventStorageService.UpdateAsync(originalTicket);
-                        continue;
-                    }
+                    if (ticket.Until < DateTime.Now || ticket.Until > e.StartDate)
+                        throw new ActionException<BadRequestObjectResult>("Некорректная дата");
+
+                    if (ticket.Limit < 5 || ticket.Limit > 999)
+                        throw new ActionException<BadRequestObjectResult>("Некорректный лимит");
                 }
-                var newTicket = new Ticket
+
+                var currentTickets = await _eventStorageService.GetTicketsByEventAcyns(e.Id);
+                foreach (var ticket in tickets)
                 {
-                    EventId = id,
-                    Title = ticket.Title,
-                    Limit = ticket.Limit,
-                    Price = ticket.Price,
-                    Until = ticket.Until
-                };
-                await _eventStorageService.CreateAsync(newTicket);
+                    if (ticket.Id > 0)
+                    {
+                        var index = currentTickets.FindIndex(e => e.Id == ticket.Id);
+                        currentTickets.RemoveAt(index);
+                        var originalTicket = await _eventStorageService.GetTicketAsync(ticket.Id);
+                        if (originalTicket != null)
+                        {
+                            _context.Entry(originalTicket).CurrentValues.SetValues(ticket);
+                            await _eventStorageService.UpdateAsync(originalTicket);
+                            continue;
+                        }
+                    }
+                    var newTicket = new Ticket
+                    {
+                        EventId = id,
+                        Title = ticket.Title,
+                        Limit = ticket.Limit,
+                        Price = ticket.Price,
+                        Until = ticket.Until
+                    };
+                    await _eventStorageService.CreateAsync(newTicket);
+                }
+
+                // Удаляем оставшиеся вопросы
+                foreach (var ticket in currentTickets)
+                    await _eventStorageService.DeleteTicketAsync(ticket.Id);
             }
-
-            // Удаляем оставшиеся вопросы
-            foreach (var ticket in currentTickets)
-                await _eventStorageService.DeleteTicketAsync(ticket.Id);
-
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
             return Ok();
         }
 
@@ -600,30 +606,31 @@ namespace EventPlanner.Controllers
         [HttpPost("{id}/participate")]
         public async Task<IActionResult> Participate(int id, [FromBody] ParticipationModel patricipation)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
-
-            var e = await _eventStorageService.GetAsync(id);
-            if (e == null)
-                return NotFound(new { ErrorText = "Мероприятие не найдено" });
-
-            if (await _eventOrganizationService.GetAsync(int.Parse(rowId), e.Id) != null)
-                return BadRequest(new { ErrorText = "Участник уже принимает участие в данном мероприятии" });
-
-            var newSale = new Sale
+            try
             {
-                TicketId = patricipation.TicketId,
-                UserId = Int16.Parse(rowId),
-                SaleDate = DateTime.Now,
-                Answers = patricipation.Answers.Select(a => new Answer
-                {
-                    QuestionId = a.QuestionId,
-                    Text = a.Text
-                }).ToList()
-            };
-            await _eventOrganizationService.CreateAsync(newSale);
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
 
+                if (await _eventOrganizationService.GetAsync(user.Id, e.Id) != null)
+                    throw new ActionException<BadRequestObjectResult>("Участник уже принимает участие в данном мероприятии");
+
+                var newSale = new Sale
+                {
+                    TicketId = patricipation.TicketId,
+                    UserId = user.Id,
+                    SaleDate = DateTime.Now,
+                    Answers = patricipation.Answers.Select(a => new Answer
+                    {
+                        QuestionId = a.QuestionId,
+                        Text = a.Text
+                    }).ToList()
+                };
+                await _eventOrganizationService.CreateAsync(newSale);
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
             return Ok();
         }
 
@@ -631,26 +638,29 @@ namespace EventPlanner.Controllers
         [HttpPost("{id}/review")]
         public async Task<IActionResult> MakeReviewAsync(int id, [FromBody] ReviewModel review)
         {
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
-
-            var userSales = await _eventOrganizationService.GetAllAsync(int.Parse(rowId));
-            var sale = userSales.FirstOrDefault(s => s.Ticket.EventId == id);
-            if (sale == null)
-                return Forbid();
-
-            if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) != null)
-                return BadRequest();
-
-            var newReview = new Review
+            try
             {
-                SaleId = sale.Id,
-                Rating = review.Rating
-            };
+                var user = await GetUserAsync();
+                var userSales = await _eventOrganizationService.GetAllAsync(user.Id);
+                var sale = userSales.FirstOrDefault(s => s.Ticket.EventId == id);
+                if (sale == null)
+                    return Forbid();
 
-            await _eventOrganizationService.CreateAsync(newReview);
+                if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) != null)
+                    throw new ActionException<BadRequestObjectResult>("Мероприятие уже имеет отзыв");
 
+                var newReview = new Review
+                {
+                    SaleId = sale.Id,
+                    Rating = review.Rating
+                };
+
+                await _eventOrganizationService.CreateAsync(newReview);
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
             return Ok();
         }
     }

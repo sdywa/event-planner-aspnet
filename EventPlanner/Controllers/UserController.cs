@@ -34,17 +34,17 @@ namespace EventPlanner.Controllers
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenModel? model)
         {
-            if (model?.Token == null)
-                return BadRequest();
-
             try {
+                if (model?.Token == null)
+                    throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
+
                 var user = await _context.Users
                 .Include(u => u.Role)
                 .Include(u => u.RefreshToken)
                 .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
 
                 if (user == null)
-                    return BadRequest();
+                    throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
 
                 return new JsonResult(
                     await _authorizationService.RefreshTokens(user, model.Token)
@@ -94,7 +94,7 @@ namespace EventPlanner.Controllers
         public async Task<IActionResult> Signup([FromBody] SignupModel model)
         {
             if (await IsEmailUsedAsync(model.Email))
-                return BadRequest(new { Errors = new { Email = "Данная почта уже используется" } });
+                return new ActionException<BadRequestObjectResult>("Данная почта уже используется") { PropertyName = "Email" }.FormResponse();
 
             await _authenticationService.RegisterAsync(model.Name, model.Surname, model.Email, model.Password, UserRole.Participant);
             return Ok();
@@ -104,17 +104,17 @@ namespace EventPlanner.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] TokenModel? model)
         {
-            if (model?.Token == null)
-                return BadRequest();
-
             try {
+                if (model?.Token == null)
+                    throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
+
                 var user = await _context.Users
                 .Include(u => u.Role)
                 .Include(u => u.RefreshToken)
                 .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
 
                 if (user == null)
-                    return BadRequest();
+                    throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
 
                 await _authorizationService.RemoveRefreshToken(user, model.Token);
                 return Ok();
@@ -144,7 +144,7 @@ namespace EventPlanner.Controllers
                 return Ok();
             }
 
-            return BadRequest();
+            return new ActionException<BadRequestObjectResult>("Непредвиденная ошибка").FormResponse();
         }
 
         [Authorize]

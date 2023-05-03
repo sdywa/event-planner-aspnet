@@ -14,7 +14,6 @@ import { ListItem } from "../components/UI/list/ListItem";
 import { DraggableItem } from "../components/UI/DraggableItem";
 import { FormInput } from "../components/UI/forms/form-input/FormInput";
 import { DateTimeInput } from "../components/UI/inputs/DateTimeInput";
-import { IDefaultEvent } from "../types/Api";
 import EventService from "../api/services/EventService";
 import { getErrors } from "../api";
 
@@ -254,7 +253,7 @@ export const TicketsPage: FC = () => {
                                 </WithIcon>
                             </Button>
                             {
-                            ticketForm.hasError && <div className="text-red font-roboto font-bold text-sm h-6 pt-2">Введите валидные значения</div>
+                            ticketForm.hasError && <div className="text-red font-roboto font-bold text-sm h-6 pt-2">{ ticketForm.serverErrors.message ?? "Введите валидные значения" }</div>
                             }
                         </div>
                         <div className="flex items-center gap-4">

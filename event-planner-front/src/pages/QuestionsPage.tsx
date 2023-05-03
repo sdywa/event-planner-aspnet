@@ -13,7 +13,6 @@ import { Button, ButtonStyles } from "../components/UI/button/Button";
 import { WithIcon } from "../components/UI/with-icon/WithIcon";
 import { SubmitButton } from "../components/UI/button/SubmitButton";
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../hooks/useValidation";
-import { IDefaultEvent } from "../types/Api";
 import EventService from "../api/services/EventService";
 import { getErrors } from "../api";
 
@@ -143,7 +142,7 @@ export const QuestionsPage: FC = () => {
                                 </WithIcon>
                             </Button>
                             {
-                            questionForm.hasError && <div className="text-red font-roboto font-bold text-sm h-6 pt-2">Введите валидные значения</div>
+                            questionForm.hasError && <div className="text-red font-roboto font-bold text-sm h-6 pt-2">{ questionForm.serverErrors.message ?? "Введите валидные значения" }</div>
                             }
                         </div>
                         <div className="flex items-center gap-4">

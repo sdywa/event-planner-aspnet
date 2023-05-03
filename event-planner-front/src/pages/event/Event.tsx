@@ -279,7 +279,7 @@ const Event: FC = () => {
                 </div>
             </div>
             <div className="flex flex-col gap-8">
-                <div className="text-base whitespace-pre-wrap">
+                <div className="text-base whitespace-pre-wrap break-words">
                     {event?.fullDescription}
                 </div>
                 {

@@ -38,11 +38,13 @@ const EventService = {
     getQuestions: async (id: number) =>
         api.get<IEventQuestionResponse>(`/event/${id}/questions`),
     sendQuestions: async (id: number, questions: IEventQuestion[]) =>
-        api.post(`/event/${id}/questions`, questions),
+        api.post(`/event/${id}/questions`, { questions }),
     getTickets: async (id: number) =>
         api.get<IEventTicketResponse>(`/event/${id}/tickets`),
-    sendTickets: async (id: number, tickets: IEventTicket[]) =>
-        api.post(`/event/${id}/tickets`, tickets),
+    sendTickets: async (id: number, tickets: IEventTicket[]) => {
+        console.log(tickets);
+        return api.post(`/event/${id}/tickets`, { tickets })
+    },
     participate: async (id: number, participation: IParticipationModel) =>
         api.post(`/event/${id}/participate`, participation),
     makeReview: async (id: number, data: { rating: number, text?: string}) =>
