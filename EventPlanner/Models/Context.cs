@@ -199,8 +199,8 @@ public class Context : DbContext
             new Address
             {
                 Id = 6,
-                Latitude = 55.774563f,
-                Longitude = 37.587128f,
+                Latitude = 56.911367f,
+                Longitude = 60.587809f,
                 Full = "г Екатеринбург, ул Коммунистическая, стр 8а",
                 Region = "Свердловская",
                 City = "Екатеринбург",

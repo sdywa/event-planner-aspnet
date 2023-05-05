@@ -21,6 +21,7 @@ import { EventTile } from "../../components/UI/events/event-tile/EventTile";
 import { observer } from "mobx-react-lite";
 import EventService from "../../api/services/EventService";
 import { getErrors } from "../../api";
+import { Map } from "../../components/UI/map";
 
 interface IEvent extends IExtendedEventResponse {
     isParticipated: boolean
@@ -235,13 +236,15 @@ const Event: FC = () => {
                 </div>
             }
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-x-4">
+                <WithIcon icon={<i className="fa-solid fa-tags"></i>}>
+                    {event?.category.title}
+                </WithIcon>
                 {
                     event?.startDate &&
                     <WithIcon icon={<i className="fa-solid fa-calendar"></i>}>
                         {parseDate(new Date(event.startDate))}
                     </WithIcon>
                 }
-                <Location type={event?.type.id} location={event?.address?.full} />
             </div>
             <div className="flex justify-center items-center gap-4 py-4 relative">
                 <div className="flex flex-col justify-center items-start gap-4">
@@ -250,32 +253,40 @@ const Event: FC = () => {
                             event?.cover && <img src={"data:image/png;base64," + event.cover} alt={event.title} className="absolute -translate-y-1/2 top-1/2 w-full" />
                         }
                     </div>
-                    <WithIcon icon={<i className="fa-solid fa-tags"></i>}>
-                        {event?.category.title}
-                    </WithIcon>
                 </div>
-                <div className="w-full h-full flex flex-col justify-center items-center gap-2">
-                    <div className="relative px-4 py-6 w-72 flex flex-col justify-center items-center border-2 border-lightgray rounded-md">
-                        {/* <div className="absolute -top-1/2 translate-y-1/2 w-28 h-28 bg-lightgray rounded-full border-4 border-white"></div> */}
-                        <h3 className="text-2xl text-center">
-                            {event?.creator.name} {event?.creator.surname}
-                        </h3>
-                        <div className="text-base">
-                            {event?.creator.eventsCount} {getNounPluralForm(event?.creator.eventsCount ?? 0, "мероприятие", "мероприятия", "мероприятий")}
+                <div className="flex flex-col gap-4 w-full">
+                    <div className="w-full h-full flex flex-col justify-center items-center gap-2">
+                        <div className="relative px-4 py-6 w-72 flex flex-col justify-center items-center border-2 border-lightgray rounded-md">
+                            {/* <div className="absolute -top-1/2 translate-y-1/2 w-28 h-28 bg-lightgray rounded-full border-4 border-white"></div> */}
+                            <h3 className="text-2xl text-center">
+                                {event?.creator.name} {event?.creator.surname}
+                            </h3>
+                            <div className="text-base">
+                                {event?.creator.eventsCount} {getNounPluralForm(event?.creator.eventsCount ?? 0, "мероприятие", "мероприятия", "мероприятий")}
+                            </div>
+                            <div className="flex justify-center items-center gap-1 text-base">
+                                <span className="font-medium">{(event?.creator.rating ?? 5).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</span>
+                                <i className="fa-solid fa-star text-yellow"></i>
+                            </div>
                         </div>
-                        <div className="flex justify-center items-center gap-1 text-base">
-                            <span className="font-medium">{(event?.creator.rating ?? 5).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</span>
-                            <i className="fa-solid fa-star text-yellow"></i>
-                        </div>
+                        {/* {
+                            user.isAuth &&
+                                <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
+                                    <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
+                                        <span className="text-base">Связаться с организатором</span>
+                                    </WithIcon>
+                                </Button>
+                        } */}
                     </div>
-                    {/* {
-                        user.isAuth &&
-                            <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
-                                <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
-                                    <span className="text-base">Связаться с организатором</span>
-                                </WithIcon>
-                            </Button>
-                    } */}
+                    <div className="flex flex-col gap-2 justify-center">
+                        {
+                            event?.address &&
+                            <>
+                                <span className="text-sm"><Location type={event?.type.id} location={event?.address?.full} /></span>
+                                <Map address={event?.address} className="h-44 rounded-lg" />
+                            </>
+                        }
+                    </div>
                 </div>
             </div>
             <div className="flex flex-col gap-8">

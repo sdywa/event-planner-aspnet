@@ -158,10 +158,9 @@ export const EditEvent: FC = () => {
                         {
                             infoForm.getInputStatus("type")?.value === eventType[0].id &&
                             <div className="flex flex-col">
-                                <div className="mx-2 relative">
-                                    <AddressInput initialValue={address} name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                <div className="mx-2 mb-2 relative">
+                                    <AddressInput initialValue={address} name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} mapClassName="mt-2 mb-6 h-80" />
                                 </div>
-                                {/* <div className="w-full h-96 bg-lightgray rounded-md"></div> */}
                             </div>
                         }
                     </div>

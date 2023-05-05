@@ -7,10 +7,12 @@ import { IAddress } from "../../../types/Api";
 import useDebounce from "../../../hooks/useDebounce";
 import DadataService from "../../../api/services/DadataService";
 import { IAddressResponse } from "../../../types/Dadata";
+import { Map } from "../map";
 
 interface IAddressInputProps {
     initialValue?: IAddress;
     className?: string | string[];
+    mapClassName?: string | string[];
     name: string;
     data: IFormInputData;
     isSubmitted: boolean;
@@ -19,7 +21,7 @@ interface IAddressInputProps {
     [key: string]: any;
 };
 
-export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data, serverError, isSubmitted, className, callBack, ...props }) => {
+export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data, serverError, isSubmitted, className, mapClassName, callBack, ...props }) => {
     const debouncedSuggest = useDebounce(suggest, 300);
     const [suggests, setSuggests] = useState<IAddressResponse[]>([]);
     const [selecting, setSelecting] = useState(false);
@@ -43,7 +45,6 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
 
     async function suggest(query: string) {
         const response = await DadataService.suggest(query);
-        console.log(response.data.suggestions);
         setSuggests(response.data.suggestions);
     }
 
@@ -58,7 +59,6 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
         const query = value.value;
         value.value = address;
         callBack(name, value);
-        console.log(value);
 
         if (value.isActive) {
             debouncedSuggest(query);
@@ -90,13 +90,11 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
             block: address.data.block
         });
         setSuggests([]);
-        console.log("set", address);
     }
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (address) {
-            console.log(address.full);
             setValue(address.full);
         }
     }, [address]);
@@ -112,22 +110,27 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
     }, [initialValue]);
 
     return (
-        <div className="w-full relative">
-            <Input type={data.type} name={name} autoComplete={data.autoComplete} {...props} value={value} {...inputData} className={clsx(getClassName(), className)}>
-                {
-                    data.label &&
-                    <span className="label-content absolute bottom-0 left-1.5 pb-1 transition-all duration-300 ease-in">
-                        {data.label}
-                    </span>
-                }
-            </Input>
-            <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
-            {
-                suggests.length > 0 && <ul className="absolute bottom-6 translate-y-full w-11/12 p-1 bg-white border-2 border-t-0 border-lightgray rounded-b-lg shadow-lg peer-[.input--active]">
+        <div className="w-full">
+            <div className="relative">
+                <Input type={data.type} name={name} autoComplete={data.autoComplete} {...props} value={value} {...inputData} className={clsx(getClassName(), className)}>
                     {
-                        suggests?.map((s) => <li key={s.value} className="cursor-pointer hover:bg-slate-200 px-4 py-1 rounded select-none" onClick={() => setSuggestedAddress(s)} onMouseDown={() => setSelecting(true)} onMouseUp={() => setSelecting(false)}>{ s.value }</li>)
+                        data.label &&
+                        <span className="label-content absolute bottom-0 left-1.5 pb-1 transition-all duration-300 ease-in">
+                            {data.label}
+                        </span>
                     }
-                </ul>
+                </Input>
+                <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
+                {
+                    suggests.length > 0 && <ul className="absolute bottom-6 translate-y-full z-[10000] w-11/12 p-1 bg-white border-2 border-t-0 border-lightgray rounded-b-lg shadow-lg peer-[.input--active]">
+                        {
+                            suggests?.map((s) => <li key={s.value} className="cursor-pointer hover:bg-slate-200 px-4 py-1 rounded select-none" onClick={() => setSuggestedAddress(s)} onMouseDown={() => setSelecting(true)} onMouseUp={() => setSelecting(false)}>{ s.value }</li>)
+                        }
+                    </ul>
+                }
+            </div>
+            {
+                address && <Map address={address} className={mapClassName} />
             }
         </div>
     );

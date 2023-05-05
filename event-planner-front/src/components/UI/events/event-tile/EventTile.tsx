@@ -54,7 +54,7 @@ export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favorit
                         {event.title}
                     </div>
                 </div>
-                <div className="max-w-full overflow-hidden text-ellipsis two-lines">
+                <div className="max-w-full overflow-hidden text-ellipsis two-lines break-words">
                     {event.description}
                 </div>
                 <div className="flex justify-between items-center flex-wrap">
