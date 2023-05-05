@@ -1,6 +1,21 @@
 import api from "..";
 import { IEventQuestion, IEventQuestionResponse, IEventTicket, IEventTicketResponse, IParticipationModel } from "../../types/Api";
 
+function addData(form: FormData, value: any, key='') {
+    if (typeof value === "object") {
+        for (const k in value) {
+            addData(form, value[k], key ? `${key}[${k}]` : k);
+        }
+        return;
+    }
+
+    if (typeof value === "number")
+        value = value.toString();
+
+    form.append(key, value);
+    console.log(`append: ${key} ${value}`);
+}
+
 const EventService = {
     getAll: async <T>() =>
         api.get<T>("event"),
@@ -10,25 +25,13 @@ const EventService = {
         api.get<T[]>("/event/search", {params: params}),
     createEvent: async (data: {title: string, description: string, fullDescription: string, cover?: File, startDate?: string, endDate?: string, typeId: number, categoryId: number, address?: string}) => {
         const formData = new FormData();
-        let key: keyof typeof data;
-        for (key in data) {
-            let value = data[key]!;
-            if (typeof value === "number")
-                value = value.toString();
-            formData.append(key, value);
-        }
+        addData(formData, data);
         return api.post<{id: number}>("/event/new", formData);
     },
     updateEvent: async (id: number, data: {title: string, description: string, fullDescription: string, cover?: File, startDate?: string, endDate?: string, typeId: number, categoryId: number, address?: string}) => {
         const formData = new FormData();
         formData.append("id", id.toString());
-        let key: keyof typeof data;
-        for (key in data) {
-            let value = data[key]!;
-            if (typeof value === "number")
-                value = value.toString();
-            formData.append(key, value);
-        }
+        addData(formData, data);
         return api.patch(`/event/${id}`, formData);
     },
     deleteEvent: async (id: number) =>

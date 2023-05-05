@@ -34,10 +34,14 @@ export interface IAuthResponse {
 }
 
 export interface IAddress {
-    country: string,
-    region: string,
-    city: string,
-    street: string
+    latitude: number;
+    longitude: number;
+    full: string;
+    region: string;
+    city: string;
+    street: string;
+    house: string;
+    block?: string;
 }
 
 // Common interface

@@ -5,7 +5,7 @@ import { List } from "../../components/UI/list/List";
 import { ListItem } from "../../components/UI/list/ListItem";
 import useForm from "../../hooks/forms/useForm";
 import { IFormInputStatus, IFormInputData, IServerError } from "../../types";
-import { IExtendedEventResponse } from "../../types/Api";
+import { IAddress, IExtendedEventResponse } from "../../types/Api";
 import { FormInput } from "../../components/UI/forms/form-input/FormInput";
 import { Textarea } from "../../components/UI/inputs/textarea/Textarea";
 import { Select } from "../../components/UI/inputs/select/Select";
@@ -16,6 +16,7 @@ import { FileUpload, AcceptedTypes } from "../../components/UI/inputs/FileUpload
 import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../hooks/useValidation";
 import EventService from "../../api/services/EventService";
 import { getErrors } from "../../api";
+import { AddressInput } from "../../components/UI/inputs/AddressInput";
 
 interface Response {
     event: IExtendedEventResponse;
@@ -25,6 +26,7 @@ export const EditEvent: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
     const [event, setEvent] = useState<IExtendedEventResponse>();
+    const [address, setAddress] = useState<IAddress>();
 
     const data: { [key: string]: IFormInputData } = {
         title: {
@@ -37,7 +39,7 @@ export const EditEvent: FC = () => {
             label: "Адрес",
             type: "text",
             autoComplete: "off",
-            validation: [IS_NOT_EMPTY("Укажите адрес"), MIN_LENGTH(3), MAX_LENGTH(100)]
+            validation: [IS_NOT_EMPTY("Укажите адрес"), MAX_LENGTH(150)]
         },
     };
     const infoForm = useForm(sendFormData);
@@ -89,9 +91,10 @@ export const EditEvent: FC = () => {
                 if (!eventId)
                     return;
                 try {
-                    const events = await EventService.get<Response>(Number(eventId));
-                    setEvent(events.data.event);
-                    console.log(events.data);
+                    const response = await EventService.get<Response>(Number(eventId));
+                    setEvent(response.data.event);
+                    // get values from the server
+                    setAddress(response.data.event.address);
                 } catch (e) {
                     return;
                 }
@@ -113,7 +116,7 @@ export const EditEvent: FC = () => {
                     <ListItem link={event && `/events/${eventId}/questions`} className={["text-darkgray hover:text-gray", !event ? "text-lightgray pointer-events-none" : ""]}>Анкета</ListItem>
                     <ListItem link={event && `/events/${eventId}/tickets`} className={["text-darkgray hover:text-gray", !event ? "text-lightgray pointer-events-none" : ""]}>Билеты</ListItem>
                 </List>
-                <form className="w-full flex flex-col gap-8" onSubmit={infoForm.onSubmit} onChange={infoForm.onChange}>
+                <form className="w-full flex flex-col" onSubmit={infoForm.onSubmit} onChange={infoForm.onChange}>
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col">
                             <h3 className="text-2xl">Основное</h3>
@@ -155,12 +158,8 @@ export const EditEvent: FC = () => {
                         {
                             infoForm.getInputStatus("type")?.value === eventType[0].id &&
                             <div className="flex flex-col">
-                                <div className="mx-2">
-                                    <FormInput initialValue={
-                                        Object.entries(event?.address || {})
-                                            .filter(([v]) => v !== "id").map(([v, key]) => key)
-                                            .join(", ")
-                                        } name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
+                                <div className="mx-2 relative">
+                                    <AddressInput initialValue={address} name="address" data={data.address} serverError={infoForm.serverErrors["address"]} isSubmitted={infoForm.isSubmitted} callBack={infoForm.updateInputStatuses} />
                                 </div>
                                 {/* <div className="w-full h-96 bg-lightgray rounded-md"></div> */}
                             </div>

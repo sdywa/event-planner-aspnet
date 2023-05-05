@@ -143,83 +143,102 @@ public class Context : DbContext
             new Address
             {
                 Id = 1,
-                Country = "Россия",
-                Region = "Нижегородская область",
-                City = "Подольск",
-                Street = "въезд Космонавтов",
-                Building = "27",
+                Latitude = 55.821355f,
+                Longitude = 37.652723f,
+                Full = "г Москва, ул Космонавтов, д 27",
+                Region = "Москва",
+                City = "Москва",
+                Street = "Космонавтов",
+                House = "27"
             },
             new Address
             {
                 Id = 2,
-                Country = "Россия",
-                Region = "Московская область",
-                City = "Клин",
-                Street = "пл. Домодедовская",
-                Building = "52",
+                Latitude = 59.807192f,
+                Longitude = 30.30737f,
+                Full = "г Санкт-Петербург, ул Домодедовская, д 15 к 2",
+                Region = "Санкт-Петербург",
+                City = "Санкт-Петербург",
+                Street = "Домодедовская",
+                House = "15",
+                Block = "2"
             },
             new Address
             {
                 Id = 3,
-                Country = "Россия",
-                Region = "Тюменская область",
-                City = "Егорьевск",
-                Street = "спуск Гоголя",
-                Building = "70",
+                Latitude = 55.042659f,
+                Longitude = 82.918184f,
+                Full = "г Новосибирск, ул Гоголя, д 7А",
+                Region = "Новосибирск",
+                City = "Новосибирская",
+                Street = "Гоголя",
+                House = "7А"
             },
             new Address
             {
                 Id = 4,
-                Country = "Россия",
-                Region = "Омская область",
-                City = "Дорохово",
-                Street = "проезд Космонавтов",
-                Building = "55",
+                Latitude = 55.702072f,
+                Longitude = 37.433167f,
+                Full = "г Москва, ул Генерала Дорохова, д 10Д",
+                Region = "Москва",
+                City = "Москва",
+                Street = "Генерала Дорохова",
+                House = "10Д"
             },
             new Address
             {
                 Id = 5,
-                Country = "Россия",
+                Latitude = 55.774563f,
+                Longitude = 37.587128f,
+                Full = "г Москва, ул 1-я Тверская-Ямская, д 21",
                 Region = "Москва",
                 City = "Москва",
-                Street = "1-я Тверская-Ямская",
-                Building = "12/23",
+                Street = "Тверская-Ямская",
+                House = "21"
             },
             new Address
             {
                 Id = 6,
-                Country = "Россия",
-                Region = "Москва",
-                City = "Москва",
+                Latitude = 55.774563f,
+                Longitude = 37.587128f,
+                Full = "г Екатеринбург, ул Коммунистическая, стр 8а",
+                Region = "Свердловская",
+                City = "Екатеринбург",
                 Street = "Коммунистическая",
-                Building = "8",
+                House = "8а"
             },
             new Address
             {
                 Id = 7,
-                Country = "Россия",
-                Region = "Рязанская область",
-                City = "Павловский Посад",
-                Street = "Ленина",
-                Building = "16",
+                Latitude = 55.160946f,
+                Longitude = 61.444523f,
+                Full = "г Челябинск, пр-кт Ленина, д 16",
+                Region = "Челябинская",
+                City = "Челябинск",
+                Street = "Космонавтов",
+                House = "16"
             },
             new Address
             {
                 Id = 8,
-                Country = "Россия",
-                Region = "Амурская область",
-                City = "Зарайск",
-                Street = "Будапештсткая",
-                Building = "48",
+                Latitude = 59.855846f,
+                Longitude = 30.380708f,
+                Full = "г Санкт-Петербург, ул Будапештская, д 48",
+                Region = "Санкт-Петербург",
+                City = "Санкт-Петербург",
+                Street = "Будапештская",
+                House = "48"
             },
             new Address
             {
                 Id = 9,
-                Country = "Россия",
+                Latitude = 55.825629f,
+                Longitude = 37.626017f,
+                Full = "г Москва, ул 2-я Останкинская, д 3",
                 Region = "Москва",
                 City = "Москва",
-                Street = "2-ая Останкинская улица",
-                Building = "3",
+                Street = "2-я Останкинская",
+                House = "3"
             }
         );
 

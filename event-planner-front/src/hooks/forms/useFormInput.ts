@@ -102,6 +102,8 @@ function useFormInput<T extends HTMLInputElement | HTMLTextAreaElement>(
     const set = (newValue: string) => {
         setValue(newValue);
         setError(!Boolean(newValue));
+        // Force to update because newValue may not be changed
+        update();
     }
 
     return {

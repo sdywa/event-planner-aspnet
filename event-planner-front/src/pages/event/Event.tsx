@@ -241,7 +241,7 @@ const Event: FC = () => {
                         {parseDate(new Date(event.startDate))}
                     </WithIcon>
                 }
-                <Location type={event?.type.id} location={`г. ${event?.address?.city}, ${event?.address?.street}`} />
+                <Location type={event?.type.id} location={event?.address?.full} />
             </div>
             <div className="flex justify-center items-center gap-4 py-4 relative">
                 <div className="flex flex-col justify-center items-start gap-4">

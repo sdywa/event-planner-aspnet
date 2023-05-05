@@ -1,5 +1,3 @@
-import { IEventResponse, IDefaultEvent } from "./Api";
-
 export interface IValidation {
     order: number;
     name: string;

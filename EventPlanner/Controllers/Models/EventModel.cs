@@ -24,5 +24,5 @@ public class EventModel
     public EventType Type { get; set; }
     [Required(ErrorMessage = "Выберите категорию")]
     public int Category { get; set; }
-    public string? Address { get; set; }
+    public AddressModel? Address { get; set; }
 }

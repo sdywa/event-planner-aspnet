@@ -17,7 +17,7 @@ export const EventSearch: FC<IEventSearchProps> = ({isAuth, setSearchText, showi
     const [value, setValue] = useState("");
     const [showingFilter, setFilter] = useState(false);
     const [showingFavorite, setFavorite] = useState(false);
-    const debouncedSearch = useDebounce<string>(search, 500);
+    const debouncedSearch = useDebounce(search, 500);
 
     function search(query: string) {
         setSearchText(query.trim());

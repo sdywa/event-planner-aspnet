@@ -341,30 +341,27 @@ namespace EventPlanner.Controllers
             return new JsonResult(await PrepareEventsAsync(events));
         }
 
-        private async Task<int?> ProcessAddressAsync(int? eventId, string address)
+        private async Task<int?> ProcessAddressAsync(AddressModel address, int? eventId)
         {
             var newAddress = new Address();
+
+            newAddress.Latitude = address.Latitude;
+            newAddress.Longitude = address.Longitude;
+            newAddress.Full = address.Full;
+            newAddress.Region = address.Region;
+            newAddress.City = address.City;
+            newAddress.Street = address.Street;
+            newAddress.House = address.House;
+            newAddress.Block = address.Block;
+
             if (eventId != null)
             {
                 var e = await _eventStorageService.GetAsync((int)eventId);
-                if (e?.Address != null)
+                if (e?.Address != null) {
                     newAddress = e.Address;
-            }
-
-            var splitted = address.Split(", ");
-            if (splitted.Length != 5)
-                return null;
-
-            newAddress.Country = splitted[0];
-            newAddress.Region = splitted[1];
-            newAddress.City = splitted[2];
-            newAddress.Street = splitted[3];
-            newAddress.Building = splitted[4];
-
-            if (newAddress.Id != default)
-            {
-                await _eventStorageService.UpdateAsync(newAddress);
-                return newAddress.Id;
+                    await _eventStorageService.UpdateAsync(newAddress);
+                    return newAddress.Id;
+                }
             }
 
             var created = await _eventStorageService.CreateAsync(newAddress);
@@ -379,8 +376,9 @@ namespace EventPlanner.Controllers
                 throw new ActionException<BadRequestObjectResult>("Некорректная дата") { PropertyName = "EndDate"};
 
             int? addressId = null;
+            Console.WriteLine($"address is: {eventInfo.Address} {eventInfo.Address?.Full}");
             if (eventInfo.Address != null)
-                addressId = await ProcessAddressAsync(null, eventInfo.Address);
+                addressId = await ProcessAddressAsync(eventInfo.Address, null);
 
             var cover = await UploadImage(eventInfo.Cover);
             var newEvent = new Event() {

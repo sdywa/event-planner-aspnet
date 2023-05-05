@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace EventPlanner.Models;
+namespace EventPlanner.Controllers.Models;
 
-public class Address : CommonModel<int>
-{
+public class AddressModel {
     public float Latitude { get; set; }
     public float Longitude { get; set; }
     [StringLength(256)]

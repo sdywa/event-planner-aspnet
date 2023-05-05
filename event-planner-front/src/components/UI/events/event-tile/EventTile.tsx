@@ -22,6 +22,13 @@ export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favorit
         return date.toLocaleDateString("ru-RU", options);
     }
 
+    function getAddress() {
+        let address = event.address?.full.split(", ");
+        if (!address)
+            return "";
+        return address.splice(0, address.length - 2).join(", ");
+    }
+
     return (
         <Link to={`/events/${event.id}`}
             className="flex flex-col max-w-[21.5rem] h-fit font-roboto text-base text-black shadow-lg rounded-xl"
@@ -51,7 +58,7 @@ export const EventTile: FC<IEventTileProps> = ({isAuth, minPrice, event, favorit
                     {event.description}
                 </div>
                 <div className="flex justify-between items-center flex-wrap">
-                    <Location type={event.type.id} location={`г. ${event.address?.city}`} />
+                    <Location type={event.type.id} location={getAddress()} />
                     <div className="font-bold">
                         {
                             minPrice

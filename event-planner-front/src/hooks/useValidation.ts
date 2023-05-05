@@ -10,7 +10,7 @@ export const IS_NOT_EMPTY: (errorText?: string) => IValidation = (errorText='') 
     };
 };
 
-export const MIN_LENGTH: (min: Number, errorText?: string) => IValidation = (min, errorText='') => {
+export const MIN_LENGTH: (min: number, errorText?: string) => IValidation = (min, errorText='') => {
     return {
         order: 1,
         name: "minLength",
@@ -19,7 +19,7 @@ export const MIN_LENGTH: (min: Number, errorText?: string) => IValidation = (min
     };
 };
 
-export const MAX_LENGTH: (max: Number, errorText?: string) => IValidation = (max, errorText='') => {
+export const MAX_LENGTH: (max: number, errorText?: string) => IValidation = (max, errorText='') => {
     return {
         order: 2,
         name: "maxLength",
