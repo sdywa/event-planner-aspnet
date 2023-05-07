@@ -7,7 +7,7 @@ import { IAddress } from "../../../types/Api";
 import useDebounce from "../../../hooks/useDebounce";
 import DadataService from "../../../api/services/DadataService";
 import { IAddressResponse } from "../../../types/Dadata";
-import { Map } from "../map";
+import { Map } from "../Map";
 
 interface IAddressInputProps {
     initialValue?: IAddress;

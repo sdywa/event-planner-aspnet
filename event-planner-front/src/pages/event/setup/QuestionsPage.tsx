@@ -1,20 +1,20 @@
 import { FC, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { PageLayout } from "../components/layouts/page-layout/PageLayout";
-import { IFormInputStatus, IFormInputData, IServerError } from "../types";
-import { IEventQuestion } from "../types/Api";
-import { List } from "../components/UI/list/List";
-import { ListItem } from "../components/UI/list/ListItem";
-import { DraggableItem } from "../components/UI/DraggableItem";
-import { FormInput } from "../components/UI/forms/form-input/FormInput";
-import useForm from "../hooks/forms/useForm";
-import { EditableItem } from "../components/UI/EditableItem";
-import { Button, ButtonStyles } from "../components/UI/button/Button";
-import { WithIcon } from "../components/UI/with-icon/WithIcon";
-import { SubmitButton } from "../components/UI/button/SubmitButton";
-import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../hooks/useValidation";
-import EventService from "../api/services/EventService";
-import { getErrors } from "../api";
+import { PageLayout } from "../../../components/layouts/page-layout/PageLayout";
+import { IFormInputStatus, IFormInputData, IServerError } from "../../../types";
+import { IEventQuestion } from "../../../types/Api";
+import { List } from "../../../components/UI/list/List";
+import { ListItem } from "../../../components/UI/list/ListItem";
+import { DraggableItem } from "../../../components/UI/DraggableItem";
+import { FormInput } from "../../../components/UI/forms/form-input/FormInput";
+import useForm from "../../../hooks/forms/useForm";
+import { EditableItem } from "../../../components/UI/EditableItem";
+import { Button, ButtonStyles } from "../../../components/UI/button/Button";
+import { WithIcon } from "../../../components/UI/with-icon/WithIcon";
+import { SubmitButton } from "../../../components/UI/button/SubmitButton";
+import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../../hooks/useValidation";
+import EventService from "../../../api/services/EventService";
+import { getErrors } from "../../../api";
 
 export const QuestionsPage: FC = () => {
     const navigate = useNavigate();

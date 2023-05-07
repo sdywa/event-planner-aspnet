@@ -21,7 +21,7 @@ import { EventTile } from "../../components/UI/events/event-tile/EventTile";
 import { observer } from "mobx-react-lite";
 import EventService from "../../api/services/EventService";
 import { getErrors } from "../../api";
-import { Map } from "../../components/UI/map";
+import { Map } from "../../components/UI/Map";
 
 interface IEvent extends IExtendedEventResponse {
     isParticipated: boolean
@@ -222,8 +222,8 @@ const Event: FC = () => {
                             </WithIcon>
                         </Button>
                     </DropdownMenu>
-                    {/* <DropdownMenu items={[
-                        {label: "Статистика", link: `/events/${eventId}/edit`},
+                    <DropdownMenu items={[
+                        {label: "Статистика", link: `/events/${eventId}/statistics`},
                         {label: "Участники", link: `/events/${eventId}/edit`},
                         {label: "Обратная связь", link: `/events/${eventId}/edit`}
                     ]}>
@@ -232,7 +232,7 @@ const Event: FC = () => {
                                 <span className="text-base font-semibold">Управление</span>
                             </WithIcon>
                         </Button>
-                    </DropdownMenu> */}
+                    </DropdownMenu>
                 </div>
             }
             <div className="m-auto max-w-2xl flex flex-wrap justify-center items-center gap-x-4">

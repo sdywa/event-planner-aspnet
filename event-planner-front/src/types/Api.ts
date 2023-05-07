@@ -114,3 +114,9 @@ export interface IParticipationModel {
     answers: IAnswer[],
     ticketId: number
 }
+
+export enum IStatus {
+    active,
+    waiting,
+    closed
+}
