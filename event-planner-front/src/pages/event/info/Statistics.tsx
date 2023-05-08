@@ -1,51 +1,88 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { PageLayout } from "../../../components/layouts/page-layout/PageLayout";
 import { List } from "../../../components/UI/list/List";
 import { ListItem } from "../../../components/UI/list/ListItem";
 import { Table } from "../../../components/UI/table/Table";
-import { Status } from "../../../components/UI/Status";
-import { IStatus } from "../../../types/Api";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+import { StatusIcon } from "../../../components/UI/Status";
+import { Status } from "../../../types/Api";
+import { AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+import EventService from "../../../api/services/EventService";
+import { IEventStatistics, IEventTicketsStatistics } from "../../../types/Api";
 
-interface IStatisticsProps {};
+const colors = [
+    "#F94144",
+    "#F8961E",
+    "#F9C74F",
+    "#90BE6D",
+    "#4D908E",
+    "#277DA1",
+    "#F3722C",
+    "#F9844A",
+    "#43AA8B",
+    "#577590"
+];
 
-export const Statistics: FC<IStatisticsProps> = (props) => {
+export const Statistics: FC = () => {
     const navigate = useNavigate();
     const {eventId} = useParams();
-
-    const values = [
-        ["Входной билет", 0, 0, [[], 100]],
-        ["Очень длинное название которое не помещается", 0, 3, [[0, 0, 0], 0]],
-        ["Входной билет", 2, 7, [[100, 100, 100, 100, 100, 100, 100], 1000]],
-    ];
+    const [eventTitle, setTitle] = useState("");
+    const [statistics, setStatistics] = useState<IEventStatistics>();
 
     const titles = {
-        [IStatus.active]: "активно",
-        [IStatus.waiting]: "",
-        [IStatus.closed]: "распродано"
+        [Status.active]: "активно",
+        [Status.waiting]: "",
+        [Status.closed]: "распродано"
     };
 
     const getData = () => {
-        const data = [];
-        for (let i = 0; i < values.length; i++) {
-            const generate = (name: string, x: number, y: number) => {
-                return {
-                    name: name,
-                    pv: x,
-                    [`uv${i}`]:  y,
-                }
-            }
-            for (let j = 0; j < (values[i][3] as number[][])[0].length; j++) {
-                data.push(generate(i.toString(), j, (values[i][3] as number[][])[0][j]));
+        if (!statistics)
+            return;
+
+        const data = [] as {[key: string]: any}[];
+        const min = new Date(Math.min.apply(null, statistics.tickets.reduce((a, b) =>
+            [...a, ...Object.entries(b.sales).map(s => Number(new Date(s[0])))], [] as number[])));
+        min.setDate(min.getDate() - 1);
+
+        while (min <= new Date()) {
+            const name = min.toISOString().slice(0, 10);
+            data.push({
+                name: name
+            });
+            min.setDate(min.getDate() + 1);
+        }
+
+        for (const ticket of statistics.tickets) {
+            for (const item of data) {
+                item[`ticket${ticket.id}`] = item.name in ticket.sales ? ticket.sales[item.name] : 0;
             }
         }
         console.log(data);
         return data;
     }
 
+    useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        if (eventId) {
+            // Sending request to server
+            const getEvent = async () => {
+                if (!eventId)
+                    return;
+
+                try {
+                    const response = await EventService.getStatistics(Number(eventId));
+                    setTitle(response.data.title);
+                    setStatistics(response.data);
+                } catch {
+                    navigate("/");
+                }
+            }
+            getEvent();
+        }
+    }, []);
+
     return (
-        <PageLayout title="Овладение искусством французской выпечки: практический мастер-класс">
+        <PageLayout title={eventTitle}>
             <div className="flex gap-12">
                 <List className="w-48 text-black">
                     <ListItem className="text-green">Статистика</ListItem>
@@ -58,12 +95,12 @@ export const Statistics: FC<IStatisticsProps> = (props) => {
                         <div className="flex">
                             <div className="flex flex-col items-center w-full border-r-2 border-r-lightgray">
                                 <span className="text-lg">Заказов</span>
-                                <div className="text-2xl font-medium">1000</div>
+                                <div className="text-2xl font-medium">{statistics?.count}</div>
                             </div>
                             <div className="flex flex-col items-center w-full">
                                 <span className="text-lg">Доход</span>
                                 <div className="text-2xl font-medium">
-                                    99999
+                                    {statistics?.income}
                                     <span> руб.</span>
                                 </div>
                             </div>
@@ -76,38 +113,63 @@ export const Statistics: FC<IStatisticsProps> = (props) => {
                                 <i className="fa-solid fa-pen text-lg"></i>
                             </Link>
                         </div>
-                        <Table headers={["Название", "Статус", "Продажи", "Доход"]} data={values}
+                        {
+                            statistics && <Table headers={["Название", "Статус", "Продажи", "Доход"]} data={statistics.tickets}
                             ceilsSchema={[
-                                (value: any) => <div className="font-bold w-full overflow-hidden text-ellipsis whitespace-nowrap">{value}</div>,
-                                (value: any) => <span className="px-4">
-                                    <Status status={value} titles={titles} />
-                                </span>,
-                                (value: any) => <div className="px-4">
-                                    <span className="font-bold">{value}</span>
-                                    <span className="text-sm"> продано</span>
-                                </div>,
-                                (value: any) => <div className="px-4">
-                                    <div>
-                                        <span className="font-bold">{value[0].reduce((a: number, b: number) => a + b, 0)}</span>
-                                        <span className="text-sm"> руб.</span>
-                                    </div>
-                                    <div className="text-sm">
-                                        { value[1] ? <>{ value[1] } <span> руб.</span> </> : "Бесплатно" }
-                                        <span className="text-gray"> / билет</span>
-                                    </div>
-                                </div>,
-                            ]}
-                        ></Table>
+                                    (value: IEventTicketsStatistics) => <div className="font-bold w-full overflow-hidden text-ellipsis whitespace-nowrap">{value.title}</div>,
+                                    (value: IEventTicketsStatistics) => <span className="px-4">
+                                        <StatusIcon status={(Status[value.status] as unknown) as number} titles={titles} />
+                                    </span>,
+                                    (value: IEventTicketsStatistics) => <div className="px-4">
+                                        <span className="font-bold">{value.salesCount}</span>
+                                        <span className="text-sm"> продано</span>
+                                    </div>,
+                                    (value: IEventTicketsStatistics) => <div className="px-4">
+                                        <div>
+                                            <span className="font-bold">{value.income}</span>
+                                            <span className="text-sm"> руб.</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            { value.price ? <>{ value.price } <span> руб.</span> </> : "Бесплатно" }
+                                            <span className="text-gray"> / билет</span>
+                                        </div>
+                                    </div>,
+                                ]}
+                            ></Table>
+                        }
                         <div className="flex justify-center mt-4">
-                            <LineChart width={600} height={300} data={getData()}>
+                            <AreaChart width={600} height={300} data={getData()}>
+                                <defs>
+                                    {
+                                        statistics?.tickets.map((v, i) =>
+                                            <linearGradient key={i} id={`colorTicket${v.id}`} x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor={colors[i % colors.length]} stopOpacity={0.7}/>
+                                                <stop offset="95%" stopColor={colors[i % colors.length]} stopOpacity={0}/>
+                                            </linearGradient>
+                                        )
+                                    }
+                                </defs>
                                 <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                                {
-                                    values.map((v, i) => <Line key={i} type="monotone" dataKey={`uv${i}`} stroke="#8884d8" />)
-                                }
                                 <XAxis dataKey="name" />
-                                <YAxis />
+                                <YAxis domain={[
+                                    (dataMin: number) => (0 - Math.abs(dataMin)),
+                                    (dataMax: number) => {
+                                        const value = Math.ceil(Math.log10(dataMax) + dataMax + 1);
+                                        const str = value + "";
+                                        if (str.length > 2) {
+                                            const d = Math.pow(10, str.length - 2);
+                                            return Math.ceil(value / d) * d;
+                                        }
+                                        return value;
+                                    }
+                                ]} />
                                 <Tooltip />
-                            </LineChart>
+                                {
+                                    statistics?.tickets.map((v, i) =>
+                                        <Area key={i} type="monotone" dataKey={`ticket${v.id}`} fillOpacity={1} stroke={colors[i % colors.length]} name={v.title} fill={`url(#colorTicket${v.id})`} />
+                                    )
+                                }
+                            </AreaChart>
                         </div>
                     </div>
                 </div>

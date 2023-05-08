@@ -115,8 +115,30 @@ export interface IParticipationModel {
     ticketId: number
 }
 
-export enum IStatus {
+export enum Status {
     active,
     waiting,
     closed
+}
+
+export interface IEventTicketsStatistics {
+    id: number,
+    title: string,
+    income: number,
+    price: number,
+    salesCount: number,
+    status: Status,
+    sales: {
+        [date: string]: number
+    }
+}
+
+export interface IEventStatistics {
+    count: number,
+    income: number,
+    tickets: IEventTicketsStatistics[]
+}
+
+export interface IEventStatisticsResponse extends IEventStatistics {
+    title: string,
 }

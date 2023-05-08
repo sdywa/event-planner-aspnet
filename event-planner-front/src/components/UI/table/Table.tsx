@@ -3,7 +3,7 @@ import { FC, ReactNode } from "react";
 interface ITableProps {
     headers?: string[] | ReactNode[];
     ceilsSchema: ((value: any) => string | ReactNode)[];
-    data: any[][]
+    data: any[]
 };
 
 export const Table: FC<ITableProps> = ({ headers, ceilsSchema, data }) => {
@@ -26,10 +26,10 @@ export const Table: FC<ITableProps> = ({ headers, ceilsSchema, data }) => {
                     data.map((row, index) =>
                         <tr key={index}>
                             {
-                                row.map((ceil, index) =>
+                                ceilsSchema.map((schema, index) =>
                                 <td key={index}>
                                     {
-                                        ceilsSchema[index](ceil)
+                                        schema(row)
                                     }
                                 </td>)
                             }

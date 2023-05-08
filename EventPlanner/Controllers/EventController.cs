@@ -291,6 +291,56 @@ namespace EventPlanner.Controllers
             }
         }
 
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpGet("{id}/statistics")]
+        public async Task<IActionResult> GetStatisticsAsync(int id)
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
+
+                var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
+                var ticketsData = new List<Dictionary<string, object>>();
+
+                var totalCount = 0;
+                var totalIncome = 0;
+                foreach (var ticket in tickets) {
+                    var sales = await _eventOrganizationService.GetAllByTicketAsync(ticket.Id);
+
+                    var salesByDate = sales
+                        .GroupBy(s => s.SaleDate.ToString("yyyy-MM-dd"))
+                        .ToDictionary(g => g.Key, g => g.Count());
+
+                    totalCount += sales.Count;
+                    totalIncome += sales.Count * ticket.Price;
+                    ticketsData.Add(new Dictionary<string, object>
+                    {
+                        ["id"] = ticket.Id,
+                        ["title"] = ticket.Title,
+                        ["status"] = sales.Count >= ticket.Limit ? "closed" : "active",
+                        ["price"] = ticket.Price,
+                        ["income"] = sales.Count * ticket.Price,
+                        ["salesCount"] = sales.Count,
+                        ["sales"] = salesByDate
+                    });
+                }
+
+                return new JsonResult(new {
+                    title = e.Title,
+                    count = totalCount,
+                    income = totalIncome,
+                    tickets = ticketsData
+                });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
+        }
+
         [Authorize]
         [HttpPost("{id}/fav")]
         public async Task<IActionResult> ChangeFavAsync(int id, [FromBody] FavEventInfo favEventInfo)

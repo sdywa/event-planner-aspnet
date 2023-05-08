@@ -32,6 +32,9 @@ public class EventOrganizationService : CommonQueries<int, Sale>, IEventOrganiza
     public async Task<List<Sale>> GetAllAsync(int userId) =>
         await _context.Sales.Include(s => s.Ticket).ThenInclude(t => t.Event).Where(e => e.UserId == userId).ToListAsync();
 
+    public async Task<List<Sale>> GetAllByTicketAsync(int ticketId) =>
+        await _context.Sales.Where(s => s.TicketId == ticketId).ToListAsync();
+
     public async Task<List<Sale>> GetAllByEventAsync(int eventId) =>
         await _context.Sales.Include(s => s.Ticket).Where(s => s.Ticket.EventId == eventId).ToListAsync();
 

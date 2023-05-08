@@ -43,14 +43,13 @@ export const TicketsPage: FC = () => {
         /* eslint-disable react-hooks/exhaustive-deps */
         if (eventId) {
             // Sending request to server
-
             const getEvent = async () => {
                 if (!eventId)
                     return;
 
                 try {
                     const response = await EventService.getTickets(Number(eventId));
-                    setTitle(response.data.title)
+                    setTitle(response.data.title);
                     setTickets(response.data.tickets);
                 } catch {
                     navigate("/");

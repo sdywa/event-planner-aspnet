@@ -1,24 +1,24 @@
 import { FC } from "react";
-import { IStatus } from "../../types/Api";
+import { Status } from "../../types/Api";
 import clsx from "clsx";
 
 interface IStatusProps {
-    status: IStatus,
+    status: Status,
     titles: {
-        [key in IStatus]: any
+        [key in Status]: any
     }
 };
 
-export const Status: FC<IStatusProps> = ({ status, titles }) => {
-    const colors: { [key in IStatus]: any } = {
-        [IStatus.active]: "green",
-        [IStatus.waiting]: "yellow",
-        [IStatus.closed]: "blue"
+export const StatusIcon: FC<IStatusProps> = ({ status, titles }) => {
+    const colors: { [key in Status]: any } = {
+        [Status.active]: "green",
+        [Status.waiting]: "yellow",
+        [Status.closed]: "blue"
     }
 
     return (
         <div className="flex gap-2 items-center">
-            <div className={clsx(["w-3 h-3 rounded-full", `bg-${colors[status]}`])}></div>
+            <div className={clsx(["w-3 h-3 rounded-full", `bg-${colors[status as Status]}`])}></div>
             <span>{titles[status]}</span>
         </div>
     );

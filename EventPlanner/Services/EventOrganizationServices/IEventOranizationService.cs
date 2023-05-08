@@ -9,6 +9,7 @@ public interface IEventOrganizationService : IDataService<int, Sale>
 {
     Task<List<Sale>> GetAllAsync(int userId);
     Task<Sale?> GetAsync(int userId, int eventId);
+    Task<List<Sale>> GetAllByTicketAsync(int ticketId);
     Task<List<Sale>> GetAllByEventAsync(int eventId);
     Task<double> GetAverageRatingAsync(int userId);
     Task<Review?> GetReviewBySaleAsync(int SaleId);
