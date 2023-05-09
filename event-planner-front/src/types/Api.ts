@@ -142,3 +142,19 @@ export interface IEventStatistics {
 export interface IEventStatisticsResponse extends IEventStatistics {
     title: string,
 }
+
+export interface IEventParticipant {
+    id: number,
+    name: string,
+    surname: string,
+    email: string,
+    answers: {
+        question: string,
+        text: string
+    }[]
+}
+
+export interface IEventParticipantsResponse {
+    title: string,
+    participants: IEventParticipant[]
+}

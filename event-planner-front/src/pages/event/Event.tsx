@@ -99,14 +99,6 @@ const Event: FC = () => {
         setEvent(nextEvent);
     }
 
-    function setModal(value: boolean) {
-        setActive(value);
-        if (value)
-            document.body.classList.add("overflow-hidden");
-        else
-            document.body.classList.remove("overflow-hidden");
-    }
-
     function parseDate(date: Date, weekday=true) {
         const currentYear = new Date().getFullYear();
         const options: Intl.DateTimeFormatOptions = {
@@ -176,10 +168,10 @@ const Event: FC = () => {
         }>
             {
                 user.isAuth &&
-                    <Modal active={modalActive} setActive={setModal}>
+                    <Modal active={modalActive} setActive={setActive}>
                         <div className="flex justify-between items-center">
                             <h3 className="heading--tertiary">Связаться с организатором</h3>
-                            <Link to="#" className="text-gray hover:text-darkgray transition-colors duration-150 ease-in" onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); setModal(false)}}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></Link>
+                            <Link to="#" className="text-gray hover:text-darkgray transition-colors duration-150 ease-in" onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); setActive(false)}}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></Link>
                         </div>
                         <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange} className="w-[44rem]">
                             <div className="w-80">
@@ -190,7 +182,7 @@ const Event: FC = () => {
                             </div>
                             <Textarea name="question" className="h-60" label="Текст сообщения:" minLength={50} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
                             <div className="flex justify-end items-center gap-2">
-                                <Button onClick={() => setModal(false)}>
+                                <Button onClick={() => setActive(false)}>
                                     <div className="text-gray">Отмена</div>
                                 </Button>
                                 <SubmitButton disabled={questionForm.hasError} isPrimary={true}
@@ -224,7 +216,7 @@ const Event: FC = () => {
                     </DropdownMenu>
                     <DropdownMenu items={[
                         {label: "Статистика", link: `/events/${eventId}/statistics`},
-                        {label: "Участники", link: `/events/${eventId}/edit`},
+                        {label: "Участники", link: `/events/${eventId}/participants`},
                         {label: "Обратная связь", link: `/events/${eventId}/edit`}
                     ]}>
                         <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">

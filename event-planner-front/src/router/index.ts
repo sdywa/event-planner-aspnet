@@ -9,6 +9,7 @@ import { QuestionsPage } from "../pages/event/setup/QuestionsPage";
 import { TicketsPage } from "../pages/event/setup/TicketsPage";
 import Settings from "../pages/Settings";
 import { Statistics } from "../pages/event/info/Statistics";
+import { Participants } from "../pages/event/info/Participants";
 
 interface route {
     path: string;
@@ -22,7 +23,8 @@ export const routes: route[] = [
     { path: "/events/:eventId/edit", component: EditEvent },
     { path: "/events/:eventId/questions", component: QuestionsPage },
     { path: "/events/:eventId/tickets", component: TicketsPage },
-    { path: "/events/:eventId/statistics", component: Statistics},
+    { path: "/events/:eventId/statistics", component: Statistics },
+    { path: "/events/:eventId/participants", component: Participants },
     { path: "/learn", component: Learn },
     { path: "/settings", component: Settings }
 ];

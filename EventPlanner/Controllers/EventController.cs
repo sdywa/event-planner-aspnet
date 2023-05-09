@@ -1,7 +1,7 @@
-using System.Dynamic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using EventPlanner.Controllers.Models;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
@@ -339,6 +339,68 @@ namespace EventPlanner.Controllers
             {
                 return ExceptionHandler.Handle(ex);
             }
+        }
+
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpGet("{id}/participants")]
+        public async Task<IActionResult> GetParticipants(int id)
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
+
+                var sales = await _eventOrganizationService.GetAllByEventAsync(id);
+                var participants = new List<object>();
+                foreach (var sale in sales)
+                {
+                    participants.Add(new {
+                        id = sale.UserId,
+                        name = sale.User.Name,
+                        surname = sale.User.Surname,
+                        email = sale.User.Email,
+                        answers = _context.Answers
+                            .Include(a => a.Question)
+                            .Where(a => a.SaleId == sale.Id)
+                            .Select(a => new {
+                                question = a.Question.Title,
+                                text = a.Text
+                            })
+                    });
+                }
+
+                return new JsonResult(new {
+                    title = e.Title,
+                    participants = participants
+                });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
+        }
+
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpDelete("{id}/participants/{userId}")]
+        public async Task<IActionResult> DeleteParticipant(int id, int userId)
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
+
+                await _eventOrganizationService.DeleteAsync(userId, id);
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
+
+            return Ok();
         }
 
         [Authorize]

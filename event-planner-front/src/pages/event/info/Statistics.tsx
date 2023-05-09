@@ -86,7 +86,7 @@ export const Statistics: FC = () => {
             <div className="flex gap-12">
                 <List className="w-48 text-black">
                     <ListItem className="text-green">Статистика</ListItem>
-                    <ListItem link={`/events/${eventId}/questions`} className="text-darkgray hover:text-gray">Участники</ListItem>
+                    <ListItem link={`/events/${eventId}/participants`} className="text-darkgray hover:text-gray">Участники</ListItem>
                     <ListItem link={`/events/${eventId}/edit`} className="text-darkgray hover:text-gray" >Обратная связь</ListItem>
                 </List>
                 <div className="flex flex-col gap-8 w-full">

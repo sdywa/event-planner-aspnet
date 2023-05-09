@@ -36,7 +36,7 @@ public class EventOrganizationService : CommonQueries<int, Sale>, IEventOrganiza
         await _context.Sales.Where(s => s.TicketId == ticketId).ToListAsync();
 
     public async Task<List<Sale>> GetAllByEventAsync(int eventId) =>
-        await _context.Sales.Include(s => s.Ticket).Where(s => s.Ticket.EventId == eventId).ToListAsync();
+        await _context.Sales.Include(s => s.Ticket).Include(s => s.User).Where(s => s.Ticket.EventId == eventId).ToListAsync();
 
     public async Task DeleteAsync(int userId, int eventId)
     {

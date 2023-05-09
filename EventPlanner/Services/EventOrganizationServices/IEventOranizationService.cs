@@ -14,4 +14,5 @@ public interface IEventOrganizationService : IDataService<int, Sale>
     Task<double> GetAverageRatingAsync(int userId);
     Task<Review?> GetReviewBySaleAsync(int SaleId);
     Task<Review> CreateAsync(Review entity);
+    Task DeleteAsync(int userId, int eventId);
 }
