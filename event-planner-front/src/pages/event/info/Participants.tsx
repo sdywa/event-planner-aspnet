@@ -58,7 +58,7 @@ export const Participants: FC = () => {
                 <List className="w-48 text-black">
                     <ListItem link={`/events/${eventId}/statistics`} className="text-darkgray hover:text-gray">Статистика</ListItem>
                     <ListItem className="text-green">Участники</ListItem>
-                    <ListItem link={`/events/${eventId}/edit`} className="text-darkgray hover:text-gray" >Обратная связь</ListItem>
+                    <ListItem link={`/events/${eventId}/feedback`} className="text-darkgray hover:text-gray" >Обратная связь</ListItem>
                 </List>
                 <div className="flex flex-col gap-8 w-full">
                     <div className="flex flex-col gap-4">

@@ -9,7 +9,7 @@ import { Location } from "../../components/UI/events/location/Location";
 import { WithIcon } from "../../components/UI/with-icon/WithIcon";
 import { FormInput } from "../../components/UI/forms/form-input/FormInput";
 import { RadioButton } from "../../components/UI/inputs/radio-button/RadioButton";
-import { IS_NOT_EMPTY } from "../../hooks/useValidation";
+import { IS_NOT_EMPTY, MAX_LENGTH, MIN_LENGTH } from "../../hooks/useValidation";
 import useForm from "../../hooks/forms/useForm";
 import { Modal } from "../../components/UI/modal/Modal";
 import { IFormInputStatus, IFormInputData, IServerError } from "../../types";
@@ -43,7 +43,7 @@ const Event: FC = () => {
     const [event, setEvent] = useState<IEvent>();
     const [advertising, setAdvertising] = useState<IEventWithPrice[]>();
     const {serverErrors, isSubmitted, getInputStatus, updateInputStatuses, onChange, onSubmit, hasError} = useForm(sendFormData);
-    const questionForm = useForm(sendQuestionFormData);
+    const feedbackForm = useForm(sendFeedbackFormData);
     const [modalActive, setActive] = useState(false);
     const defaultFormInputData = (label: string): IFormInputData => {
         return {
@@ -82,9 +82,20 @@ const Event: FC = () => {
         return errors;
     }
 
-    async function sendQuestionFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
+    async function sendFeedbackFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
         console.log("question sent!");
-        return {};
+
+        const result = Object.entries(data).map(([key, d]) => [key, d.value]);
+        let errors = {};
+        try {
+            console.log(result);
+            await EventService.createChat(Number(eventId), Object.fromEntries(result));
+            window.location.reload(); // FIX ME
+        } catch (e) {
+            errors = getErrors(e);
+        }
+
+        return errors;
     }
 
     function setFavorite(value: boolean) {
@@ -111,26 +122,26 @@ const Event: FC = () => {
     }
 
     function getNounPluralForm (number: number, one: string, two: string, many: string) {
-    const mod10 = number % 10;
-    const mod100 = number % 100;
+        const mod10 = number % 10;
+        const mod100 = number % 100;
 
-    switch (true) {
-        case (mod100 >= 11 && mod100 <= 20):
-            return many;
+        switch (true) {
+            case (mod100 >= 11 && mod100 <= 20):
+                return many;
 
-        case (mod10 > 5):
-            return many;
+            case (mod10 > 5):
+                return many;
 
-        case (mod10 === 1):
-            return one;
+            case (mod10 === 1):
+                return one;
 
-        case (mod10 >= 2 && mod10 <= 4):
-            return two;
+            case (mod10 >= 2 && mod10 <= 4):
+                return two;
 
-        default:
-            return many;
+            default:
+                return many;
+        }
     }
-}
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
@@ -170,23 +181,27 @@ const Event: FC = () => {
                 user.isAuth &&
                     <Modal active={modalActive} setActive={setActive}>
                         <div className="flex justify-between items-center">
-                            <h3 className="heading--tertiary">Связаться с организатором</h3>
+                            <h3 className="heading--tertiary text-2xl">Связаться с организатором</h3>
                             <Link to="#" className="text-gray hover:text-darkgray transition-colors duration-150 ease-in" onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); setActive(false)}}><i className="fa-solid fa-xmark text-3xl w-8 h-8"></i></Link>
                         </div>
-                        <form onSubmit={questionForm.onSubmit} onChange={questionForm.onChange} className="w-[44rem]">
-                            <div className="w-80">
-                                <FormInput name="name" data={defaultFormInputData("Ваше имя")} serverError={questionForm.serverErrors["name"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
+                        <form onSubmit={feedbackForm.onSubmit} onChange={feedbackForm.onChange} className="w-[44rem] mt-4">
+                            <div className="w-96">
+                                <FormInput name="theme" data={
+                                    {
+                                        label: "Тема обращения",
+                                        type: "text",
+                                        autoComplete: "off",
+                                        validation: [IS_NOT_EMPTY(), MIN_LENGTH(10), MAX_LENGTH(150)]
+                                    }
+                                } serverError={feedbackForm.serverErrors["theme"]} isSubmitted={feedbackForm.isSubmitted} callBack={feedbackForm.updateInputStatuses} />
                             </div>
-                            <div className="w-80 mb-4">
-                                <FormInput name="email" data={defaultFormInputData("Ваш email")} serverError={questionForm.serverErrors["email"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
-                            </div>
-                            <Textarea name="question" className="h-60" label="Текст сообщения:" minLength={50} serverError={questionForm.serverErrors["question"]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} />
+                            <Textarea name="text" className="h-60" label="Текст сообщения:" minLength={50} maxLength={4500} serverError={feedbackForm.serverErrors["text"]} isSubmitted={feedbackForm.isSubmitted} callBack={feedbackForm.updateInputStatuses} />
                             <div className="flex justify-end items-center gap-2">
                                 <Button onClick={() => setActive(false)}>
                                     <div className="text-gray">Отмена</div>
                                 </Button>
-                                <SubmitButton disabled={questionForm.hasError} isPrimary={true}
-                                    buttonStyle={questionForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
+                                <SubmitButton disabled={feedbackForm.hasError} isPrimary={true}
+                                    buttonStyle={feedbackForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
                                     Отправить
                                 </SubmitButton>
                             </div>
@@ -217,7 +232,7 @@ const Event: FC = () => {
                     <DropdownMenu items={[
                         {label: "Статистика", link: `/events/${eventId}/statistics`},
                         {label: "Участники", link: `/events/${eventId}/participants`},
-                        {label: "Обратная связь", link: `/events/${eventId}/edit`}
+                        {label: "Обратная связь", link: `/events/${eventId}/feedback`}
                     ]}>
                         <Button buttonStyle={ButtonStyles.BUTTON_GREEN} className="py-2">
                             <WithIcon icon={<i className="fa-solid fa-box-archive"></i>}>
@@ -246,7 +261,16 @@ const Event: FC = () => {
                         }
                     </div>
                 </div>
-                <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-col gap-8 w-full">
+                    <div className="flex flex-col gap-2 justify-center">
+                        {
+                            event?.address &&
+                            <>
+                                <span className="text-sm"><Location type={event?.type.id} location={event?.address?.full} /></span>
+                                <Map address={event?.address} className="h-44 rounded-lg" />
+                            </>
+                        }
+                    </div>
                     <div className="w-full h-full flex flex-col justify-center items-center gap-2">
                         <div className="relative px-4 py-6 w-72 flex flex-col justify-center items-center border-2 border-lightgray rounded-md">
                             {/* <div className="absolute -top-1/2 translate-y-1/2 w-28 h-28 bg-lightgray rounded-full border-4 border-white"></div> */}
@@ -261,22 +285,13 @@ const Event: FC = () => {
                                 <i className="fa-solid fa-star text-yellow"></i>
                             </div>
                         </div>
-                        {/* {
-                            user.isAuth &&
-                                <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setModal(true)} >
+                        {
+                            user.isAuth && user.user.id !== event?.creator.id &&
+                                <Button buttonStyle={ButtonStyles.BUTTON_BLUE} onClick={() => setActive(true)} >
                                     <WithIcon icon={<i className="fa-regular fa-circle-question"></i>}>
                                         <span className="text-base">Связаться с организатором</span>
                                     </WithIcon>
                                 </Button>
-                        } */}
-                    </div>
-                    <div className="flex flex-col gap-2 justify-center">
-                        {
-                            event?.address &&
-                            <>
-                                <span className="text-sm"><Location type={event?.type.id} location={event?.address?.full} /></span>
-                                <Map address={event?.address} className="h-44 rounded-lg" />
-                            </>
                         }
                     </div>
                 </div>

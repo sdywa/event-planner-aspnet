@@ -30,9 +30,9 @@ export const Statistics: FC = () => {
     const [statistics, setStatistics] = useState<IEventStatistics>();
 
     const titles = {
-        [Status.active]: "активно",
-        [Status.waiting]: "",
-        [Status.closed]: "распродано"
+        [Status.Active]: "активно",
+        [Status.Waiting]: "",
+        [Status.Closed]: "распродано"
     };
 
     const getData = () => {
@@ -87,7 +87,7 @@ export const Statistics: FC = () => {
                 <List className="w-48 text-black">
                     <ListItem className="text-green">Статистика</ListItem>
                     <ListItem link={`/events/${eventId}/participants`} className="text-darkgray hover:text-gray">Участники</ListItem>
-                    <ListItem link={`/events/${eventId}/edit`} className="text-darkgray hover:text-gray" >Обратная связь</ListItem>
+                    <ListItem link={`/events/${eventId}/feedback`} className="text-darkgray hover:text-gray" >Обратная связь</ListItem>
                 </List>
                 <div className="flex flex-col gap-8 w-full">
                     <div className="flex flex-col gap-4">

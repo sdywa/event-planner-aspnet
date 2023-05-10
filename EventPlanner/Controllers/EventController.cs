@@ -8,6 +8,7 @@ using EventPlanner.Models;
 using EventPlanner.Services.AdvertisingServices;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
+using EventPlanner.Services.EventChatServices;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
@@ -23,6 +24,7 @@ namespace EventPlanner.Controllers
         private IAdvertisingService _advertisingService;
         private IEventStorageService _eventStorageService;
         private IEventOrganizationService _eventOrganizationService;
+        private IEventChatService _eventChatService;
         private IUserService _userService;
         private IWebHostEnvironment _appEnvironment;
 
@@ -32,6 +34,7 @@ namespace EventPlanner.Controllers
             IAdvertisingService advertisingService,
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
+            IEventChatService eventChatService,
             IUserService userService)
         {
             _appEnvironment = appEnvironment;
@@ -39,6 +42,7 @@ namespace EventPlanner.Controllers
             _advertisingService = advertisingService;
             _eventStorageService = eventStorageService;
             _eventOrganizationService = eventOrganizationService;
+            _eventChatService = eventChatService;
             _userService = userService;
         }
 
@@ -320,7 +324,7 @@ namespace EventPlanner.Controllers
                     {
                         ["id"] = ticket.Id,
                         ["title"] = ticket.Title,
-                        ["status"] = sales.Count >= ticket.Limit ? "closed" : "active",
+                        ["status"] = sales.Count >= ticket.Limit ? "Closed" : "Active",
                         ["price"] = ticket.Price,
                         ["income"] = sales.Count * ticket.Price,
                         ["salesCount"] = sales.Count,
@@ -380,6 +384,68 @@ namespace EventPlanner.Controllers
             {
                 return ExceptionHandler.Handle(ex);
             }
+        }
+
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpGet("{id}/chats")]
+        public async Task<IActionResult> GetChats(int id)
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId != user.Id)
+                    return Forbid();
+
+                var chats = await _eventChatService.GetChatsAsync(id);
+                return new JsonResult(new {
+                    title = e.Title,
+                    chats = chats
+                    .OrderBy(c => c.StatusId != ChatStatus.Waiting)
+                    .ThenBy(c => c.StatusId != ChatStatus.Waiting)
+                    .Select(c => new {
+                        id = c.Id,
+                        theme = c.Theme,
+                        status = c.Status.Name
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("{id}/chats")]
+        public async Task<IActionResult> CreateChat(int id, [FromBody] ChatModel model)
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                var e = await _eventStorageService.GetByIdAsync(id);
+                if (e.CreatorId == user.Id)
+                    return Forbid();
+
+                var chat = await _eventChatService.CreateChatAsync(new Chat {
+                    EventId = e.Id,
+                    InitiatorId = user.Id,
+                    StatusId = ChatStatus.Waiting,
+                    Theme = model.Theme
+                });
+
+                await _eventChatService.CreateAsync(new Message {
+                    ChatId = chat.Id,
+                    CreatorId = user.Id,
+                    Text = model.Text
+                });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
+
+            return Ok();
         }
 
         [Authorize(Roles = "Organizer,Administrator")]

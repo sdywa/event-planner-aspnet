@@ -29,7 +29,7 @@ export const Table: FC<ITableProps> = ({ headers, ceilsSchema, data, rowCallback
                         <tr key={index} className={clsx(["hover:bg-slate-100 transition-colors duration-200 ease-in-out", rowCallback && "cursor-pointer"])} onClick={() => rowCallback && rowCallback(row)}>
                             {
                                 ceilsSchema.map((schema, index) =>
-                                <td key={index} className="first:pl-4 first:rounded-l-md last:pr-4 last:rounded-r-md">
+                                <td key={index} className={clsx(["first:pl-4 first:rounded-l-md last:pr-4 last:rounded-r-md", headers && index >= headers.length && "w-0"])}>
                                     {
                                         schema(row)
                                     }

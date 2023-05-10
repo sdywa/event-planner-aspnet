@@ -21,6 +21,10 @@ public class Context : DbContext
 
     public DbSet<FavEvent> FavEvents { get; set; } = null!;
 
+    public DbSet<Message> Messages { get; set; } = null!;
+    public DbSet<ChatStatus> ChatStatuses { get; set; } = null!;
+    public DbSet<Chat> Chats { get; set; } = null!;
+
     public Context(DbContextOptions<Context> options) : base(options)
     {
 
@@ -1048,6 +1052,12 @@ public class Context : DbContext
                 UserId = 6,
                 EventId = 10
             }
+        );
+
+        builder.Entity<ChatStatus>().HasData(
+            new ChatStatus { Id = EventPlanner.ChatStatus.Active, Name = "Active" },
+            new ChatStatus { Id = EventPlanner.ChatStatus.Waiting, Name = "Waiting" },
+            new ChatStatus { Id = EventPlanner.ChatStatus.Closed, Name = "Closed" }
         );
     }
 }

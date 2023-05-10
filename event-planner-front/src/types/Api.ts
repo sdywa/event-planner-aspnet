@@ -116,9 +116,9 @@ export interface IParticipationModel {
 }
 
 export enum Status {
-    active,
-    waiting,
-    closed
+    Active,
+    Waiting,
+    Closed
 }
 
 export interface IEventTicketsStatistics {
@@ -157,4 +157,15 @@ export interface IEventParticipant {
 export interface IEventParticipantsResponse {
     title: string,
     participants: IEventParticipant[]
+}
+
+export interface IEventChat {
+    id: number,
+    theme: string,
+    status: Status
+}
+
+export interface IEventChatResponse {
+    title: string,
+    chats: IEventChat[]
 }

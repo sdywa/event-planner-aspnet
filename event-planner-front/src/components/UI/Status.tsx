@@ -11,9 +11,9 @@ interface IStatusProps {
 
 export const StatusIcon: FC<IStatusProps> = ({ status, titles }) => {
     const colors: { [key in Status]: any } = {
-        [Status.active]: "green",
-        [Status.waiting]: "yellow",
-        [Status.closed]: "blue"
+        [Status.Active]: "green",
+        [Status.Waiting]: "yellow",
+        [Status.Closed]: "blue"
     }
 
     return (

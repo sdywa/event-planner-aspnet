@@ -11,6 +11,7 @@ using EventPlanner.Services.AuthenticationServices;
 using EventPlanner.Services.AuthorizationService;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
+using EventPlanner.Services.EventChatServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,7 @@ builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 
 builder.Services.AddTransient<IEventStorageService, EventStorageService>();
 builder.Services.AddTransient<IEventOrganizationService, EventOrganizationService>();
+builder.Services.AddTransient<IEventChatService, EventChatService>();
 builder.Services.AddTransient<IAdvertisingService, AdvertisingService>();
 
 
