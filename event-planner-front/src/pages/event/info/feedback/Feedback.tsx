@@ -64,7 +64,7 @@ export const Feedback: FC = () => {
                                         </div>
                                     ]}
                                     rowCallback={(value: IEventChat) => {
-                                        console.log(value);
+                                        navigate(`/events/${eventId}/chats/${value.id}`);
                                     }}
                                 />
                                 :

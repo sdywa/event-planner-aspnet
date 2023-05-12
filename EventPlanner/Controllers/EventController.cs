@@ -416,6 +416,40 @@ namespace EventPlanner.Controllers
             }
         }
 
+        [Authorize(Roles = "Organizer,Administrator")]
+        [HttpGet("chats/{id}")]
+        public async Task<IActionResult> GetChat(int id)
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                var chat = await _eventChatService.GetChatAsync(id);
+                if (chat == null)
+                    throw new ChatNotFoundException();
+
+                if (chat.InitiatorId != user.Id && chat.Event.CreatorId != user.Id)
+                    return Forbid();
+
+                return new JsonResult(
+                    new {
+                        id = chat.Id,
+                        theme = chat.Theme,
+                        status = chat.Status.Name,
+                        creator = $"{chat.Initiator.Name} {chat.Initiator.Surname}",
+                        creationTime = chat.CreationTime,
+                        messages = chat.Messages.Select(m => new {
+                            creator = m.Creator.Name,
+                            creationTime = m.CreationTime,
+                            text = m.Text
+                        })
+                    });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
+        }
+
         [Authorize]
         [HttpPost("{id}/chats")]
         public async Task<IActionResult> CreateChat(int id, [FromBody] ChatModel model)

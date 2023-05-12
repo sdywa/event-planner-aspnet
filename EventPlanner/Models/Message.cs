@@ -10,6 +10,7 @@ public class Message : CommonModel<int>
     public int CreatorId { get; set; }
     public User Creator { get; set; } = null!;
 
+    public DateTime CreationTime { get; set; } = DateTime.Now;
 
     [StringLength(4500)]
     public string Text { get; set; } = null!;

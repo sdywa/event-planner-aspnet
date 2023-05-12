@@ -11,6 +11,7 @@ import Settings from "../pages/Settings";
 import { Statistics } from "../pages/event/info/Statistics";
 import { Participants } from "../pages/event/info/Participants";
 import { Feedback } from "../pages/event/info/feedback/Feedback";
+import { Chat } from "../pages/event/info/feedback/Chat";
 
 interface route {
     path: string;
@@ -27,6 +28,7 @@ export const routes: route[] = [
     { path: "/events/:eventId/statistics", component: Statistics },
     { path: "/events/:eventId/participants", component: Participants },
     { path: "/events/:eventId/feedback", component: Feedback },
+    { path: "/events/:eventId/chats/:chatId", component: Chat },
     { path: "/learn", component: Learn },
     { path: "/settings", component: Settings }
 ];

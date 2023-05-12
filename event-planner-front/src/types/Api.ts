@@ -1,3 +1,5 @@
+import { StringLiteral } from "typescript";
+
 export interface IServerResponse {
     errors: {
         [key: string]: string | string[];
@@ -163,6 +165,21 @@ export interface IEventChat {
     id: number,
     theme: string,
     status: Status
+}
+
+export interface IMessage {
+    creator: string,
+    creationTime: string,
+    text: string,
+}
+
+export interface IChat {
+    id: number,
+    theme: string,
+    status: Status,
+    creator: string,
+    creationTime: string,
+    messages: IMessage[]
 }
 
 export interface IEventChatResponse {
