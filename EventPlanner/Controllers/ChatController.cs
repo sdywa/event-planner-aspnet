@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using EventPlanner.Controllers.Models;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
 using EventPlanner.Services.ChatServices;
@@ -44,9 +45,9 @@ namespace EventPlanner.Controllers
             return user;
         }
 
-        [Authorize(Roles = "Organizer,Administrator")]
+        [Authorize]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetChat(int id)
+        public async Task<IActionResult> GetChatAsync(int id)
         {
             try
             {
@@ -71,6 +72,41 @@ namespace EventPlanner.Controllers
                             text = m.Text
                         })
                     });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("{id}")]
+        public async Task<IActionResult> CreateMessage(int id, [FromBody] MessageModel model)
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                var chat = await _chatService.GetChatAsync(id);
+                if (chat == null)
+                    throw new ChatNotFoundException();
+
+                if (chat.InitiatorId != user.Id && chat.Event.CreatorId != user.Id)
+                    return Forbid();
+
+                var message = new Message {
+                    ChatId = chat.Id,
+                    CreatorId = user.Id,
+                    Text = model.Text
+                };
+                await _chatService.CreateAsync(message);
+                var status = ChatStatus.Active;
+                if (model.CloseChat)
+                    status = ChatStatus.Closed;
+                else if (chat.InitiatorId == user.Id)
+                    status = ChatStatus.Waiting;
+
+                await _chatService.UpdateChatStatusAsync(chat.Id, status);
+                return await GetChatAsync(id);
             }
             catch (Exception ex)
             {

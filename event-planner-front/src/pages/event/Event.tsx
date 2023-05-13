@@ -71,7 +71,6 @@ const Event: FC = () => {
 
         let errors = {};
         try {
-            console.log(result);
             await EventService.participate(Number(eventId), result);
             if (event)
                 setEvent({...event, isParticipated: true});
@@ -88,7 +87,6 @@ const Event: FC = () => {
         const result = Object.entries(data).map(([key, d]) => [key, d.value]);
         let errors = {};
         try {
-            console.log(result);
             await EventService.createChat(Number(eventId), Object.fromEntries(result));
             window.location.reload(); // FIX ME
         } catch (e) {

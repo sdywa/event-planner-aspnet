@@ -13,7 +13,6 @@ function addData(form: FormData, value: any, key='') {
         value = value.toString();
 
     form.append(key, value);
-    console.log(`append: ${key} ${value}`);
 }
 
 const EventService = {

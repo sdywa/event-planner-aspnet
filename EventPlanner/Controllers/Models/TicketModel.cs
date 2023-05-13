@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Controllers.Models;
 
-public class TicketModel {
+public class TicketModel
+{
     public List<Ticket> Tickets { get; set; } = null!;
 
     public class Ticket

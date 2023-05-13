@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventPlanner.Controllers.Models;
 
-public class AddressModel {
+public class AddressModel
+{
     public float Latitude { get; set; }
     public float Longitude { get; set; }
     [StringLength(256)]

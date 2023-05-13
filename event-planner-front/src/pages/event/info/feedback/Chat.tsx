@@ -12,7 +12,7 @@ import useForm from "../../../../hooks/forms/useForm";
 import { IFormInputStatus, IServerError } from "../../../../types";
 import { getErrors } from "../../../../api";
 import { Textarea } from "../../../../components/UI/inputs/textarea/Textarea";
-import { Button, ButtonStyles } from "../../../../components/UI/button/Button";
+import { ButtonStyles } from "../../../../components/UI/button/Button";
 import { SubmitButton } from "../../../../components/UI/button/SubmitButton";
 import { WithIcon } from "../../../../components/UI/with-icon/WithIcon";
 
@@ -23,13 +23,15 @@ export const Chat: FC<IChatProps> = (props) => {
     const {eventId, chatId} = useParams();
     const [eventTitle, setTitle] = useState("");
     const [chat, setChat] = useState<IChat>();
+    const [closeChat, setClose] = useState(false);
 
     const chatForm = useForm(sendChatFormData);
+    const [trigger, setTrigger] = useState(false);
 
     const titles = {
         [Status.Active]: "активно",
         [Status.Waiting]: "ожидание ответа",
-        [Status.Closed]: "распродано"
+        [Status.Closed]: "закрыт"
     };
 
     async function sendChatFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
@@ -38,8 +40,9 @@ export const Chat: FC<IChatProps> = (props) => {
         const result = Object.entries(data).map(([key, d]) => [key, d.value]);
         let errors = {};
         try {
-            console.log(result);
-            // window.location.reload(); // FIX ME
+            const response = await ChatService.sendMessage(Number(chatId), Object.fromEntries([...result, ["closeChat", closeChat]]));
+            setChat(response.data);
+            setTrigger(!trigger);
         } catch (e) {
             errors = getErrors(e);
         }
@@ -67,6 +70,17 @@ export const Chat: FC<IChatProps> = (props) => {
             getEvent();
         }
     }, []);
+
+    useEffect(() => {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        const status = chatForm.getInputStatus("text");
+        if (status) {
+            status.value = "";
+            status.removeDirty();
+            chatForm.updateInputStatuses("text", status);
+            chatForm.reset();
+        }
+    }, [trigger]);
 
     return (
         <PageLayout title={eventTitle}>
@@ -111,26 +125,47 @@ export const Chat: FC<IChatProps> = (props) => {
                                         <div className="w-full flex border-b-2 border-slate-300 last:border-b-0" key={index}>
                                             <div className="w-40 px-4 py-2 border-r-2 border-slate-300">
                                                 <div>{m.creator}</div>
-                                                <span className="text-xs">{m.creationTime}</span>
+                                                <span className="text-xs">{new Date(m.creationTime).toLocaleString()}</span>
                                             </div>
-                                            <div className="px-4 py-2 whitespace-pre-wrap">{m.text}</div>
+                                            <div className="px-4 py-2 whitespace-pre-wrap w-full">{m.text}</div>
                                         </div>
                                     )
                                 }
                             </div>
-                            <div>
+                            <div className="mt-2">
                                 <form onSubmit={chatForm.onSubmit} onChange={chatForm.onChange} className="w-full">
-                                    <Textarea name="text" className="h-60" label="Текст сообщения:" minLength={50} maxLength={4500} serverError={chatForm.serverErrors["text"]} isSubmitted={chatForm.isSubmitted} callBack={chatForm.updateInputStatuses} />
+                                <Textarea name="text" className="h-60" label="Текст сообщения:" minLength={50} maxLength={4500} serverError={chatForm.serverErrors["text"]} isSubmitted={chatForm.isSubmitted} callBack={chatForm.updateInputStatuses} key={Number(trigger)}/>
                                     <div className="flex justify-end items-center gap-2">
-                                        <Button buttonStyle={ButtonStyles.BUTTON_GRAY} isPrimary={true}>
-                                            <WithIcon icon={<i className="fa-regular fa-circle-check text-blue" />}>
-                                                Закрыть вопрос с ответом
-                                            </WithIcon>
-                                        </Button>
-                                        <SubmitButton disabled={chatForm.hasError} isPrimary={true}
-                                            buttonStyle={chatForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
-                                            Отправить
-                                        </SubmitButton>
+                                        {
+                                            chat && (Status[chat.status] as unknown) as number === Status.Closed ?
+                                            <>
+                                                <SubmitButton isPrimary={true} onClick={() => setClose(false)}
+                                                    buttonStyle={chatForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GRAY}>
+                                                    <WithIcon icon={<i className="fa-solid fa-rotate text-green" />}>
+                                                        Открыть вопрос
+                                                    </WithIcon>
+                                                </SubmitButton>
+                                                <SubmitButton disabled={chatForm.hasError} isPrimary={true}
+                                                    buttonStyle={chatForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}
+                                                    onClick={() => setClose(true)}>
+                                                    Отправить
+                                                </SubmitButton>
+                                            </>
+                                            :
+                                            <>
+                                                <SubmitButton isPrimary={true} onClick={() => setClose(true)}
+                                                buttonStyle={chatForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GRAY}>
+                                                    <WithIcon icon={<i className="fa-regular fa-circle-check text-blue" />}>
+                                                        Закрыть вопрос с ответом
+                                                    </WithIcon>
+                                                </SubmitButton>
+                                                <SubmitButton disabled={chatForm.hasError} isPrimary={true}
+                                                    buttonStyle={chatForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}
+                                                    onClick={() => setClose(false)}>
+                                                    Отправить
+                                                </SubmitButton>
+                                            </>
+                                        }
                                     </div>
                                 </form>
                             </div>

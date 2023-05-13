@@ -19,7 +19,7 @@ export const Feedback: FC = () => {
     const titles = {
         [Status.Active]: "активно",
         [Status.Waiting]: "ожидание ответа",
-        [Status.Closed]: "распродано"
+        [Status.Closed]: "закрыт"
     };
 
     useEffect(() => {

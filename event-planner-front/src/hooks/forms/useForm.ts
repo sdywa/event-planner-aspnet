@@ -43,6 +43,11 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
     });
     const [hasError, setErrors] = useState(false);
 
+    const reset = () => {
+        setSubmitted(false);
+        setUsedSubmit(false);
+    }
+
     const checkErrors = () => {
         let hasError = false;
         let isDirty = true;
@@ -94,7 +99,7 @@ const useForm = (sendFormData: (data: {[key: string]: IFormInputStatus}) => Prom
         }
     }
 
-    return {serverErrors, isSubmitted, getInputStatus, hideInputStatus, updateInputStatuses, onChange, onSubmit, hasError};
+    return {serverErrors, isSubmitted, getInputStatus, hideInputStatus, updateInputStatuses, onChange, onSubmit, hasError, reset};
 }
 
 export default useForm;
