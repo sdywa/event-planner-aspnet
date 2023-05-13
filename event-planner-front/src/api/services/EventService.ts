@@ -1,5 +1,5 @@
 import api from "..";
-import { IEventQuestion, IEventQuestionResponse, IEventTicket, IEventTicketResponse, IParticipationModel, IEventStatisticsResponse, IEventParticipantsResponse, IEventChatResponse, IChat } from "../../types/Api";
+import { IEventQuestion, IEventQuestionResponse, IEventTicket, IEventTicketResponse, IParticipationModel, IEventStatisticsResponse, IEventParticipantsResponse, IEventChatResponse } from "../../types/Api";
 
 function addData(form: FormData, value: any, key='') {
     if (typeof value === "object") {
@@ -54,8 +54,6 @@ const EventService = {
         api.delete<IEventParticipantsResponse>(`/event/${id}/participants/${userId}`),
     getChats: async (id: number) =>
         api.get<IEventChatResponse>(`/event/${id}/chats`),
-    getChat: async (id: number) =>
-        api.get<IChat>(`/event/chats/${id}`),
     createChat: async (id: number, data: { theme: string, text: string }) =>
         api.post(`/event/${id}/chats`, data),
     participate: async (id: number, participation: IParticipationModel) =>

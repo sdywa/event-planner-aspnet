@@ -8,7 +8,7 @@ using EventPlanner.Models;
 using EventPlanner.Services.AdvertisingServices;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
-using EventPlanner.Services.EventChatServices;
+using EventPlanner.Services.ChatServices;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
@@ -24,7 +24,7 @@ namespace EventPlanner.Controllers
         private IAdvertisingService _advertisingService;
         private IEventStorageService _eventStorageService;
         private IEventOrganizationService _eventOrganizationService;
-        private IEventChatService _eventChatService;
+        private IChatService _chatService;
         private IUserService _userService;
         private IWebHostEnvironment _appEnvironment;
 
@@ -34,7 +34,7 @@ namespace EventPlanner.Controllers
             IAdvertisingService advertisingService,
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
-            IEventChatService eventChatService,
+            IChatService chatService,
             IUserService userService)
         {
             _appEnvironment = appEnvironment;
@@ -42,7 +42,7 @@ namespace EventPlanner.Controllers
             _advertisingService = advertisingService;
             _eventStorageService = eventStorageService;
             _eventOrganizationService = eventOrganizationService;
-            _eventChatService = eventChatService;
+            _chatService = chatService;
             _userService = userService;
         }
 
@@ -397,7 +397,7 @@ namespace EventPlanner.Controllers
                 if (e.CreatorId != user.Id)
                     return Forbid();
 
-                var chats = await _eventChatService.GetChatsAsync(id);
+                var chats = await _chatService.GetChatsAsync(id);
                 return new JsonResult(new {
                     title = e.Title,
                     chats = chats
@@ -416,40 +416,6 @@ namespace EventPlanner.Controllers
             }
         }
 
-        [Authorize(Roles = "Organizer,Administrator")]
-        [HttpGet("chats/{id}")]
-        public async Task<IActionResult> GetChat(int id)
-        {
-            try
-            {
-                var user = await GetUserAsync();
-                var chat = await _eventChatService.GetChatAsync(id);
-                if (chat == null)
-                    throw new ChatNotFoundException();
-
-                if (chat.InitiatorId != user.Id && chat.Event.CreatorId != user.Id)
-                    return Forbid();
-
-                return new JsonResult(
-                    new {
-                        id = chat.Id,
-                        theme = chat.Theme,
-                        status = chat.Status.Name,
-                        creator = $"{chat.Initiator.Name} {chat.Initiator.Surname}",
-                        creationTime = chat.CreationTime,
-                        messages = chat.Messages.Select(m => new {
-                            creator = m.Creator.Name,
-                            creationTime = m.CreationTime,
-                            text = m.Text
-                        })
-                    });
-            }
-            catch (Exception ex)
-            {
-                return ExceptionHandler.Handle(ex);
-            }
-        }
-
         [Authorize]
         [HttpPost("{id}/chats")]
         public async Task<IActionResult> CreateChat(int id, [FromBody] ChatModel model)
@@ -461,14 +427,14 @@ namespace EventPlanner.Controllers
                 if (e.CreatorId == user.Id)
                     return Forbid();
 
-                var chat = await _eventChatService.CreateChatAsync(new Chat {
+                var chat = await _chatService.CreateChatAsync(new Chat {
                     EventId = e.Id,
                     InitiatorId = user.Id,
                     StatusId = ChatStatus.Waiting,
                     Theme = model.Theme
                 });
 
-                await _eventChatService.CreateAsync(new Message {
+                await _chatService.CreateAsync(new Message {
                     ChatId = chat.Id,
                     CreatorId = user.Id,
                     Text = model.Text

@@ -6,6 +6,7 @@ import { List } from "../../../../components/UI/list/List";
 import { ListItem } from "../../../../components/UI/list/ListItem";
 import { Status } from "../../../../types/Api";
 import { StatusIcon } from "../../../../components/UI/Status";
+import ChatService from "../../../../api/services/ChatService";
 import EventService from "../../../../api/services/EventService";
 import useForm from "../../../../hooks/forms/useForm";
 import { IFormInputStatus, IServerError } from "../../../../types";
@@ -55,7 +56,7 @@ export const Chat: FC<IChatProps> = (props) => {
                     return;
 
                 try {
-                    const response = await EventService.getChat(Number(chatId));
+                    const response = await ChatService.getChat(Number(chatId));
                     setChat(response.data);
                     const event = await EventService.get<{event: IDefaultEvent}>(Number(eventId));
                     setTitle(event.data.event.title);
@@ -110,7 +111,7 @@ export const Chat: FC<IChatProps> = (props) => {
                                         <div className="w-full flex border-b-2 border-slate-300 last:border-b-0" key={index}>
                                             <div className="w-40 px-4 py-2 border-r-2 border-slate-300">
                                                 <div>{m.creator}</div>
-                                                <span className="text-sm">{m.creationTime}</span>
+                                                <span className="text-xs">{m.creationTime}</span>
                                             </div>
                                             <div className="px-4 py-2 whitespace-pre-wrap">{m.text}</div>
                                         </div>
@@ -118,7 +119,7 @@ export const Chat: FC<IChatProps> = (props) => {
                                 }
                             </div>
                             <div>
-                                <form onSubmit={chatForm.onSubmit} onChange={chatForm.onChange} className="w-[44rem] mt-4">
+                                <form onSubmit={chatForm.onSubmit} onChange={chatForm.onChange} className="w-full">
                                     <Textarea name="text" className="h-60" label="Текст сообщения:" minLength={50} maxLength={4500} serverError={chatForm.serverErrors["text"]} isSubmitted={chatForm.isSubmitted} callBack={chatForm.updateInputStatuses} />
                                     <div className="flex justify-end items-center gap-2">
                                         <Button buttonStyle={ButtonStyles.BUTTON_GRAY} isPrimary={true}>

@@ -1,11 +1,11 @@
 using EventPlanner.Models;
 
-namespace EventPlanner.Services.EventChatServices;
+namespace EventPlanner.Services.ChatServices;
 
 /// <summary>
 /// Сервис обращений мероприятия
 /// </summary>
-public interface IEventChatService : IDataService<int, Message>
+public interface IChatService : IDataService<int, Message>
 {
     Task<Chat> GetChatAsync(int id);
     Task<List<Chat>> GetChatsAsync(int eventId);

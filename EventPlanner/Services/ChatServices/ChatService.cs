@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
 
-namespace EventPlanner.Services.EventChatServices;
+namespace EventPlanner.Services.ChatServices;
 
-public class EventChatService : CommonQueries<int, Message>, IEventChatService
+public class EventChatService : CommonQueries<int, Message>, IChatService
 {
     private Context _context;
     private CommonQueries<int, Chat> _common;
