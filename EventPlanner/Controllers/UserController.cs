@@ -6,6 +6,8 @@ using EventPlanner.Controllers.Models;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
 using EventPlanner.Services.AuthenticationServices;
+using EventPlanner.Services.EventStorageServices;
+using EventPlanner.Services.EventOrganizationServices;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
@@ -16,19 +18,46 @@ namespace EventPlanner.Controllers
     {
         private IAuthenticationService _authenticationService;
         private EventPlanner.Services.AuthorizationService.IAuthorizationService _authorizationService;
+        private IEventStorageService _eventStorageService;
+        private IEventOrganizationService _eventOrganizationService;
         private Context _context;
         private IUserService _userService;
 
         public UserController(
             IAuthenticationService authenticationService,
             EventPlanner.Services.AuthorizationService.IAuthorizationService authorizationService,
+            IEventStorageService eventStorageService,
+            IEventOrganizationService eventOrganizationService,
             Context context,
             IUserService userService)
         {
             _authenticationService = authenticationService;
             _authorizationService = authorizationService;
+            _eventStorageService = eventStorageService;
+            _eventOrganizationService = eventOrganizationService;
             _context = context;
             _userService = userService;
+        }
+
+        private async Task<User?> TryGetUserAsync()
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null)
+                return null;
+
+            var user = await _userService.GetAsync(int.Parse(id));
+            if (user == null)
+                return null;
+
+            return user;
+        }
+
+        private async Task<User> GetUserAsync()
+        {
+            var user = await TryGetUserAsync();
+            if (user == null)
+                throw new UserNotFoundException();
+            return user;
         }
 
         [HttpPost("refreshToken")]
@@ -143,6 +172,34 @@ namespace EventPlanner.Controllers
             }
 
             return new ActionException<BadRequestObjectResult>("Непредвиденная ошибка").FormResponse();
+        }
+
+        [Authorize]
+        [HttpGet("history")]
+        public async Task<IActionResult> GetHistoryAsync()
+        {
+            try
+            {
+                var user = await GetUserAsync();
+                List<Event>? created = null;
+                if (user.RoleId != UserRole.Participant)
+                    created = await _eventStorageService.GetByCreatorAsync(user.Id);
+
+                List<Event> participated = new List<Event>();
+                var tickets = await _eventOrganizationService.GetAllByUserAsync(user.Id);
+                foreach (var ticket in tickets.OrderByDescending(t => t.SaleDate))
+                    participated.Add(await _eventStorageService.GetByIdAsync(ticket.Ticket.EventId));
+
+                return new JsonResult(new
+                {
+                    Created = created,
+                    Participated = participated
+                });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
         }
 
         [Authorize]

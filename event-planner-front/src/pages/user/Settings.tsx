@@ -1,13 +1,15 @@
 import React, { FC, useState, useContext, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { Context } from "..";
-import { PageLayout } from "../components/layouts/page-layout/PageLayout";
-import { FormInput } from "../components/UI/forms/form-input/FormInput";
-import { Button, ButtonStyles } from "../components/UI/button/Button";
-import { SubmitButton } from "../components/UI/button/SubmitButton";
-import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH, EMAIL_ADDRESS } from "../hooks/useValidation";
-import { IFormInputData, IFormInputStatus, IServerError } from "../types/index";
-import useForm from "../hooks/forms/useForm";
+import { Context } from "../..";
+import { PageLayout } from "../../components/layouts/page-layout/PageLayout";
+import { FormInput } from "../../components/UI/forms/form-input/FormInput";
+import { Button, ButtonStyles } from "../../components/UI/button/Button";
+import { List } from "../../components/UI/list/List";
+import { ListItem } from "../../components/UI/list/ListItem";
+import { SubmitButton } from "../../components/UI/button/SubmitButton";
+import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH, EMAIL_ADDRESS } from "../../hooks/useValidation";
+import { IFormInputData, IFormInputStatus, IServerError } from "../../types/index";
+import useForm from "../../hooks/forms/useForm";
 
 const Settings: FC = () => {
     const [isPasswordReseted, setPassword] = useState(false);
@@ -95,37 +97,44 @@ const Settings: FC = () => {
 
     return (
         <PageLayout title="Настройка аккаунта">
-            <form className="flex flex-col justify-center items-start w-[26rem]" onSubmit={onSubmit} onChange={onChange}>
-                <div className="flex gap-8">
-                    <div className="w-64">
-                        <FormInput name="name" data={data["name"]} initialValue={user.user.name} serverError={serverErrors["name"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+            <div className="flex gap-12">
+                <List className="w-48 text-black">
+                    <ListItem className="text-green">Настройка аккаунта</ListItem>
+                    <ListItem link="/user/history" className="text-darkgray hover:text-gray">История</ListItem>
+                    <ListItem link="/user/feedback" className="text-darkgray hover:text-gray">Обращения</ListItem>
+                </List>
+                <form className="flex flex-col justify-center items-start w-[26rem]" onSubmit={onSubmit} onChange={onChange}>
+                    <div className="flex gap-8">
+                        <div className="w-64">
+                            <FormInput name="name" data={data["name"]} initialValue={user.user.name} serverError={serverErrors["name"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+                        </div>
+                        <div className="w-64">
+                            <FormInput name="surname" data={data["surname"]} initialValue={user.user.surname} serverError={serverErrors["surname"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+                        </div>
                     </div>
                     <div className="w-64">
-                        <FormInput name="surname" data={data["surname"]} initialValue={user.user.surname} serverError={serverErrors["surname"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+                        <FormInput name="email" data={data["email"]} initialValue={user.user.email} serverError={serverErrors["email"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
                     </div>
-                </div>
-                <div className="w-64">
-                    <FormInput name="email" data={data["email"]} initialValue={user.user.email} serverError={serverErrors["email"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
-                </div>
-                <div className="flex gap-8">
-                    <div className="w-64">
-                        <FormInput name="password" data={data["password"]} initialValue={passwordPlaceholder} onClick={resetInput} serverError={serverErrors["password"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+                    <div className="flex gap-8">
+                        <div className="w-64">
+                            <FormInput name="password" data={data["password"]} initialValue={passwordPlaceholder} onClick={resetInput} serverError={serverErrors["password"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+                        </div>
+                        <div className="w-64">
+                            <FormInput name="passwordConfirm" data={data["passwordConfirm"]} initialValue={passwordPlaceholder} onClick={resetInput} serverError={serverErrors["passwordConfirm"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+                        </div>
                     </div>
-                    <div className="w-64">
-                        <FormInput name="passwordConfirm" data={data["passwordConfirm"]} initialValue={passwordPlaceholder} onClick={resetInput} serverError={serverErrors["passwordConfirm"]} isSubmitted={isSubmitted} callBack={updateInputStatuses} />
+                    <div className="flex items-center gap-2">
+                        <SubmitButton disabled={hasError} isPrimary={true}
+                            buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
+                            Сохранить
+                        </SubmitButton>
+                        {
+                            user.user.role === "Participant" &&
+                            <Button onClick={async () => await user.promote() }><span className="text-gray">Стать организатором</span></Button>
+                        }
                     </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <SubmitButton disabled={hasError} isPrimary={true}
-                        buttonStyle={hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
-                        Сохранить
-                    </SubmitButton>
-                    {
-                        user.user.role === "Participant" &&
-                        <Button onClick={async () => await user.promote() }><span className="text-gray">Стать организатором</span></Button>
-                    }
-                </div>
-            </form>
+                </form>
+            </div>
         </PageLayout>
     );
 }

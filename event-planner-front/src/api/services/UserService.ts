@@ -20,6 +20,8 @@ const UserService = {
         console.log(formData);
         return api.patch("/user", data);
     },
+    getHistory: async <T>() =>
+        api.get<T>("/user/history"),
     promote: async () =>
         api.post("/user/role")
 }

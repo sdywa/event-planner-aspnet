@@ -7,7 +7,8 @@ import { Signup } from "../pages/signup/Signup";
 import { EditEvent } from "../pages/event/setup/EditEvent";
 import { QuestionsPage } from "../pages/event/setup/QuestionsPage";
 import { TicketsPage } from "../pages/event/setup/TicketsPage";
-import Settings from "../pages/Settings";
+import Settings from "../pages/user/Settings";
+import History from "../pages/user/History";
 import { Statistics } from "../pages/event/info/Statistics";
 import { Participants } from "../pages/event/info/Participants";
 import { Feedback } from "../pages/event/info/feedback/Feedback";
@@ -30,7 +31,8 @@ export const routes: route[] = [
     { path: "/events/:eventId/feedback", component: Feedback },
     { path: "/events/:eventId/chats/:chatId", component: Chat },
     { path: "/learn", component: Learn },
-    { path: "/settings", component: Settings }
+    { path: "/user/settings", component: Settings },
+    { path: "/user/history", component: History },
 ];
 
 export const authRoutes: route[] = [

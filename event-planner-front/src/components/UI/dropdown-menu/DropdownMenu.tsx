@@ -4,7 +4,13 @@ import { SimpleListItem } from "../list/SimpleListItem";
 
 interface IDropdownMenuProps {
     children: React.ReactNode;
-    items: {label: React.ReactNode, link?: string, icon?: React.ReactNode, onClick?: (e: React.MouseEvent<HTMLLIElement>) => void}[];
+    items: {
+        label: React.ReactNode,
+        link?: string,
+        icon?: React.ReactNode,
+        onClick?: (e: React.MouseEvent<HTMLLIElement>) => void,
+        className?: string | string[]
+    }[];
 };
 
 export const DropdownMenu: FC<IDropdownMenuProps> = ({children, items}) => {
@@ -21,7 +27,7 @@ export const DropdownMenu: FC<IDropdownMenuProps> = ({children, items}) => {
                                 link={item.link}
                                 icon={item.icon}
                                 onClick={item.onClick}
-                                className="text-darkgray hover:text-gray"
+                                className={[item.className, "text-darkgray hover:text-gray"]}
                             ></SimpleListItem>
                         )
                     }
