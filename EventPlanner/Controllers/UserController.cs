@@ -14,50 +14,24 @@ namespace EventPlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : Controller
     {
         private IAuthenticationService _authenticationService;
         private EventPlanner.Services.AuthorizationService.IAuthorizationService _authorizationService;
-        private IEventStorageService _eventStorageService;
-        private IEventOrganizationService _eventOrganizationService;
         private Context _context;
-        private IUserService _userService;
 
         public UserController(
+            IWebHostEnvironment appEnvironment,
             IAuthenticationService authenticationService,
             EventPlanner.Services.AuthorizationService.IAuthorizationService authorizationService,
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
             Context context,
-            IUserService userService)
+            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, userService)
         {
             _authenticationService = authenticationService;
             _authorizationService = authorizationService;
-            _eventStorageService = eventStorageService;
-            _eventOrganizationService = eventOrganizationService;
             _context = context;
-            _userService = userService;
-        }
-
-        private async Task<User?> TryGetUserAsync()
-        {
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (id == null)
-                return null;
-
-            var user = await _userService.GetAsync(int.Parse(id));
-            if (user == null)
-                return null;
-
-            return user;
-        }
-
-        private async Task<User> GetUserAsync()
-        {
-            var user = await TryGetUserAsync();
-            if (user == null)
-                throw new UserNotFoundException();
-            return user;
         }
 
         [HttpPost("refreshToken")]
@@ -181,14 +155,18 @@ namespace EventPlanner.Controllers
             try
             {
                 var user = await GetUserAsync();
-                List<Event>? created = null;
+                List<object>? created = null;
                 if (user.RoleId != UserRole.Participant)
-                    created = await _eventStorageService.GetByCreatorAsync(user.Id);
+                {
+                    created = new List<object>();
+                    foreach (var e in await _eventStorageService.GetByCreatorAsync(user.Id))
+                        created.Add(await PrepareEventAsync(e));
+                }
 
-                List<Event> participated = new List<Event>();
+                List<object> participated = new List<object>();
                 var tickets = await _eventOrganizationService.GetAllByUserAsync(user.Id);
                 foreach (var ticket in tickets.OrderByDescending(t => t.SaleDate))
-                    participated.Add(await _eventStorageService.GetByIdAsync(ticket.Ticket.EventId));
+                    participated.Add(await PrepareEventAsync(await _eventStorageService.GetByIdAsync(ticket.Ticket.EventId)));
 
                 return new JsonResult(new
                 {

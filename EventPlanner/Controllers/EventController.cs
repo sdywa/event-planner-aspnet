@@ -15,18 +15,13 @@ namespace EventPlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventController : ControllerBase
+    public class EventController : Controller
     {
         private static readonly string PlaceholderLink = "placeholder.png";
-        private string UploadFolder { get => $"{_appEnvironment.WebRootPath}/Uploads/"; }
 
         private Context _context;
         private IAdvertisingService _advertisingService;
-        private IEventStorageService _eventStorageService;
-        private IEventOrganizationService _eventOrganizationService;
         private IChatService _chatService;
-        private IUserService _userService;
-        private IWebHostEnvironment _appEnvironment;
 
         public EventController(
             IWebHostEnvironment appEnvironment,
@@ -35,53 +30,11 @@ namespace EventPlanner.Controllers
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
             IChatService chatService,
-            IUserService userService)
+            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, userService)
         {
-            _appEnvironment = appEnvironment;
             _context = context;
             _advertisingService = advertisingService;
-            _eventStorageService = eventStorageService;
-            _eventOrganizationService = eventOrganizationService;
             _chatService = chatService;
-            _userService = userService;
-        }
-
-        private async Task<User?> TryGetUserAsync()
-        {
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (id == null)
-                return null;
-
-            var user = await _userService.GetAsync(int.Parse(id));
-            if (user == null)
-                return null;
-
-            return user;
-        }
-
-        private async Task<User> GetUserAsync()
-        {
-            var user = await TryGetUserAsync();
-            if (user == null)
-                throw new UserNotFoundException();
-            return user;
-        }
-
-        private string? LoadImage(string filename)
-        {
-            var fullPath = $"{UploadFolder}{filename}";
-            if (System.IO.File.Exists(fullPath))
-            {
-                var bytes = System.IO.File.ReadAllBytes(fullPath);
-                return Convert.ToBase64String(bytes);
-            }
-            return null;
-        }
-
-        private void CreateUploadFolderIfNotExist()
-        {
-            if (!Directory.Exists(UploadFolder))
-                Directory.CreateDirectory(UploadFolder);
         }
 
         private async Task<string> UploadImageAsync(IFormFile? image)
@@ -97,82 +50,6 @@ namespace EventPlanner.Controllers
                 return filename;
             }
             return PlaceholderLink;
-        }
-
-        private Dictionary<string, object?> PrepareEvent(Event e, User? user, HashSet<string> fields)
-        {
-            var type = typeof(Event);
-            var prepared = new Dictionary<string, object?>();
-
-            foreach (var pi in type.GetProperties())
-            {
-                if (!fields.Contains(pi.Name))
-                    continue;
-                prepared[pi.Name] = type.GetProperty(pi.Name)?.GetValue(e);
-            }
-
-            if (fields.Contains("Cover"))
-                prepared["Cover"] = LoadImage(e.Cover ?? "");
-
-            if (fields.Contains("IsFavorite"))
-                prepared["IsFavorite"] = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null;
-
-            return prepared;
-        }
-
-        private async Task<Dictionary<string, object?>> PrepareEventAsync(Event e)
-        {
-            var user = await TryGetUserAsync();
-            return PrepareEvent(e, user, new HashSet<string> {
-                nameof(e.Id),
-                nameof(e.Title),
-                nameof(e.Cover),
-                nameof(e.Description),
-                nameof(e.Category),
-                nameof(e.Type),
-                nameof(e.StartDate),
-                nameof(e.EndDate),
-                nameof(e.Address),
-                "IsFavorite"
-            });
-        }
-
-        private async Task<Dictionary<string, object?>> PrepareExtendedEventAsync(Event e)
-        {
-            var prepared = await PrepareEventAsync(e);
-
-            prepared["FullDescription"] = e.FullDescription;
-            prepared["Creator"] = new
-            {
-                Id = e.Creator.Id,
-                Name = e.Creator.Name,
-                Surname = e.Creator.Surname,
-                EventsCount = (await _eventStorageService.GetByCreatorAsync(e.Creator.Id)).Count,
-                Rating = await _eventOrganizationService.GetAverageRatingAsync(e.Creator.Id)
-            };
-
-            var sales = await _eventOrganizationService.GetAllByEventAsync(e.Id);
-            prepared["Tickets"] = e.Tickets
-                .Where(t => t.Until > DateTime.Now && t.Limit > sales.Count)
-                .Select(t => new
-                {
-                    Id = t.Id,
-                    Title = t.Title,
-                    Limit = t.Limit,
-                    Price = t.Price,
-                    Until = t.Until
-                });
-
-            prepared["Questions"] = e.Questions.Select(q => new
-            {
-                Id = q.Id,
-                Title = q.Title
-            });
-
-            var user = await TryGetUserAsync();
-            prepared["IsParticipated"] = user != null ? await _eventOrganizationService.GetAsync(user.Id, e.Id) != null : false;
-
-            return prepared;
         }
 
         private async Task<Object> PrepareEventsAsync(List<Event> events)

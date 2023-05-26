@@ -1,48 +1,29 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using EventPlanner.Controllers.Models;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
 using EventPlanner.Services.ChatServices;
+using EventPlanner.Services.EventStorageServices;
+using EventPlanner.Services.EventOrganizationServices;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChatController : ControllerBase
+    public class ChatController : Controller
     {
         private IChatService _chatService;
-        private IUserService _userService;
 
         public ChatController(
+            IWebHostEnvironment appEnvironment,
             IChatService eventChatService,
-            IUserService userService)
+            IEventStorageService eventStorageService,
+            IEventOrganizationService eventOrganizationService,
+            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, userService)
         {
             _chatService = eventChatService;
-            _userService = userService;
-        }
-
-        private async Task<User?> TryGetUserAsync()
-        {
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (id == null)
-                return null;
-
-            var user = await _userService.GetAsync(int.Parse(id));
-            if (user == null)
-                return null;
-
-            return user;
-        }
-
-        private async Task<User> GetUserAsync()
-        {
-            var user = await TryGetUserAsync();
-            if (user == null)
-                throw new UserNotFoundException();
-            return user;
         }
 
         [Authorize]
