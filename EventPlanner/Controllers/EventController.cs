@@ -84,7 +84,7 @@ namespace EventPlanner.Controllers
                 Directory.CreateDirectory(UploadFolder);
         }
 
-        private async Task<string> UploadImage(IFormFile? image)
+        private async Task<string> UploadImageAsync(IFormFile? image)
         {
             CreateUploadFolderIfNotExist();
             if (image != null)
@@ -227,7 +227,7 @@ namespace EventPlanner.Controllers
                 var events = (await _eventStorageService.GetAvailableAsync())
                     .Where(ev => ev.CategoryId == eventInfo.Category.Id && ev.Id != eventInfo.Id)
                     .ToList();
-                var advertising = await _advertisingService.GetAdvertisingFrom(events, 3, user?.Id);
+                var advertising = await _advertisingService.GetAdvertisingFromAsync(events, 3, user?.Id);
                 return new JsonResult(new {
                     Event = e,
                     Advertising = await PrepareEventsAsync(advertising)
@@ -241,7 +241,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpGet("{id}/questions")]
-        public async Task<IActionResult> GetQuestions(int id)
+        public async Task<IActionResult> GetQuestionsAsync(int id)
         {
             try
             {
@@ -268,7 +268,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpGet("{id}/tickets")]
-        public async Task<IActionResult> GetTickets(int id)
+        public async Task<IActionResult> GetTicketsAsync(int id)
         {
             try
             {
@@ -347,7 +347,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpGet("{id}/participants")]
-        public async Task<IActionResult> GetParticipants(int id)
+        public async Task<IActionResult> GetParticipantsAsync(int id)
         {
             try
             {
@@ -388,7 +388,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpGet("{id}/chats")]
-        public async Task<IActionResult> GetChats(int id)
+        public async Task<IActionResult> GetChatsAsync(int id)
         {
             try
             {
@@ -418,7 +418,7 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("{id}/chats")]
-        public async Task<IActionResult> CreateChat(int id, [FromBody] ChatModel model)
+        public async Task<IActionResult> CreateChatAsync(int id, [FromBody] ChatModel model)
         {
             try
             {
@@ -450,7 +450,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpDelete("{id}/participants/{userId}")]
-        public async Task<IActionResult> DeleteParticipant(int id, int userId)
+        public async Task<IActionResult> DeleteParticipantAsync(int id, int userId)
         {
             try
             {
@@ -471,7 +471,7 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("{id}/fav")]
-        public async Task<IActionResult> ChangeFavAsync(int id, [FromBody] FavEventInfo favEventInfo)
+        public async Task<IActionResult> ChangeFavAsync(int id, [FromBody] FavEventModel favEventInfo)
         {
             try
             {
@@ -546,7 +546,7 @@ namespace EventPlanner.Controllers
             return created.Id;
         }
 
-        private async Task<Event> MakeNewEvent(int userId, EventModel eventInfo)
+        private async Task<Event> MakeNewEventAsync(int userId, EventModel eventInfo)
         {
             if (DateTime.Now > eventInfo.StartDate)
                 throw new ActionException<BadRequestObjectResult>("Некорректная дата") { PropertyName = "StartDate"};
@@ -558,7 +558,7 @@ namespace EventPlanner.Controllers
             if (eventInfo.Address != null)
                 addressId = await ProcessAddressAsync(eventInfo.Address, null);
 
-            var cover = await UploadImage(eventInfo.Cover);
+            var cover = await UploadImageAsync(eventInfo.Cover);
             var newEvent = new Event() {
                 Title = eventInfo.Title,
                 Description = eventInfo.Description,
@@ -579,7 +579,7 @@ namespace EventPlanner.Controllers
             return newEvent;
         }
 
-        private async Task CreateDefaultQuestion(int eventId, string title)
+        private async Task CreateDefaultQuestionAsync(int eventId, string title)
         {
             var question = new Question()
             {
@@ -593,15 +593,15 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("new")]
-        public async Task<IActionResult> CreateEvent([FromForm] EventModel newEventInfo)
+        public async Task<IActionResult> CreateEventAsync([FromForm] EventModel newEventInfo)
         {
             try
             {
                 var user = await GetUserAsync();
-                var created = await _eventStorageService.CreateAsync(await MakeNewEvent(user.Id, newEventInfo));
-                await CreateDefaultQuestion(created.Id, "Email");
-                await CreateDefaultQuestion(created.Id, "Ваше Имя");
-                await CreateDefaultQuestion(created.Id, "Ваша Фамилия");
+                var created = await _eventStorageService.CreateAsync(await MakeNewEventAsync(user.Id, newEventInfo));
+                await CreateDefaultQuestionAsync(created.Id, "Email");
+                await CreateDefaultQuestionAsync(created.Id, "Ваше Имя");
+                await CreateDefaultQuestionAsync(created.Id, "Ваша Фамилия");
 
                 return new JsonResult(new { id = created.Id });
             }
@@ -613,7 +613,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateEvent(int id, [FromForm] EventModel eventInfo)
+        public async Task<IActionResult> UpdateEventAsync(int id, [FromForm] EventModel eventInfo)
         {
             try
             {
@@ -622,7 +622,7 @@ namespace EventPlanner.Controllers
                 if (e.CreatorId != user.Id)
                     return Forbid();
 
-                var newEvent = await MakeNewEvent(user.Id, eventInfo);
+                var newEvent = await MakeNewEventAsync(user.Id, eventInfo);
                 newEvent.Id = id;
 
                 if (newEvent.Cover == PlaceholderLink)
@@ -640,7 +640,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(int id)
+        public async Task<IActionResult> DeleteEventAsync(int id)
         {
             try
             {
@@ -660,7 +660,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("{id}/questions")]
-        public async Task<IActionResult> ProcessQuestions(int id, [FromBody] QuestionModel model)
+        public async Task<IActionResult> ProcessQuestionsAsync(int id, [FromBody] QuestionModel model)
         {
             var questions = model.Questions;
 
@@ -718,7 +718,7 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("{id}/tickets")]
-        public async Task<IActionResult> ProcessTickets(int id, [FromBody] TicketModel model)
+        public async Task<IActionResult> ProcessTicketsAsync(int id, [FromBody] TicketModel model)
         {
             var tickets = model.Tickets;
 
@@ -780,7 +780,7 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("{id}/participate")]
-        public async Task<IActionResult> Participate(int id, [FromBody] ParticipationModel patricipation)
+        public async Task<IActionResult> ParticipateAsync(int id, [FromBody] ParticipationModel patricipation)
         {
             try
             {

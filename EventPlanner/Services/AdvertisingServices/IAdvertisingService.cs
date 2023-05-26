@@ -7,5 +7,5 @@ namespace EventPlanner.Services.AdvertisingServices;
 /// </summary>
 public interface IAdvertisingService
 {
-    Task<List<Event>> GetAdvertisingFrom(List<Event> events, int limit, int? userId);
+    Task<List<Event>> GetAdvertisingFromAsync(List<Event> events, int limit, int? userId);
 }

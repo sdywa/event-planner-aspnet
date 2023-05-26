@@ -32,7 +32,7 @@ namespace EventPlanner.Controllers
         }
 
         [HttpPost("refreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenModel? model)
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenModel? model)
         {
             try {
                 if (model?.Token == null)
@@ -47,7 +47,7 @@ namespace EventPlanner.Controllers
                     throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
 
                 return new JsonResult(
-                    await _authorizationService.RefreshTokens(user, model.Token)
+                    await _authorizationService.RefreshTokensAsync(user, model.Token)
                 );
             }
             catch (Exception ex)
@@ -57,13 +57,13 @@ namespace EventPlanner.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
         {
             try
             {
                 var user = await _authenticationService.LoginAsync(model.Email, model.Password);
                 var accessToken = _authorizationService.GetAccessToken(user);
-                var refreshToken = await _authorizationService.GetRefreshToken(user);
+                var refreshToken = await _authorizationService.GetRefreshTokenAsync(user);
 
                 return new JsonResult(
                     new {
@@ -85,13 +85,11 @@ namespace EventPlanner.Controllers
             }
         }
 
-        private async Task<bool> IsEmailUsedAsync(string email)
-        {
-            return await _userService.GetByEmailAsync(email) != null;
-        }
+        private async Task<bool> IsEmailUsedAsync(string email) =>
+            await _userService.GetByEmailAsync(email) != null;
 
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup([FromBody] SignupModel model)
+        public async Task<IActionResult> SignupAsync([FromBody] SignupModel model)
         {
             if (await IsEmailUsedAsync(model.Email))
                 return new ActionException<BadRequestObjectResult>("Данная почта уже используется") { PropertyName = "Email" }.FormResponse();
@@ -102,7 +100,7 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout([FromBody] TokenModel? model)
+        public async Task<IActionResult> LogoutAsync([FromBody] TokenModel? model)
         {
             try {
                 if (model?.Token == null)
@@ -116,7 +114,7 @@ namespace EventPlanner.Controllers
                 if (user == null)
                     throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
 
-                await _authorizationService.RemoveRefreshToken(user, model.Token);
+                await _authorizationService.RemoveRefreshTokenAsync(user, model.Token);
                 return Ok();
             }
             catch (Exception ex)

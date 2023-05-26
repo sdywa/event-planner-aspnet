@@ -57,7 +57,7 @@ public class AdvertisingService : IAdvertisingService
         return normalized;
     }
 
-    private async Task<List<(int, double)>> Calculate(List<Event> events, CriteriaValues? customValues = null)
+    private async Task<List<(int, double)>> CalculateAsync(List<Event> events, CriteriaValues? customValues = null)
     {
         var criteriaValues = new Dictionary<int, CriteriaValues>();
         var maxCriteriaValues = new CriteriaValues();
@@ -66,7 +66,7 @@ public class AdvertisingService : IAdvertisingService
         // Подсчёт значений
         foreach (var e in events)
         {
-            criteriaValues[e.Id] = await GetCriteriaValues(e);
+            criteriaValues[e.Id] = await GetCriteriaValuesAsync(e);
             foreach (var pi in type.GetProperties())
             {
                 var value = (double?)type.GetProperty(pi.Name)?.GetValue(criteriaValues[e.Id], null);
@@ -92,7 +92,7 @@ public class AdvertisingService : IAdvertisingService
         return original;
     }
 
-    private async Task<CriteriaValues> GetCriteriaValues(Event e)
+    private async Task<CriteriaValues> GetCriteriaValuesAsync(Event e)
     {
         var sales = await _eventOrganizationService.GetAllByEventAsync(e.Id);
         var minPrice = e.Tickets.Min(t => t.Price);
@@ -133,7 +133,7 @@ public class AdvertisingService : IAdvertisingService
         return 0.00018 * averagePrice - 0.2;
     }
 
-    public async Task<List<Event>> GetAdvertisingFrom(List<Event> events, int limit, int? userId)
+    public async Task<List<Event>> GetAdvertisingFromAsync(List<Event> events, int limit, int? userId)
     {
         var averagePrice = 0;
         if (userId != null)
@@ -146,7 +146,7 @@ public class AdvertisingService : IAdvertisingService
 
         var minPriceMultiplier = GetMinPriceMultiplier(averagePrice);
         var maxPriceMultiplier = GetMaxPriceMultiplier(averagePrice);
-        var results = await Calculate(events, new CriteriaValues
+        var results = await CalculateAsync(events, new CriteriaValues
         {
             MinPrice = minPriceMultiplier,
             MaxPrice = maxPriceMultiplier

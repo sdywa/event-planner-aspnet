@@ -58,7 +58,7 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task<Object> GetRefreshToken(User user) {
+    public async Task<Object> GetRefreshTokenAsync(User user) {
         var refreshToken = new RefreshToken
         {
             Id = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
@@ -77,7 +77,7 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task<Object> RefreshTokens(User user, string refreshToken) {
+    public async Task<Object> RefreshTokensAsync(User user, string refreshToken) {
         var foundUser = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)
@@ -87,7 +87,7 @@ public class AuthorizationService : IAuthorizationService
             throw new InvalidRefreshToken();
 
         var jwt = GetAccessToken(foundUser);
-        var newRefreshToken = await GetRefreshToken(foundUser);
+        var newRefreshToken = await GetRefreshTokenAsync(foundUser);
         return new
         {
             accessToken = jwt,
@@ -95,7 +95,7 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task RemoveRefreshToken(User user, string refreshToken) {
+    public async Task RemoveRefreshTokenAsync(User user, string refreshToken) {
         var foundUser = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)

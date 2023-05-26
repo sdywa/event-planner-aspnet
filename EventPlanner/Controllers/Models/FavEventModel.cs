@@ -1,6 +1,6 @@
 namespace EventPlanner.Controllers.Models;
 
-public class FavEventInfo
+public class FavEventModel
 {
     public bool IsFavorite { get; set; }
 }

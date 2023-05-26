@@ -81,7 +81,7 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("{id}")]
-        public async Task<IActionResult> CreateMessage(int id, [FromBody] MessageModel model)
+        public async Task<IActionResult> CreateMessageAsync(int id, [FromBody] MessageModel model)
         {
             try
             {

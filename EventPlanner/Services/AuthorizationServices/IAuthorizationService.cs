@@ -8,7 +8,7 @@ namespace EventPlanner.Services.AuthorizationService;
 public interface IAuthorizationService
 {
     public Object GetAccessToken(User user);
-    public Task<Object> GetRefreshToken(User user);
-    public Task<Object> RefreshTokens(User user, string refreshToken);
-    public Task RemoveRefreshToken(User user, string refreshToken);
+    public Task<Object> GetRefreshTokenAsync(User user);
+    public Task<Object> RefreshTokensAsync(User user, string refreshToken);
+    public Task RemoveRefreshTokenAsync(User user, string refreshToken);
 }

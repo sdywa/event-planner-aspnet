@@ -3,7 +3,7 @@ using EventPlanner.Models;
 namespace EventPlanner.Services.ChatServices;
 
 /// <summary>
-/// Сервис обращений мероприятия
+/// Сервис обращений
 /// </summary>
 public interface IChatService : IDataService<int, Message>
 {
