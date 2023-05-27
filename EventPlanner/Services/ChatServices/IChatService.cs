@@ -8,7 +8,8 @@ namespace EventPlanner.Services.ChatServices;
 public interface IChatService : IDataService<int, Message>
 {
     Task<Chat> GetChatAsync(int id);
-    Task<List<Chat>> GetChatsAsync(int eventId);
+    Task<List<Chat>> GetChatsByEventAsync(int eventId);
+    Task<List<Chat>> GetChatsByCreatorAsync(int initiatorId);
     Task<Chat> CreateChatAsync(Chat chat);
     Task<Chat> UpdateChatStatusAsync(int id, EventPlanner.ChatStatus status);
 }

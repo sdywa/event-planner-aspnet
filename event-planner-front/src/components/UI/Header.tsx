@@ -33,7 +33,7 @@ export const Header: FC = observer(() => {
                             },
                             {
                                 label: "Обращения",
-                                link: "/user/feedback",
+                                link: "/user/chats",
                                 icon: (
                                     <i className="fa-solid fa-comments text-sm"></i>
                                 ),

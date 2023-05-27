@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using EventPlanner.Models;
 using EventPlanner.Exceptions;
+using EventPlanner.Services.ChatServices;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
 using EventPlanner.Services.UserServices;
@@ -17,17 +18,20 @@ namespace EventPlanner.Controllers
 
         protected IEventStorageService _eventStorageService;
         protected IEventOrganizationService _eventOrganizationService;
+        protected IChatService _chatService;
         protected IUserService _userService;
 
         public Controller(
             IWebHostEnvironment appEnvironment,
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
+            IChatService chatService,
             IUserService userService)
         {
             _appEnvironment = appEnvironment;
             _eventStorageService = eventStorageService;
             _eventOrganizationService = eventOrganizationService;
+            _chatService = chatService;
             _userService = userService;
         }
 

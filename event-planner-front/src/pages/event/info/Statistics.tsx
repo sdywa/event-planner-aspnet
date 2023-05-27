@@ -115,7 +115,7 @@ export const Statistics: FC = () => {
                         Участники
                     </ListItem>
                     <ListItem
-                        link={`/events/${eventId}/feedback`}
+                        link={`/events/${eventId}/chats`}
                         className="text-darkgray hover:text-gray"
                     >
                         Обратная связь

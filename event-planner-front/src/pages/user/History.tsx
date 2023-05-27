@@ -59,7 +59,7 @@ export const History: FC = () => {
                     </ListItem>
                     <ListItem className="text-green">История</ListItem>
                     <ListItem
-                        link="/user/feedback"
+                        link="/user/chats"
                         className="text-darkgray hover:text-gray"
                     >
                         Обращения
@@ -155,7 +155,7 @@ export const History: FC = () => {
                                             ))}
                                     </div>
                                 ) : (
-                                    <EmptyPlaceholder text="Вы ещё ни разу не принимали участие" />
+                                    <EmptyPlaceholder text="Вы нигде не принимали участие" />
                                 )}
                             </div>
                         )}

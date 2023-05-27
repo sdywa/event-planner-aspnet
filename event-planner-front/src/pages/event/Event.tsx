@@ -345,7 +345,7 @@ export const Event: FC = observer(() => {
                             },
                             {
                                 label: "Обратная связь",
-                                link: `/events/${eventId}/feedback`,
+                                link: `/events/${eventId}/chats`,
                             },
                         ]}
                     >

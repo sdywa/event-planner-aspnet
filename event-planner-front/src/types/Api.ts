@@ -175,6 +175,7 @@ export interface IChat {
     id: number;
     theme: string;
     status: Status;
+    creatorId: number;
     creator: string;
     creationTime: string;
     messages: IMessage[];

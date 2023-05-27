@@ -14,17 +14,13 @@ namespace EventPlanner.Controllers
     [ApiController]
     public class ChatController : Controller
     {
-        private IChatService _chatService;
-
         public ChatController(
             IWebHostEnvironment appEnvironment,
-            IChatService eventChatService,
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
-            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, userService)
-        {
-            _chatService = eventChatService;
-        }
+            IChatService chatService,
+            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, chatService, userService)
+        { }
 
         [Authorize]
         [HttpGet("{id}")]
@@ -45,6 +41,7 @@ namespace EventPlanner.Controllers
                         id = chat.Id,
                         theme = chat.Theme,
                         status = chat.Status.Name,
+                        creatorId = chat.InitiatorId,
                         creator = $"{chat.Initiator.Name} {chat.Initiator.Surname}",
                         creationTime = chat.CreationTime,
                         messages = chat.Messages.Select(m => new {

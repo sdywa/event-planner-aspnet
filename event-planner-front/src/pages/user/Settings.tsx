@@ -149,7 +149,7 @@ export const Settings: FC = observer(() => {
                         История
                     </ListItem>
                     <ListItem
-                        link="/user/feedback"
+                        link="/user/chats"
                         className="text-darkgray hover:text-gray"
                     >
                         Обращения

@@ -25,7 +25,11 @@ public class EventChatService : CommonQueries<int, Message>, IChatService
         return chat;
     }
 
-    public async Task<List<Chat>> GetChatsAsync(int id) => await _common.GetAllAsync(IncludeChatValues());
+    public async Task<List<Chat>> GetChatsByEventAsync(int eventId) =>
+        await IncludeChatValues().Where(c => c.EventId == eventId).ToListAsync();
+
+    public async Task<List<Chat>> GetChatsByCreatorAsync(int initiatorId) =>
+        await IncludeChatValues().Where(c => c.InitiatorId == initiatorId).ToListAsync();
 
     public async Task<Chat> CreateChatAsync(Chat chat) => await _common.CreateAsync(chat);
 

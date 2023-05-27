@@ -31,5 +31,6 @@ export const UserService = {
         return api.patch("/user", data);
     },
     getHistory: async <T>() => api.get<T>("/user/history"),
+    getChats: async () => api.get("/user/chats"),
     promote: async () => api.post("/user/role"),
 };

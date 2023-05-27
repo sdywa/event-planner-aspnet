@@ -6,6 +6,7 @@ using EventPlanner.Controllers.Models;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
 using EventPlanner.Services.AuthenticationServices;
+using EventPlanner.Services.ChatServices;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
 using EventPlanner.Services.UserServices;
@@ -21,13 +22,14 @@ namespace EventPlanner.Controllers
         private Context _context;
 
         public UserController(
+            Context context,
             IWebHostEnvironment appEnvironment,
             IAuthenticationService authenticationService,
             EventPlanner.Services.AuthorizationService.IAuthorizationService authorizationService,
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
-            Context context,
-            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, userService)
+            IChatService chatService,
+            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, chatService, userService)
         {
             _authenticationService = authenticationService;
             _authorizationService = authorizationService;
@@ -149,6 +151,32 @@ namespace EventPlanner.Controllers
         }
 
         [Authorize]
+        [HttpPatch]
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UserModel model)
+        {
+            if (model.Password != null && model.Password != string.Empty && model.Password.Length < 8)
+                return BadRequest(new { Errors = new { Password = "Используйте не менее 8 символов", PasswordConfirm = "Используйте не менее 8 символов" } });
+
+            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (rowId == null)
+                return Unauthorized();
+
+            var user = await _userService.GetAsync(int.Parse(rowId));
+            if (user == null)
+                return Unauthorized();
+
+            user.Name = model.Name;
+            user.Surname = model.Surname;
+            user.Email = model.Email;
+            await _userService.UpdateAsync(user);
+
+            if (model.Password != null && model.Password != string.Empty)
+                await _authenticationService.UpdatePasswordAsync(user.Id, model.Password);
+
+            return Ok();
+        }
+
+        [Authorize]
         [HttpGet("history")]
         public async Task<IActionResult> GetHistoryAsync()
         {
@@ -181,29 +209,28 @@ namespace EventPlanner.Controllers
         }
 
         [Authorize]
-        [HttpPatch]
-        public async Task<IActionResult> UpdateUserAsync([FromBody] UserModel model)
+        [HttpGet("chats")]
+        public async Task<IActionResult> GetChatsAsync()
         {
-            if (model.Password != null && model.Password != string.Empty && model.Password.Length < 8)
-                return BadRequest(new { Errors = new { Password = "Используйте не менее 8 символов", PasswordConfirm = "Используйте не менее 8 символов" } });
-
-            var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (rowId == null)
-                return Unauthorized();
-
-            var user = await _userService.GetAsync(int.Parse(rowId));
-            if (user == null)
-                return Unauthorized();
-
-            user.Name = model.Name;
-            user.Surname = model.Surname;
-            user.Email = model.Email;
-            await _userService.UpdateAsync(user);
-
-            if (model.Password != null && model.Password != string.Empty)
-                await _authenticationService.UpdatePasswordAsync(user.Id, model.Password);
-
-            return Ok();
+            try
+            {
+                var user = await GetUserAsync();
+                var chats = await _chatService.GetChatsByCreatorAsync(user.Id);
+                return new JsonResult(new {
+                    chats = chats
+                    .OrderBy(c => c.StatusId != ChatStatus.Waiting)
+                    .ThenBy(c => c.StatusId != ChatStatus.Waiting)
+                    .Select(c => new {
+                        id = c.Id,
+                        theme = c.Theme,
+                        status = c.Status.Name
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return ExceptionHandler.Handle(ex);
+            }
         }
     }
 }

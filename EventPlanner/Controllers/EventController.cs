@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +5,9 @@ using EventPlanner.Controllers.Models;
 using EventPlanner.Exceptions;
 using EventPlanner.Models;
 using EventPlanner.Services.AdvertisingServices;
+using EventPlanner.Services.ChatServices;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
-using EventPlanner.Services.ChatServices;
 using EventPlanner.Services.UserServices;
 
 namespace EventPlanner.Controllers
@@ -21,8 +20,6 @@ namespace EventPlanner.Controllers
 
         private Context _context;
         private IAdvertisingService _advertisingService;
-        private IChatService _chatService;
-
         public EventController(
             IWebHostEnvironment appEnvironment,
             Context context,
@@ -30,11 +27,10 @@ namespace EventPlanner.Controllers
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
             IChatService chatService,
-            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, userService)
+            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, chatService, userService)
         {
             _context = context;
             _advertisingService = advertisingService;
-            _chatService = chatService;
         }
 
         private async Task<string> UploadImageAsync(IFormFile? image)
@@ -274,7 +270,7 @@ namespace EventPlanner.Controllers
                 if (e.CreatorId != user.Id)
                     return Forbid();
 
-                var chats = await _chatService.GetChatsAsync(id);
+                var chats = await _chatService.GetChatsByEventAsync(id);
                 return new JsonResult(new {
                     title = e.Title,
                     chats = chats

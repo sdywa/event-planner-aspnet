@@ -83,7 +83,7 @@ export const Participants: FC = () => {
                     </ListItem>
                     <ListItem className="text-green">Участники</ListItem>
                     <ListItem
-                        link={`/events/${eventId}/feedback`}
+                        link={`/events/${eventId}/chats`}
                         className="text-darkgray hover:text-gray"
                     >
                         Обратная связь
