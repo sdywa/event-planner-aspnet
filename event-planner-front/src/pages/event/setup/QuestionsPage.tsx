@@ -1,24 +1,29 @@
-import { FC, useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { PageLayout } from "../../../components/layouts/page-layout/PageLayout";
-import { IFormInputStatus, IFormInputData, IServerError } from "../../../types";
-import { IEventQuestion } from "../../../types/Api";
+import React, { FC, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { getErrors } from "../../../api";
+import { EventService } from "../../../api/services/EventService";
+import { PageLayout } from "../../../components/layouts/PageLayout";
+import { Button, ButtonStyles } from "../../../components/UI/buttons/Button";
+import { SubmitButton } from "../../../components/UI/buttons/SubmitButton";
+import { DraggableItem } from "../../../components/UI/DraggableItem";
+import { EditableItem } from "../../../components/UI/EditableItem";
+import { FormInput } from "../../../components/UI/forms/FormInput";
 import { List } from "../../../components/UI/list/List";
 import { ListItem } from "../../../components/UI/list/ListItem";
-import { DraggableItem } from "../../../components/UI/DraggableItem";
-import { FormInput } from "../../../components/UI/forms/form-input/FormInput";
-import useForm from "../../../hooks/forms/useForm";
-import { EditableItem } from "../../../components/UI/EditableItem";
-import { Button, ButtonStyles } from "../../../components/UI/button/Button";
-import { WithIcon } from "../../../components/UI/with-icon/WithIcon";
-import { SubmitButton } from "../../../components/UI/button/SubmitButton";
-import { IS_NOT_EMPTY, MIN_LENGTH, MAX_LENGTH } from "../../../hooks/useValidation";
-import EventService from "../../../api/services/EventService";
-import { getErrors } from "../../../api";
+import { WithIcon } from "../../../components/UI/WithIcon";
+import { useForm } from "../../../hooks/forms/useForm";
+import {
+    IS_NOT_EMPTY,
+    MAX_LENGTH,
+    MIN_LENGTH,
+} from "../../../hooks/useValidation";
+import { IFormInputData, IFormInputStatus, IServerError } from "../../../types";
+import { IEventQuestion } from "../../../types/Api";
 
 export const QuestionsPage: FC = () => {
     const navigate = useNavigate();
-    const {eventId} = useParams();
+    const { eventId } = useParams();
     const [eventTitle, setTitle] = useState("");
     const [questions, setQuestions] = useState<IEventQuestion[]>([]);
     const [activeQuestions, setActiveQuestions] = useState<number[]>([]);
@@ -29,7 +34,11 @@ export const QuestionsPage: FC = () => {
         label: "",
         type: "text",
         autoComplete: "off",
-        validation: [IS_NOT_EMPTY("Введите вопрос"), MIN_LENGTH(5), MAX_LENGTH(70)]
+        validation: [
+            IS_NOT_EMPTY("Введите вопрос"),
+            MIN_LENGTH(5),
+            MAX_LENGTH(70),
+        ],
     };
 
     useEffect(() => {
@@ -38,17 +47,18 @@ export const QuestionsPage: FC = () => {
             // Sending request to server
 
             const getEvent = async () => {
-                if (!eventId)
-                    return;
+                if (!eventId) return;
 
                 try {
-                    const response = await EventService.getQuestions(Number(eventId));
-                    setTitle(response.data.title)
+                    const response = await EventService.getQuestions(
+                        Number(eventId)
+                    );
+                    setTitle(response.data.title);
                     setQuestions(response.data.questions);
                 } catch {
                     navigate("/");
                 }
-            }
+            };
             getEvent();
         }
     }, []);
@@ -57,8 +67,8 @@ export const QuestionsPage: FC = () => {
         const question: IEventQuestion = {
             id: createdCount,
             title: "",
-            isEditable: true
-        }
+            isEditable: true,
+        };
         setQuestions([...questions, question]);
         setActiveQuestions([...activeQuestions, question.id]);
         setCreatedCount(createdCount - 1);
@@ -67,27 +77,57 @@ export const QuestionsPage: FC = () => {
 
     function renderQuestion(question: IEventQuestion) {
         return (
-            <DraggableItem key={question.id} className="border-b-2 border-lightgray group h-12">
-                <EditableItem isActive={activeQuestions.includes(question.id)} showButtons={question.isEditable}
-                open={() => openQuestion(question.id)} close={() => closeQuestion(question.id)} remove={() => removeQuestion(question.id)}
-                activeState={
-                    <FormInput initialValue={questionForm.getInputStatus(question.id.toString())?.value || question.title} name={question.id.toString()} data={defaultFormInputData} serverError={questionForm.serverErrors[question.id.toString()]} isSubmitted={questionForm.isSubmitted} callBack={questionForm.updateInputStatuses} showError={false} className="p-0" />
-                }
-                defaultState={
-                    <span className="font-medium">{questionForm.getInputStatus(question.id.toString())?.value || question.title}</span>
-                } />
+            <DraggableItem
+                key={question.id}
+                className="border-b-2 border-lightgray group h-12"
+            >
+                <EditableItem
+                    isActive={activeQuestions.includes(question.id)}
+                    showButtons={question.isEditable}
+                    open={() => openQuestion(question.id)}
+                    close={() => closeQuestion(question.id)}
+                    remove={() => removeQuestion(question.id)}
+                    activeState={
+                        <FormInput
+                            initialValue={
+                                questionForm.getInputStatus(
+                                    question.id.toString()
+                                )?.value || question.title
+                            }
+                            name={question.id.toString()}
+                            data={defaultFormInputData}
+                            serverError={
+                                questionForm.serverErrors[
+                                    question.id.toString()
+                                ]
+                            }
+                            isSubmitted={questionForm.isSubmitted}
+                            callBack={questionForm.updateInputStatuses}
+                            showError={false}
+                            className="p-0"
+                        />
+                    }
+                    defaultState={
+                        <span className="font-medium">
+                            {questionForm.getInputStatus(question.id.toString())
+                                ?.value || question.title}
+                        </span>
+                    }
+                />
             </DraggableItem>
         );
     }
 
-    async function sendFormData(data: {[key: string]: IFormInputStatus}): Promise<IServerError> {
+    async function sendFormData(data: {
+        [key: string]: IFormInputStatus;
+    }): Promise<IServerError> {
         console.log("sent!");
         const result = Object.entries(data).map(([key, d]): IEventQuestion => {
             const id = Number(key);
             return {
                 id: id,
                 title: d.value,
-                isEditable: questions.find(q => q.id === id)?.isEditable
+                isEditable: questions.find((q) => q.id === id)?.isEditable,
             };
         });
 
@@ -105,50 +145,81 @@ export const QuestionsPage: FC = () => {
     const openQuestion = (id: number) => {
         if (!activeQuestions.includes(id))
             setActiveQuestions([...activeQuestions, id]);
-    }
+    };
 
     const closeQuestion = (id: number) => {
         setActiveQuestions(activeQuestions.filter((qId) => qId !== id));
-    }
+    };
 
     const removeQuestion = (id: number) => {
         setQuestions(questions.filter((q) => q.id !== id));
         questionForm.hideInputStatus(id.toString(), true);
-    }
+    };
 
     return (
         <PageLayout title={eventTitle}>
             <div className="flex gap-12">
                 <List className="w-48 text-black">
-                    <ListItem link={`/events/${eventId}/edit`} className="text-darkgray hover:text-gray">Информация</ListItem>
+                    <ListItem
+                        link={`/events/${eventId}/edit`}
+                        className="text-darkgray hover:text-gray"
+                    >
+                        Информация
+                    </ListItem>
                     <ListItem className="text-green">Анкета</ListItem>
-                    <ListItem link={`/events/${eventId}/tickets`} className="text-darkgray hover:text-gray">Билеты</ListItem>
+                    <ListItem
+                        link={`/events/${eventId}/tickets`}
+                        className="text-darkgray hover:text-gray"
+                    >
+                        Билеты
+                    </ListItem>
                 </List>
                 <div className="flex flex-col gap-2">
                     <h3 className="text-xl">Регистрация на событие</h3>
-                    <form className="flex flex-col justify-start gap-4" onSubmit={questionForm.onSubmit} onChange={questionForm.onChange}>
+                    <form
+                        className="flex flex-col justify-start gap-4"
+                        onSubmit={questionForm.onSubmit}
+                        onChange={questionForm.onChange}
+                    >
                         <div className="w-80">
                             <span>Вопросы анкеты:</span>
-                            {
-                                questions.map((q) =>
-                                    renderQuestion(q)
-                                )
-                            }
+                            {questions.map((q) => renderQuestion(q))}
                         </div>
                         <div>
-                            <Button onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); createQuestion()}} buttonStyle={ButtonStyles.BUTTON_GREEN} link="/events/new">
-                                <WithIcon icon={<i className="fa-solid fa-plus"></i>}>
+                            <Button
+                                onClick={(
+                                    e: React.MouseEvent<HTMLAnchorElement>
+                                ) => {
+                                    e.preventDefault();
+                                    createQuestion();
+                                }}
+                                buttonStyle={ButtonStyles.BUTTON_GREEN}
+                                link="/events/new"
+                            >
+                                <WithIcon
+                                    icon={<i className="fa-solid fa-plus"></i>}
+                                >
                                     Добавить вопрос
                                 </WithIcon>
                             </Button>
-                            {
-                            questionForm.hasError && <div className="text-red font-roboto font-bold text-sm h-6 pt-2">{ questionForm.serverErrors.message ?? "Введите валидные значения" }</div>
-                            }
+                            {questionForm.hasError && (
+                                <div className="text-red font-roboto font-bold text-sm h-6 pt-2">
+                                    {questionForm.serverErrors.message ??
+                                        "Введите валидные значения"}
+                                </div>
+                            )}
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-6">
-                                <SubmitButton disabled={questionForm.hasError} isPrimary={true}
-                                    buttonStyle={questionForm.hasError ? ButtonStyles.BUTTON_RED : ButtonStyles.BUTTON_GREEN}>
+                                <SubmitButton
+                                    disabled={questionForm.hasError}
+                                    isPrimary={true}
+                                    buttonStyle={
+                                        questionForm.hasError
+                                            ? ButtonStyles.BUTTON_RED
+                                            : ButtonStyles.BUTTON_GREEN
+                                    }
+                                >
                                     Продолжить
                                 </SubmitButton>
                                 {/* <Button isPrimary={true} buttonStyle={ButtonStyles.BUTTON_GRAY}>
@@ -156,7 +227,9 @@ export const QuestionsPage: FC = () => {
                                 </Button> */}
                             </div>
                             <Button link="/events">
-                                <div className="text-gray hover:text-red">Отмена</div>
+                                <div className="text-gray hover:text-red">
+                                    Отмена
+                                </div>
                             </Button>
                         </div>
                     </form>
@@ -164,4 +237,4 @@ export const QuestionsPage: FC = () => {
             </div>
         </PageLayout>
     );
-}
+};

@@ -1,9 +1,10 @@
 import { makeAutoObservable } from "mobx";
-import { getErrors } from "../api";
-import UserService from "../api/services/UserService";
-import { IUser, IToken, UserRoles } from "../types/Api";
 
-export default class User {
+import { getErrors } from "../api";
+import { UserService } from "../api/services/UserService";
+import { IToken, IUser, UserRoles } from "../types/Api";
+
+export class User {
     user = {} as IUser;
     isAuth = false;
     isCreator = false;
@@ -21,11 +22,18 @@ export default class User {
 
     setUser(value: IUser) {
         this.user = value;
-        this.isCreator = value.role === "Organizer" || value.role === "Administrator";
+        this.isCreator =
+            value.role === "Organizer" || value.role === "Administrator";
         localStorage.setItem("user", JSON.stringify(value));
     }
 
-    async signup(data: {name: string, surname: string, email: string, password: string, passwordConfirm: string}) {
+    async signup(data: {
+        name: string;
+        surname: string;
+        email: string;
+        password: string;
+        passwordConfirm: string;
+    }) {
         try {
             await UserService.signup(data);
         } catch (e) {
@@ -33,14 +41,19 @@ export default class User {
         }
     }
 
-    async login(data: {email: string, password: string}) {
+    async login(data: { email: string; password: string }) {
         try {
             const response = await UserService.login(data);
-            if (response.data.user === undefined)
-                return;
+            if (response.data.user === undefined) return;
 
-            localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
-            localStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
+            localStorage.setItem(
+                "accessToken",
+                JSON.stringify(response.data.accessToken)
+            );
+            localStorage.setItem(
+                "refreshToken",
+                JSON.stringify(response.data.refreshToken)
+            );
             this.setAuth(true);
             this.setUser(response.data.user);
         } catch (e) {
@@ -50,8 +63,10 @@ export default class User {
 
     async logout() {
         try {
-            const refreshToken: IToken = JSON.parse(localStorage.getItem("refreshToken") || "{}");
-            await UserService.logout({token: refreshToken.token});
+            const refreshToken: IToken = JSON.parse(
+                localStorage.getItem("refreshToken") || "{}"
+            );
+            await UserService.logout({ token: refreshToken.token });
         } catch (e) {
             return;
         } finally {
@@ -62,7 +77,13 @@ export default class User {
         }
     }
 
-    async update(data: {name: string, surname: string, email: string, password: string, passwordConfirm: string}) {
+    async update(data: {
+        name: string;
+        surname: string;
+        email: string;
+        password: string;
+        passwordConfirm: string;
+    }) {
         try {
             await UserService.update(data);
             this.user.email = data.email;

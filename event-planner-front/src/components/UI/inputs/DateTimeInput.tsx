@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+
 import { IFormInputStatus } from "../../../types/index";
 
 interface IDateTimeInputProps {
@@ -7,12 +8,20 @@ interface IDateTimeInputProps {
     name: string;
     isFormSubmitted: boolean;
     serverError: string;
-    showError?: boolean,
+    showError?: boolean;
     callBack: (name: string, value: IFormInputStatus) => void;
-};
+}
 
-export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, isFormSubmitted, serverError, showError=true, callBack}) => {
-    const defaultClass = "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150 cursor-pointer";
+export const DateTimeInput: FC<IDateTimeInputProps> = ({
+    initialValue = "",
+    name,
+    isFormSubmitted,
+    serverError,
+    showError = true,
+    callBack,
+}) => {
+    const defaultClass =
+        "border-2 rounded-md py-1 px-2 outline-none text-center transition-colors ease-in duration-150 cursor-pointer";
     const userTimezone = new Date().getTimezoneOffset() * 60 * 1000;
 
     const [date, setDate] = useState(-1);
@@ -28,8 +37,12 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
     const [isActive, setActive] = useState(false);
 
     const parsedDate = () => Date.parse(dateRef.current?.value || "");
-    const parsedTime = () => Date.parse(`01 Jan 1970 ${timeRef.current?.value} GMT`);
-    const fullDate = () => time !== -1 && date !== -1 ? new Date(date + time + userTimezone).toISOString() : null;
+    const parsedTime = () =>
+        Date.parse(`01 Jan 1970 ${timeRef.current?.value} GMT`);
+    const fullDate = () =>
+        time !== -1 && date !== -1
+            ? new Date(date + time + userTimezone).toISOString()
+            : null;
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
@@ -40,20 +53,17 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
             removeDirty: resetInput,
             hasError: hasError,
             isDirty: isDirty,
-            isActive: false
+            isActive: false,
         });
     }, [date, time, hasError, isDirty]);
 
     function getClassName() {
         const className = [defaultClass];
-        if (isActive)
-            className.push("input--active");
+        if (isActive) className.push("input--active");
 
-        if (errorText)
-            className.push("input--error");
+        if (errorText) className.push("input--error");
 
-        if (className.length === 1)
-            className.push("border-lightgray");
+        if (className.length === 1) className.push("border-lightgray");
 
         return className.join(" ");
     }
@@ -93,12 +103,12 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
         e.target.showPicker();
     };
 
-    const onChange = (e: React.ChangeEvent) => {
+    const onChange = () => {
         setError(false);
         setErrorText("");
     };
 
-    const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const onBlur = () => {
         setActive(false);
 
         const newDate = parsedDate();
@@ -107,8 +117,7 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
         setDate(!isNaN(newDate) ? newDate : 0);
 
         const newTime = parsedTime();
-        if (!isNaN(newTime))
-            setTime(newTime);
+        if (!isNaN(newTime)) setTime(newTime);
 
         const errors = getError(isDirty, false);
         setErrorText(errors);
@@ -118,12 +127,11 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
         setDirty(false);
         setErrorText(getError(false, false));
         setPrevDate(date);
-    }
+    };
 
     useEffect(() => {
         /* eslint-disable react-hooks/exhaustive-deps */
-        if (isFormSubmitted)
-            setErrorText(getError(false, true));
+        if (isFormSubmitted) setErrorText(getError(false, true));
     }, [isFormSubmitted]);
 
     useEffect(() => {
@@ -133,33 +141,63 @@ export const DateTimeInput: FC<IDateTimeInputProps> = ({initialValue="", name, i
             const parsed = Date.parse(initialValue);
             if (!isNaN(parsed)) {
                 const fullDate = new Date(parsed);
-                const date = new Date(fullDate.getFullYear(), fullDate.getMonth(), fullDate.getDate()).getTime();
+                const date = new Date(
+                    fullDate.getFullYear(),
+                    fullDate.getMonth(),
+                    fullDate.getDate()
+                ).getTime();
                 const time = new Date(parsed - date).getTime();
                 initialDate = date - userTimezone;
                 initialTime = time;
             }
         }
-        if (!dateRef.current || !timeRef.current || initialDate === -1 || initialTime === -1) {
+        if (
+            !dateRef.current ||
+            !timeRef.current ||
+            initialDate === -1 ||
+            initialTime === -1
+        ) {
             setError(true);
             return;
         }
         setPrevDate(date);
         setDate(initialDate);
         setTime(initialTime);
-        dateRef.current.value = new Date(initialDate).toISOString().split("T")[0];
-        timeRef.current.value = new Date(initialTime).toISOString().split("T")[1]?.split(".")[0];
+        dateRef.current.value = new Date(initialDate)
+            .toISOString()
+            .split("T")[0];
+        timeRef.current.value = new Date(initialTime)
+            .toISOString()
+            .split("T")[1]
+            ?.split(".")[0];
         setError(false);
     }, [initialValue]);
 
     return (
         <div>
             <div className="flex items-center gap-4 font-roboto text-sm">
-                <input type="date" className={clsx("w-32", getClassName())} ref={dateRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur} />
-                <input type="time" className={clsx("w-24", getClassName())} ref={timeRef} onFocus={onFocus} onChange={onChange} onBlur={onBlur} />
+                <input
+                    type="date"
+                    className={clsx("w-32", getClassName())}
+                    ref={dateRef}
+                    onFocus={onFocus}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                />
+                <input
+                    type="time"
+                    className={clsx("w-24", getClassName())}
+                    ref={timeRef}
+                    onFocus={onFocus}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                />
             </div>
-            {
-                showError && <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
-            }
+            {showError && (
+                <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">
+                    {errorText}
+                </div>
+            )}
         </div>
     );
-}
+};

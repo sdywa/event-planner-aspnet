@@ -1,18 +1,19 @@
-import React from "react"
-import Events from "../pages/events/Events";
-import Event from "../pages/event/Event";
-import Learn from "../pages/learn/Learn";
-import { Login } from "../pages/login/Login";
-import { Signup } from "../pages/signup/Signup";
+import React from "react";
+
+import { Event } from "../pages/event/Event";
+import { Chat } from "../pages/event/info/feedback/Chat";
+import { Feedback } from "../pages/event/info/feedback/Feedback";
+import { Participants } from "../pages/event/info/Participants";
+import { Statistics } from "../pages/event/info/Statistics";
 import { EditEvent } from "../pages/event/setup/EditEvent";
 import { QuestionsPage } from "../pages/event/setup/QuestionsPage";
 import { TicketsPage } from "../pages/event/setup/TicketsPage";
-import Settings from "../pages/user/Settings";
-import History from "../pages/user/History";
-import { Statistics } from "../pages/event/info/Statistics";
-import { Participants } from "../pages/event/info/Participants";
-import { Feedback } from "../pages/event/info/feedback/Feedback";
-import { Chat } from "../pages/event/info/feedback/Chat";
+import { Events } from "../pages/Events";
+import { Learn } from "../pages/Learn";
+import { Login } from "../pages/Login";
+import { Signup } from "../pages/Signup";
+import { History } from "../pages/user/History";
+import { Settings } from "../pages/user/Settings";
 
 interface route {
     path: string;
@@ -37,5 +38,5 @@ export const routes: route[] = [
 
 export const authRoutes: route[] = [
     { path: "/login", component: Login },
-    { path: "/signup", component: Signup }
+    { path: "/signup", component: Signup },
 ];

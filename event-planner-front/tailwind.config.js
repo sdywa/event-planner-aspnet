@@ -1,10 +1,7 @@
 /** @type {import("tailwindcss").Config} */
 module.exports = {
     mode: "jit",
-    content: [
-        "./src/**/*.{ts,tsx}",
-        "./public/**/*.html"
-    ],
+    content: ["./src/**/*.{ts,tsx}", "./public/**/*.html"],
     theme: {
         extend: {
             colors: {
@@ -20,18 +17,20 @@ module.exports = {
                 red: "#E02B4C",
                 darkred: "#C31841",
                 blue: "#3F8FD9",
-                darkblue: "#3667B0"
+                darkblue: "#3667B0",
             },
             fontFamily: {
                 ubuntu: ["Ubuntu", "sans-serif"],
                 roboto: ["Roboto", "sans-serif"],
-            }
+            },
         },
     },
     plugins: [],
-    safelist: [{
-            pattern: /(bg|text|border)-(green|darkgreen|red|darkred|blue|darkblue|gray|darkgray|yellow)/,
-            variants: ['hover']
-        }
-    ]
-}
+    safelist: [
+        {
+            pattern:
+                /(bg|text|border)-(green|darkgreen|red|darkred|blue|darkblue|gray|darkgray|yellow)/,
+            variants: ["hover"],
+        },
+    ],
+};

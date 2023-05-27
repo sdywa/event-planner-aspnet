@@ -1,20 +1,25 @@
-import { FC } from "react";
+import React, { FC } from "react";
+
+import { WithIcon } from "../WithIcon";
+
 import { ListItem } from "./ListItem";
-import { WithIcon } from "../with-icon/WithIcon";
 
 interface ISimpleListItemProps {
     label: React.ReactNode;
     link?: string;
     icon?: React.ReactNode;
-    [x:string]: any;
-};
+    [x: string]: unknown;
+}
 
-export const SimpleListItem: FC<ISimpleListItemProps> = ({label, icon, link, ...props}) => {
+export const SimpleListItem: FC<ISimpleListItemProps> = ({
+    label,
+    icon,
+    link,
+    ...props
+}) => {
     return (
         <ListItem link={link} {...props}>
-            <WithIcon icon={icon}>
-                {label}
-            </WithIcon>
+            <WithIcon icon={icon}>{label}</WithIcon>
         </ListItem>
     );
-}
+};

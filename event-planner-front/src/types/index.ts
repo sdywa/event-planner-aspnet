@@ -11,21 +11,22 @@ export interface IFilter<T> {
 }
 
 export interface IFormInputData {
-    label: string,
-    type: "text" | "password",
-    autoComplete: string,
-    validation: IValidation[]
+    label: string;
+    type: "text" | "password";
+    autoComplete: string;
+    validation: IValidation[];
 }
 
 export interface IFormInputStatus {
-    name: string,
-    value: any,
-    hasError: boolean,
-    isActive: boolean,
-    isDirty: boolean,
-    removeDirty: () => void
+    name: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: any;
+    hasError: boolean;
+    isActive: boolean;
+    isDirty: boolean;
+    removeDirty: () => void;
 }
 
 export interface IServerError {
-    [key: string]: string
+    [key: string]: string;
 }

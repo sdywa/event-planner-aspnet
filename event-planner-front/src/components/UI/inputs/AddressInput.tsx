@@ -1,13 +1,15 @@
-import { FC, useEffect, useState } from "react";
-import { IFormInputData, IFormInputStatus } from "../../../types";
-import useFormInput from "../../../hooks/forms/useFormInput";
-import { Input } from "./input/Input";
+import React, { FC, useEffect, useState } from "react";
 import clsx from "clsx";
+
+import { DadataService } from "../../../api/services/DadataService";
+import { useFormInput } from "../../../hooks/forms/useFormInput";
+import { useDebounce } from "../../../hooks/useDebounce";
+import { IFormInputData, IFormInputStatus } from "../../../types";
 import { IAddress } from "../../../types/Api";
-import useDebounce from "../../../hooks/useDebounce";
-import DadataService from "../../../api/services/DadataService";
 import { IAddressResponse } from "../../../types/Dadata";
 import { Map } from "../Map";
+
+import { Input } from "./Input";
 
 interface IAddressInputProps {
     initialValue?: IAddress;
@@ -18,10 +20,20 @@ interface IAddressInputProps {
     isSubmitted: boolean;
     serverError: string;
     callBack: (name: string, value: IFormInputStatus) => void;
-    [key: string]: any;
-};
+    [key: string]: unknown;
+}
 
-export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data, serverError, isSubmitted, className, mapClassName, callBack, ...props }) => {
+export const AddressInput: FC<IAddressInputProps> = ({
+    initialValue,
+    name,
+    data,
+    serverError,
+    isSubmitted,
+    className,
+    mapClassName,
+    callBack,
+    ...props
+}) => {
     const debouncedSuggest = useDebounce(suggest, 300);
     const [suggests, setSuggests] = useState<IAddressResponse[]>([]);
     const [selecting, setSelecting] = useState(false);
@@ -29,19 +41,21 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
     const [address, setAddress] = useState<IAddress | undefined>(initialValue);
     const [addressError, setError] = useState("");
 
-    const { value, setValue, errorText, getClassName, ...inputData } = useFormInput<HTMLInputElement>(
-        initialValue?.full ?? "",
-        name,
-        data.validation,
-        isSubmitted,
-        serverError || addressError,
-        {
-            default: data.label ? "pt-6" : "",
-            active: "input--active",
-            dirty: "input--dirty",
-            error: "input--error"
-        },
-        updateAddress);
+    const { value, setValue, errorText, getClassName, ...inputData } =
+        useFormInput<HTMLInputElement>(
+            initialValue?.full ?? "",
+            name,
+            data.validation,
+            isSubmitted,
+            serverError || addressError,
+            {
+                default: data.label ? "pt-6" : "",
+                active: "input--active",
+                dirty: "input--dirty",
+                error: "input--error",
+            },
+            updateAddress
+        );
 
     async function suggest(query: string) {
         const response = await DadataService.suggest(query);
@@ -87,7 +101,7 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
             city: address.data.city,
             street: address.data.street,
             house: address.data.house,
-            block: address.data.block
+            block: address.data.block,
         });
         setSuggests([]);
     }
@@ -100,8 +114,7 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
     }, [address]);
 
     useEffect(() => {
-        if (!isActive && suggests.length > 0)
-            setSuggests([]);
+        if (!isActive && suggests.length > 0) setSuggests([]);
     }, [suggests]);
 
     useEffect(() => {
@@ -112,26 +125,41 @@ export const AddressInput: FC<IAddressInputProps> = ({ initialValue, name, data,
     return (
         <div className="w-full">
             <div className="relative">
-                <Input type={data.type} name={name} autoComplete={data.autoComplete} {...props} value={value} {...inputData} className={clsx(getClassName(), className)}>
-                    {
-                        data.label &&
+                <Input
+                    type={data.type}
+                    name={name}
+                    autoComplete={data.autoComplete}
+                    {...props}
+                    value={value}
+                    {...inputData}
+                    className={clsx(getClassName(), className)}
+                >
+                    {data.label && (
                         <span className="label-content absolute bottom-0 left-1.5 pb-1 transition-all duration-300 ease-in">
                             {data.label}
                         </span>
-                    }
+                    )}
                 </Input>
-                <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">{errorText}</div>
-                {
-                    suggests.length > 0 && <ul className="absolute bottom-6 translate-y-full z-[10000] w-11/12 p-1 bg-white border-2 border-t-0 border-lightgray rounded-b-lg shadow-lg peer-[.input--active]">
-                        {
-                            suggests?.map((s) => <li key={s.value} className="cursor-pointer hover:bg-slate-200 px-4 py-1 rounded select-none" onClick={() => setSuggestedAddress(s)} onMouseDown={() => setSelecting(true)} onMouseUp={() => setSelecting(false)}>{ s.value }</li>)
-                        }
+                <div className="text-red font-roboto font-bold text-xs h-6 pt-1 pb-2">
+                    {errorText}
+                </div>
+                {suggests.length > 0 && (
+                    <ul className="absolute bottom-6 translate-y-full z-[10000] w-11/12 p-1 bg-white border-2 border-t-0 border-lightgray rounded-b-lg shadow-lg peer-[.input--active]">
+                        {suggests?.map((s) => (
+                            <li
+                                key={s.value}
+                                className="cursor-pointer hover:bg-slate-200 px-4 py-1 rounded select-none"
+                                onClick={() => setSuggestedAddress(s)}
+                                onMouseDown={() => setSelecting(true)}
+                                onMouseUp={() => setSelecting(false)}
+                            >
+                                {s.value}
+                            </li>
+                        ))}
                     </ul>
-                }
+                )}
             </div>
-            {
-                address && <Map address={address} className={mapClassName} />
-            }
+            {address && <Map address={address} className={mapClassName} />}
         </div>
     );
-}
+};

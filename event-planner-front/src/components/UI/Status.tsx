@@ -1,25 +1,32 @@
-import { FC } from "react";
-import { Status } from "../../types/Api";
+import React, { FC } from "react";
 import clsx from "clsx";
 
+import { Status } from "../../types/Api";
+
 interface IStatusProps {
-    status: Status,
+    status: Status;
     titles: {
-        [key in Status]: any
-    }
-};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [key in Status]: any;
+    };
+}
 
 export const StatusIcon: FC<IStatusProps> = ({ status, titles }) => {
-    const colors: { [key in Status]: any } = {
+    const colors: { [key in Status]: unknown } = {
         [Status.Active]: "green",
         [Status.Waiting]: "yellow",
-        [Status.Closed]: "blue"
-    }
+        [Status.Closed]: "blue",
+    };
 
     return (
         <div className="flex gap-2 items-center">
-            <div className={clsx(["w-3 h-3 rounded-full", `bg-${colors[status as Status]}`])}></div>
+            <div
+                className={clsx([
+                    "w-3 h-3 rounded-full",
+                    `bg-${colors[status as Status]}`,
+                ])}
+            ></div>
             <span>{titles[status]}</span>
         </div>
     );
-}
+};
