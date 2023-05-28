@@ -2,6 +2,7 @@
 import React, { FC, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate, useParams } from "react-router-dom";
+import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 
 import { Context } from "../..";
@@ -451,27 +452,35 @@ export const Event: FC = observer(() => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-8">
-                <div className="text-base whitespace-pre-wrap break-words">
+            <div className="relative">
+                <div
+                    className={clsx([
+                        "text-base whitespace-pre-wrap break-words",
+                        advertising?.length ? "w-[calc(100%-19rem)]" : "w-full",
+                    ])}
+                >
                     {event?.fullDescription}
                 </div>
                 {advertising && advertising?.length !== 0 && (
-                    <div className="py-2 border-t-2 border-lightgray">
-                        <h3 className="text-2xl pb-2">Рекомендуем</h3>
-                        <div className="grid grid-cols-3 gap-y-8 gap-x-6 justify-items-center content-center">
+                    <div className="absolute right-0 top-0 h-full overflow-y-scroll pb-8 pr-2">
+                        <h3 className="text-2xl pb-2">Также рекомендуем</h3>
+                        <div className="flex flex-col gap-8 justify-items-center content-center">
                             {advertising.map((v) => (
                                 <Tile
                                     key={v.id}
                                     isAuth={user.isAuth}
                                     minPrice={v.minPrice}
                                     event={v}
+                                    className="w-64 h-64"
                                 />
                             ))}
                         </div>
                     </div>
                 )}
+            </div>
+            <div className="flex flex-col gap-8">
                 {user.isAuth && (
-                    <div className="py-2 border-t-2 border-lightgray flex justify-center">
+                    <div className="py-2 flex justify-center">
                         <div>
                             {event?.isParticipated ? (
                                 <h3 className="heading--tertiary mt-2">
