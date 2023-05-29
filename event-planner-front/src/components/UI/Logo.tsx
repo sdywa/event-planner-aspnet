@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export enum LogoTypes {
     COMPACT_LOGO = "compact-logo.svg",
@@ -12,14 +12,12 @@ interface ILogoProps {
 }
 
 export const Logo: FC<ILogoProps> = ({ logoType }) => {
-    const navigate = useNavigate();
-
     return (
-        <div className="cursor-pointer" onClick={() => navigate("/")}>
+        <Link to="/" className="cursor-pointer">
             <img
                 src={require(`../../assets/img/logo/${logoType}`)}
                 alt="Логотип"
             />
-        </div>
+        </Link>
     );
 };

@@ -16,7 +16,6 @@ function addData(form: FormData, value: any, key = "") {
         for (const k in value) {
             addData(form, value[k], key ? `${key}[${k}]` : k);
         }
-        return;
     }
 
     if (typeof value === "number") value = value.toString();
