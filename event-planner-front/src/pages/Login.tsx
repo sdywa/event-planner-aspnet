@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { AuthForm } from "../components/UI/forms/AuthForm";
 import { useUser } from "../hooks/useUserContext";
@@ -13,6 +13,9 @@ import { IFormInputData, IFormInputStatus, IServerError } from "../types/index";
 export const Login: FC = () => {
     const { user } = useUser();
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
+
     const data: { [key: string]: IFormInputData } = {
         email: {
             label: "Email",
@@ -41,7 +44,7 @@ export const Login: FC = () => {
         let errors = {};
         await user.login(Object.fromEntries(result)).then((e) => {
             errors = e;
-            if (!errors) navigate("/events");
+            if (!errors) navigate(from, { replace: true });
         });
 
         return errors;

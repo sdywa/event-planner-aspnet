@@ -15,6 +15,7 @@ import {
     MAX_LENGTH,
     MIN_LENGTH,
 } from "../../hooks/useValidation";
+import { UserRole } from "../../types/Api";
 import {
     IFormInputData,
     IFormInputStatus,
@@ -228,7 +229,7 @@ export const Settings: FC = observer(() => {
                         >
                             Сохранить
                         </SubmitButton>
-                        {user.user.role === "Participant" && (
+                        {user.user.role === UserRole.Participant && (
                             <Button onClick={async () => await user.promote()}>
                                 <span className="text-gray">
                                     Стать организатором

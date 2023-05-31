@@ -18,6 +18,7 @@ import { Textarea } from "../../../components/UI/inputs/Textarea";
 import { List } from "../../../components/UI/list/List";
 import { ListItem } from "../../../components/UI/list/ListItem";
 import { useForm } from "../../../hooks/forms/useForm";
+import { useUser } from "../../../hooks/useUserContext";
 import {
     IS_NOT_EMPTY,
     MAX_LENGTH,
@@ -32,6 +33,8 @@ interface Response {
 
 export const EditEvent: FC = () => {
     const navigate = useNavigate();
+    const { user } = useUser();
+
     const { eventId } = useParams();
     const [event, setEvent] = useState<IExtendedEventResponse>();
     const [address, setAddress] = useState<IAddress>();
@@ -111,11 +114,14 @@ export const EditEvent: FC = () => {
                     const response = await EventService.get<Response>(
                         Number(eventId)
                     );
+                    if (response.data.event.creator.id !== user.user.id)
+                        throw Error;
+
                     setEvent(response.data.event);
                     // get values from the server
                     setAddress(response.data.event.address);
                 } catch (e) {
-                    return;
+                    navigate("/");
                 }
             };
 

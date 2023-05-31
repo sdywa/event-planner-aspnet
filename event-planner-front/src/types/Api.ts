@@ -13,10 +13,10 @@ export interface IToken {
     expires: string;
 }
 
-export enum UserRoles {
-    Participant = "Participant",
-    Organizer = "Organizer",
-    Administrator = "Administrator",
+export enum UserRole {
+    Guest = 0,
+    Participant = 1,
+    Organizer = 2,
 }
 
 export interface IUser {
@@ -24,7 +24,7 @@ export interface IUser {
     email: string;
     name: string;
     surname: string;
-    role: UserRoles;
+    role: UserRole;
 }
 
 export interface IAuthResponse {

@@ -56,8 +56,7 @@ public class Context : DbContext
 
         builder.Entity<Role>().HasData(
             new Role { Id = UserRole.Participant, Name = "Participant", Title = "Участник" },
-            new Role { Id = UserRole.Organizer, Name = "Organizer", Title = "Организатор" },
-            new Role { Id = UserRole.Administrator, Name = "Administrator", Title = "Администратор" }
+            new Role { Id = UserRole.Organizer, Name = "Organizer", Title = "Организатор" }
         );
 
         builder.Entity<User>().HasData(

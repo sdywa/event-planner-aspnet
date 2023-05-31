@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 
 import { useUser } from "../../hooks/useUserContext";
@@ -11,6 +11,7 @@ import { Logo, LogoTypes } from "./Logo";
 export const Header: FC = observer(() => {
     const { user } = useUser();
     const navigate = useNavigate();
+    const location = useLocation();
 
     return (
         <header className="flex justify-center items-center">
@@ -42,7 +43,11 @@ export const Header: FC = observer(() => {
                                 label: "Выход",
                                 onClick: async () => {
                                     await user.logout();
-                                    navigate("/");
+                                    console.log(location.pathname);
+
+                                    location.pathname === "/"
+                                        ? window.location.reload()
+                                        : navigate("/");
                                 },
                                 icon: (
                                     <i className="fa-solid fa-right-from-bracket"></i>

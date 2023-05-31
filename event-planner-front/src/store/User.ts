@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 
 import { getErrors } from "../api";
 import { UserService } from "../api/services/UserService";
-import { IToken, IUser, UserRoles } from "../types/Api";
+import { IToken, IUser, UserRole } from "../types/Api";
 
 export class User {
     user = {} as IUser;
@@ -13,7 +13,7 @@ export class User {
         makeAutoObservable(this);
         const user = JSON.parse(localStorage.getItem("user") || "{}");
         this.setUser(user);
-        this.setAuth(Object.keys(user).length > 0);
+        this.setAuth(Object.keys(user).length > 1);
     }
 
     setAuth(value: boolean) {
@@ -22,8 +22,8 @@ export class User {
 
     setUser(value: IUser) {
         this.user = value;
-        this.isCreator =
-            value.role === "Organizer" || value.role === "Administrator";
+        this.user.role = UserRole[this.user.role] as unknown as UserRole; // force use UserRole
+        this.isCreator = this.user.role === UserRole.Organizer;
         localStorage.setItem("user", JSON.stringify(value));
     }
 
@@ -73,7 +73,9 @@ export class User {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             this.setAuth(false);
-            this.setUser({} as IUser);
+            this.setUser({
+                role: UserRole[UserRole.Guest] as unknown as UserRole,
+            } as IUser);
         }
     }
 
@@ -98,7 +100,7 @@ export class User {
     async promote() {
         try {
             await UserService.promote();
-            this.user.role = UserRoles.Organizer;
+            this.user.role = UserRole.Organizer;
             this.setUser(this.user);
         } catch (e) {
             return getErrors(e);
