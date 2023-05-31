@@ -1,11 +1,11 @@
 /* eslint-disable indent */
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Context } from "../../..";
 import { getErrors } from "../../../api";
 import { ChatService } from "../../../api/services/ChatService";
 import { useForm } from "../../../hooks/forms/useForm";
+import { useUser } from "../../../hooks/useUserContext";
 import { IFormInputStatus, IServerError } from "../../../types";
 import { IChat } from "../../../types/Api";
 import { Status } from "../../../types/Api";
@@ -22,7 +22,7 @@ interface IChatProps {
 
 export const Chat: FC<IChatProps> = ({ chat, callback }) => {
     const navigate = useNavigate();
-    const { user } = useContext(Context);
+    const { user } = useUser();
     const chatForm = useForm(sendChatFormData);
     const [closeChat, setClose] = useState(false);
     const [trigger, setTrigger] = useState(false);

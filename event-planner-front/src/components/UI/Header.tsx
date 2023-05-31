@@ -1,15 +1,15 @@
-import React, { FC, useContext } from "react";
+import React, { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 
-import { Context } from "../..";
+import { useUser } from "../../hooks/useUserContext";
 
 import { Button } from "./buttons/Button";
 import { DropdownMenu } from "./DropdownMenu";
 import { Logo, LogoTypes } from "./Logo";
 
 export const Header: FC = observer(() => {
-    const { user } = useContext(Context);
+    const { user } = useUser();
     const navigate = useNavigate();
 
     return (

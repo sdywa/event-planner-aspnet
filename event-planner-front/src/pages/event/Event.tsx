@@ -1,11 +1,10 @@
 /* eslint-disable indent */
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 
-import { Context } from "../..";
 import { getErrors } from "../../api";
 import { EventService } from "../../api/services/EventService";
 import { PageLayout } from "../../components/layouts/PageLayout";
@@ -22,6 +21,7 @@ import { Map } from "../../components/UI/Map";
 import { Modal } from "../../components/UI/Modal";
 import { WithIcon } from "../../components/UI/WithIcon";
 import { useForm } from "../../hooks/forms/useForm";
+import { useUser } from "../../hooks/useUserContext";
 import {
     IS_NOT_EMPTY,
     MAX_LENGTH,
@@ -51,7 +51,7 @@ interface IEventDataResponse {
 export const Event: FC = observer(() => {
     const navigate = useNavigate();
     const { eventId } = useParams();
-    const { user } = useContext(Context);
+    const { user } = useUser();
     const [event, setEvent] = useState<IEvent>();
     const [advertising, setAdvertising] = useState<IEventWithPrice[]>();
     const {

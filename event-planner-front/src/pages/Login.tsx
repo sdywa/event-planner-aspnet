@@ -1,17 +1,17 @@
-import React, { FC, useContext } from "react";
+import React, { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AuthForm } from "../components/UI/forms/AuthForm";
+import { useUser } from "../hooks/useUserContext";
 import {
     EMAIL_ADDRESS,
     IS_NOT_EMPTY,
     MAX_LENGTH,
 } from "../hooks/useValidation";
 import { IFormInputData, IFormInputStatus, IServerError } from "../types/index";
-import { Context } from "..";
 
 export const Login: FC = () => {
-    const { user } = useContext(Context);
+    const { user } = useUser();
     const navigate = useNavigate();
     const data: { [key: string]: IFormInputData } = {
         email: {

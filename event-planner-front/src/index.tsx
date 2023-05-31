@@ -12,13 +12,13 @@ interface globalStore {
 
 const user = new User();
 
-export const Context = createContext<globalStore>({ user });
+export const UserContext = createContext<globalStore>({ user });
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
 );
 root.render(
-    <Context.Provider value={{ user }}>
+    <UserContext.Provider value={{ user }}>
         <App />
-    </Context.Provider>
+    </UserContext.Provider>
 );

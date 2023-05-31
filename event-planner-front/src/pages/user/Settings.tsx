@@ -1,7 +1,6 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { Context } from "../..";
 import { PageLayout } from "../../components/layouts/PageLayout";
 import { Button, ButtonStyles } from "../../components/UI/buttons/Button";
 import { SubmitButton } from "../../components/UI/buttons/SubmitButton";
@@ -9,6 +8,7 @@ import { FormInput } from "../../components/UI/forms/FormInput";
 import { List } from "../../components/UI/list/List";
 import { ListItem } from "../../components/UI/list/ListItem";
 import { useForm } from "../../hooks/forms/useForm";
+import { useUser } from "../../hooks/useUserContext";
 import {
     EMAIL_ADDRESS,
     IS_NOT_EMPTY,
@@ -23,7 +23,7 @@ import {
 
 export const Settings: FC = observer(() => {
     const [isPasswordReseted, setPassword] = useState(false);
-    const { user } = useContext(Context);
+    const { user } = useUser();
     const {
         serverErrors,
         isSubmitted,

@@ -1,13 +1,13 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Context } from "../..";
 import { UserService } from "../../api/services/UserService";
 import { PageLayout } from "../../components/layouts/PageLayout";
 import { EmptyPlaceholder } from "../../components/UI/EmptyPlaceholder";
 import { Tile } from "../../components/UI/event/Tile";
 import { List } from "../../components/UI/list/List";
 import { ListItem } from "../../components/UI/list/ListItem";
+import { useUser } from "../../hooks/useUserContext";
 import { IEventResponse } from "../../types/Api";
 
 interface IHistory {
@@ -17,7 +17,7 @@ interface IHistory {
 
 export const History: FC = () => {
     const navigate = useNavigate();
-    const { user } = useContext(Context);
+    const { user } = useUser();
     const [history, setHistory] = useState<IHistory>();
     const [isActive, setActive] = useState(false);
 

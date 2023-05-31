@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { EventService } from "../api/services/EventService";
@@ -11,8 +11,8 @@ import { Search } from "../components/UI/event/Search";
 import { Tile } from "../components/UI/event/Tile";
 import { WithIcon } from "../components/UI/WithIcon";
 import { useFilter } from "../hooks/useFilter";
+import { useUser } from "../hooks/useUserContext";
 import { IEventResponse } from "../types/Api";
-import { Context } from "..";
 
 interface IExtendedEventResponse extends IEventResponse {
     minPrice: number;
@@ -24,7 +24,7 @@ interface IEventListResponse {
 }
 
 export const Events: FC = observer(() => {
-    const { user } = useContext(Context);
+    const { user } = useUser();
     const [review, setReview] = useState<IEventResponse>();
     const [allEvents, setAllEvents] = useState<IExtendedEventResponse[]>([]);
     const [events, setEvents] = useState<IExtendedEventResponse[]>([]);
