@@ -7,9 +7,9 @@
         @apply font-roboto;
         background-color: #F1F6F9;
     }
-    
+
     #root {
-        width: calc(100vw - 15px);
+        width: calc(100vw - 17px);
     }
 
     h1, h2, h3 {
@@ -179,4 +179,8 @@
     .text-stroke-white {
         -webkit-text-stroke-width: 1px;
     }
+}
+
+.leaflet-attribution-flag {
+    width: 0 !important;
 }

@@ -30,9 +30,9 @@ public class AuthorizationService : IAuthorizationService
             new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name)
         };
         ClaimsIdentity identity = new ClaimsIdentity(
-            claims, 
-            "Token", 
-            ClaimsIdentity.DefaultNameClaimType, 
+            claims,
+            "Token",
+            ClaimsIdentity.DefaultNameClaimType,
             ClaimsIdentity.DefaultRoleClaimType);
         return identity;
     }
@@ -50,7 +50,7 @@ public class AuthorizationService : IAuthorizationService
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
         );
         var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-        return new 
+        return new
         {
             Token = encodedJwt,
             Created = now,
@@ -58,7 +58,7 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task<Object> GetRefreshToken(User user) {
+    public async Task<Object> GetRefreshTokenAsync(User user) {
         var refreshToken = new RefreshToken
         {
             Id = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
@@ -69,7 +69,7 @@ public class AuthorizationService : IAuthorizationService
         user.RefreshToken = refreshToken;
         await _userService.UpdateAsync(user);
 
-        return new 
+        return new
         {
             Token = refreshToken.Id,
             Created = refreshToken.Created,
@@ -77,26 +77,25 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task<Object> RefreshTokens(User user, string refreshToken) {
+    public async Task<Object> RefreshTokensAsync(User user, string refreshToken) {
         var foundUser = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)
             .FirstOrDefaultAsync(u => u.Id == user.Id && u.RefreshTokenId == refreshToken);
 
-        Console.WriteLine($"{foundUser?.Name} — \"{foundUser?.RefreshTokenId}\" {user?.Name}: {user?.RefreshToken}");
         if (foundUser == null || foundUser.RefreshToken == null || foundUser.RefreshToken.Expires < DateTime.Now)
             throw new InvalidRefreshToken();
 
         var jwt = GetAccessToken(foundUser);
-        var newRefreshToken = await GetRefreshToken(foundUser);
-        return new 
+        var newRefreshToken = await GetRefreshTokenAsync(foundUser);
+        return new
         {
             accessToken = jwt,
             refreshToken = newRefreshToken
         };
     }
 
-    public async Task RemoveRefreshToken(User user, string refreshToken) {
+    public async Task RemoveRefreshTokenAsync(User user, string refreshToken) {
         var foundUser = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)

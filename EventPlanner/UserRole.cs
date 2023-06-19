@@ -1,8 +1,8 @@
 namespace EventPlanner;
 
-public enum UserRole 
+public enum UserRole
 {
+    Guest,
     Participant,
     Organizer,
-    Administrator
 }

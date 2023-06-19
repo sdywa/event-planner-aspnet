@@ -1,22 +1,35 @@
-import { useState, useEffect } from "react";
-import { IFilter } from "../types/index";
-import { IEventResponse } from "../types/Api";
+import { useEffect, useState } from "react";
 
-export const IS_FAVORITE: IFilter<IEventResponse> = {
-    name: "isFavorite",
-    func: (value) => value.isFavorite
+import { IEventResponse } from "../types/Api";
+import { IFilter } from "../types/index";
+
+export const IS_FAVORITE: () => IFilter<IEventResponse> = () => {
+    return {
+        name: "isFavorite",
+        func: (value) => value.isFavorite,
+    };
 };
 
-function useFilter<T>(items: T[]) {
+export const BY_CATEGORY: (category?: number) => IFilter<IEventResponse> = (
+    category?: number
+) => {
+    return {
+        name: "byCategory",
+        func: (value) => value.category.id === category,
+    };
+};
+
+export function useFilter<T>(items: T[]) {
     const [filters, setFilters] = useState<IFilter<T>[]>([]);
     const [filteredItems, setFilteredItems] = useState(items);
 
-    const toggleFilter = (filter: IFilter<T>) => {
-        if (filters.includes(filter))
-            setFilters(filters.filter(x => x.name !== filter.name));
-        else
-            setFilters([...filters, filter]);
-    }
+    const toggleFilter = (filter: IFilter<T>, force: boolean) => {
+        if (!force)
+            setFilters((filters) =>
+                filters.filter((x) => x.name !== filter.name)
+            );
+        else setFilters((filters) => [...filters, filter]);
+    };
 
     useEffect(() => {
         let tempItems = items;
@@ -27,6 +40,4 @@ function useFilter<T>(items: T[]) {
     }, [items, filters]);
 
     return { filteredItems, toggleFilter };
-};
-
-export default useFilter;
+}

@@ -1,33 +1,46 @@
-import { FC } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
-import { routes, authRoutes } from "../router";
-import { AuthLayout } from "./layouts/auth-layout/AuthLayout";
-import { Layout } from "./Layout";
+import React, { FC } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-const AppRouter: FC = () => {
+import { authRoutes, routes } from "../router";
+import { UserRole } from "../types/Api";
+
+import { AuthLayout } from "./layouts/AuthLayout";
+import { Layout } from "./Layout";
+import { RequireAuth } from "./RequireAuth";
+
+export const AppRouter: FC = () => {
     return (
         <Routes>
             <Route element={<AuthLayout />}>
-                {authRoutes.map((route) => 
+                {authRoutes.map((route) => (
                     <Route
                         key={route.path}
                         path={route.path}
                         element={<route.component />}
                     />
-                )}
+                ))}
             </Route>
-            <Route element={<Layout hideHeaderPath={["/signup", "/login"]}/>}>
-                {routes.map((route) => 
+            <Route element={<Layout hideHeaderPath={["/signup", "/login"]} />}>
+                {Object.entries(routes).map(([key, routes]) => (
                     <Route
-                        key={route.path}
-                        path={route.path}
-                        element={<route.component />}
-                    />
-                )}
+                        key={key}
+                        element={
+                            <RequireAuth
+                                roleLevel={key as unknown as UserRole}
+                            />
+                        }
+                    >
+                        {routes.map((route) => (
+                            <Route
+                                key={route.path}
+                                path={route.path}
+                                element={<route.component />}
+                            />
+                        ))}
+                    </Route>
+                ))}
                 <Route path="*" element={<Navigate replace to="/" />}></Route>
             </Route>
         </Routes>
     );
-}
-
-export default AppRouter;
+};

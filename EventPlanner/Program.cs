@@ -11,6 +11,7 @@ using EventPlanner.Services.AuthenticationServices;
 using EventPlanner.Services.AuthorizationService;
 using EventPlanner.Services.EventStorageServices;
 using EventPlanner.Services.EventOrganizationServices;
+using EventPlanner.Services.ChatServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,14 +26,14 @@ builder.Services.AddControllers()
     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 });
 
-builder.Services.AddCors(options => 
+builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "test", policy => {
         policy.WithOrigins("http://localhost:3000");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
-    }); 
+    });
 });
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => {
@@ -60,6 +61,7 @@ builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 
 builder.Services.AddTransient<IEventStorageService, EventStorageService>();
 builder.Services.AddTransient<IEventOrganizationService, EventOrganizationService>();
+builder.Services.AddTransient<IChatService, EventChatService>();
 builder.Services.AddTransient<IAdvertisingService, AdvertisingService>();
 
 
@@ -70,6 +72,34 @@ using(var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<Context>();
     var isCreated = await context.Database.EnsureCreatedAsync();
+    if (isCreated) {
+        context.Sales
+            .Include(s => s.Ticket)
+            .Include(s => s.User)
+            .ToList()
+            .ForEach(s =>
+                context.Questions
+                    .Where(q => q.EventId == s.Ticket.EventId)
+                    .ToList()
+                    .ForEach(q => {
+                        var text = "";
+                        if (q.Title == "Email")
+                            text = s.User.Email;
+                        else if (q.Title == "Ваше Имя")
+                            text = s.User.Name;
+                        else if (q.Title == "Ваша Фамилия")
+                            text = s.User.Surname;
+
+                        context.Answers.Add(
+                            new Answer {
+                                QuestionId = q.Id,
+                                SaleId = s.Id,
+                                Text = text
+                            }
+                        );
+                    }));
+        await context.SaveChangesAsync();
+    }
 }
 
 // Configure the HTTP request pipeline.
