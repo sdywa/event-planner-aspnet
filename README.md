@@ -1,7 +1,7 @@
 <p align="center">
 <img src="https://github.com/sdywa/event-planner-aspnet/assets/73535285/9ed5978b-a9b1-46c8-9fdb-e6979890a69a" width="200" />
 <h1 align="center">Event Planner</h1>
-<div align="center">A simple event planning app for a graduation project.</div>
+<div align="center">A simple event planning app for a graduation project that allows you to publish events, sell tickets, get statistics, and handle user questions.</div>
 <div align="center">
     <br />
     <a href="https://www.youtube.com/embed/JqYuK6JN8K4">
