@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace EventPlanner.Models;
 
 public class Sale : CommonModel<int>

@@ -17,36 +17,43 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<Context>(options => options
-    .UseMySql(connection, ServerVersion.AutoDetect(connection)));
+builder.Services.AddDbContext<Context>(
+    options => options.UseMySql(connection, ServerVersion.AutoDetect(connection))
+);
 
-builder.Services.AddControllers()
-.AddNewtonsoftJson(options => {
-    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-});
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    });
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "test", policy => {
-        policy.WithOrigins("http://localhost:3000");
-        policy.AllowAnyHeader();
-        policy.AllowAnyMethod();
-        policy.AllowCredentials();
-    });
+    options.AddPolicy(
+        name: "test",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000");
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+            policy.AllowCredentials();
+        }
+    );
 });
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => {
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
         options.RequireHttpsMetadata = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidIssuer = AuthOptions.ISSUER,
-
             ValidateAudience = true,
             ValidAudience = AuthOptions.AUDIENCE,
             ValidateLifetime = true,
-
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
         };
@@ -64,42 +71,13 @@ builder.Services.AddTransient<IEventOrganizationService, EventOrganizationServic
 builder.Services.AddTransient<IChatService, EventChatService>();
 builder.Services.AddTransient<IAdvertisingService, AdvertisingService>();
 
-
 var app = builder.Build();
 
 // Create DB if not exist.
-using(var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<Context>();
-    var isCreated = await context.Database.EnsureCreatedAsync();
-    if (isCreated) {
-        context.Sales
-            .Include(s => s.Ticket)
-            .Include(s => s.User)
-            .ToList()
-            .ForEach(s =>
-                context.Questions
-                    .Where(q => q.EventId == s.Ticket.EventId)
-                    .ToList()
-                    .ForEach(q => {
-                        var text = "";
-                        if (q.Title == "Email")
-                            text = s.User.Email;
-                        else if (q.Title == "Ваше Имя")
-                            text = s.User.Name;
-                        else if (q.Title == "Ваша Фамилия")
-                            text = s.User.Surname;
-
-                        context.Answers.Add(
-                            new Answer {
-                                QuestionId = q.Id,
-                                SaleId = s.Id,
-                                Text = text
-                            }
-                        );
-                    }));
-        await context.SaveChangesAsync();
-    }
+    await context.Database.EnsureCreatedAsync();
 }
 
 // Configure the HTTP request pipeline.

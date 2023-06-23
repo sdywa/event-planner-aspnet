@@ -7,13 +7,13 @@ public class ReviewService : CommonQueries<int, Review>
 {
     private Context _context;
 
-    public ReviewService(Context context) : base(context)
+    public ReviewService(Context context)
+        : base(context)
     {
         _context = context;
     }
 
-    public async Task<Review?> GetAsync(int id) =>
-        await base.GetAsync(id, _context.Reviews);
+    public async Task<Review?> GetAsync(int id) => await base.GetAsync(id, _context.Reviews);
 
     public async Task<Review?> GetBySaleAsync(int saleId)
     {
@@ -26,8 +26,7 @@ public class ReviewService : CommonQueries<int, Review>
         double rating = 0;
         foreach (var e in events)
         {
-            var ratings = (await GetByEventAsync(e.Id))
-            .Select(r => r.Rating);
+            var ratings = (await GetByEventAsync(e.Id)).Select(r => r.Rating);
             if (ratings.Count() != 0)
                 if (rating == 0)
                     rating = ratings.Average();
@@ -39,8 +38,7 @@ public class ReviewService : CommonQueries<int, Review>
     }
 
     public async Task<List<Review>> GetByEventAsync(int eventId) =>
-        await _context
-            .Reviews
+        await _context.Reviews
             .Include(r => r.Sale)
             .ThenInclude(s => s.Ticket)
             .ThenInclude(t => t.Event)

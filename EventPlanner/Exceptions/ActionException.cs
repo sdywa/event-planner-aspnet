@@ -7,9 +7,11 @@ public class ActionException<T> : Exception, IActionException<T>
 {
     public string? PropertyName { get; set; }
 
-    public ActionException() : base() { }
+    public ActionException()
+        : base() { }
 
-    public ActionException(string? message) : base(message) { }
+    public ActionException(string? message)
+        : base(message) { }
 
     public IActionResult FormResponse()
     {

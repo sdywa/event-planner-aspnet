@@ -4,5 +4,6 @@ namespace EventPlanner.Exceptions;
 
 public class ChatNotFoundException : ActionException<NotFoundObjectResult>
 {
-    public ChatNotFoundException(string message = "Чат не найден") : base(message) { }
+    public ChatNotFoundException(string message = "Чат не найден")
+        : base(message) { }
 }

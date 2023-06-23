@@ -13,6 +13,7 @@ public interface IAuthenticationService
         string lastName,
         string email,
         string password,
-        UserRole role);
+        UserRole role
+    );
     Task UpdatePasswordAsync(int userId, string password);
 }

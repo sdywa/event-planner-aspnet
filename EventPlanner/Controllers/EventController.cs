@@ -20,6 +20,7 @@ namespace EventPlanner.Controllers
 
         private Context _context;
         private IAdvertisingService _advertisingService;
+
         public EventController(
             IWebHostEnvironment appEnvironment,
             Context context,
@@ -27,7 +28,15 @@ namespace EventPlanner.Controllers
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
             IChatService chatService,
-            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, chatService, userService)
+            IUserService userService
+        )
+            : base(
+                appEnvironment,
+                eventStorageService,
+                eventOrganizationService,
+                chatService,
+                userService
+            )
         {
             _context = context;
             _advertisingService = advertisingService;
@@ -41,7 +50,9 @@ namespace EventPlanner.Controllers
                 string ex = System.IO.Path.GetExtension(image.FileName);
                 string filename = $"{Math.Abs(image.FileName.GetHashCode())}{ex}";
 
-                using (var fileStream = new FileStream($"{UploadFolder}{filename}", FileMode.Create))
+                using (
+                    var fileStream = new FileStream($"{UploadFolder}{filename}", FileMode.Create)
+                )
                     await image.CopyToAsync(fileStream);
                 return filename;
             }
@@ -82,11 +93,9 @@ namespace EventPlanner.Controllers
                     }
             }
 
-            return new JsonResult(new
-            {
-                Events = await PrepareEventsAsync(events),
-                Review = eventForReview,
-            });
+            return new JsonResult(
+                new { Events = await PrepareEventsAsync(events), Review = eventForReview, }
+            );
         }
 
         [HttpGet("{id}")]
@@ -100,11 +109,14 @@ namespace EventPlanner.Controllers
                 var events = (await _eventStorageService.GetAvailableAsync())
                     .Where(ev => ev.CategoryId == eventInfo.Category.Id && ev.Id != eventInfo.Id)
                     .ToList();
-                var advertising = await _advertisingService.GetAdvertisingFromAsync(events, 3, user?.Id);
-                return new JsonResult(new {
-                    Event = e,
-                    Advertising = await PrepareEventsAsync(advertising)
-                });
+                var advertising = await _advertisingService.GetAdvertisingFromAsync(
+                    events,
+                    3,
+                    user?.Id
+                );
+                return new JsonResult(
+                    new { Event = e, Advertising = await PrepareEventsAsync(advertising) }
+                );
             }
             catch (Exception ex)
             {
@@ -124,14 +136,21 @@ namespace EventPlanner.Controllers
                     return Forbid();
 
                 var questions = await _eventStorageService.GetQuestionsByEventAsync(id);
-                return new JsonResult(new {
-                    title = e.Title,
-                    questions = questions.Select(q => new {
-                        Id = q.Id,
-                        Title = q.Title,
-                        IsEditable = q.IsEditable
-                    })
-                });
+                return new JsonResult(
+                    new
+                    {
+                        title = e.Title,
+                        questions = questions.Select(
+                            q =>
+                                new
+                                {
+                                    Id = q.Id,
+                                    Title = q.Title,
+                                    IsEditable = q.IsEditable
+                                }
+                        )
+                    }
+                );
             }
             catch (Exception ex)
             {
@@ -151,16 +170,23 @@ namespace EventPlanner.Controllers
                     return Forbid();
 
                 var tickets = await _eventStorageService.GetTicketsByEventAcyns(id);
-                return new JsonResult(new {
-                    title = e.Title,
-                    tickets = tickets.Select(t => new {
-                        Id = t.Id,
-                        Title = t.Title,
-                        Limit = t.Limit,
-                        Price = t.Price,
-                        Until = t.Until
-                    })
-                });
+                return new JsonResult(
+                    new
+                    {
+                        title = e.Title,
+                        tickets = tickets.Select(
+                            t =>
+                                new
+                                {
+                                    Id = t.Id,
+                                    Title = t.Title,
+                                    Limit = t.Limit,
+                                    Price = t.Price,
+                                    Until = t.Until
+                                }
+                        )
+                    }
+                );
             }
             catch (Exception ex)
             {
@@ -184,7 +210,8 @@ namespace EventPlanner.Controllers
 
                 var totalCount = 0;
                 var totalIncome = 0;
-                foreach (var ticket in tickets) {
+                foreach (var ticket in tickets)
+                {
                     var sales = await _eventOrganizationService.GetAllByTicketAsync(ticket.Id);
 
                     var salesByDate = sales
@@ -193,24 +220,29 @@ namespace EventPlanner.Controllers
 
                     totalCount += sales.Count;
                     totalIncome += sales.Count * ticket.Price;
-                    ticketsData.Add(new Dictionary<string, object>
-                    {
-                        ["id"] = ticket.Id,
-                        ["title"] = ticket.Title,
-                        ["status"] = sales.Count >= ticket.Limit ? "Closed" : "Active",
-                        ["price"] = ticket.Price,
-                        ["income"] = sales.Count * ticket.Price,
-                        ["salesCount"] = sales.Count,
-                        ["sales"] = salesByDate
-                    });
+                    ticketsData.Add(
+                        new Dictionary<string, object>
+                        {
+                            ["id"] = ticket.Id,
+                            ["title"] = ticket.Title,
+                            ["status"] = sales.Count >= ticket.Limit ? "Closed" : "Active",
+                            ["price"] = ticket.Price,
+                            ["income"] = sales.Count * ticket.Price,
+                            ["salesCount"] = sales.Count,
+                            ["sales"] = salesByDate
+                        }
+                    );
                 }
 
-                return new JsonResult(new {
-                    title = e.Title,
-                    count = totalCount,
-                    income = totalIncome,
-                    tickets = ticketsData
-                });
+                return new JsonResult(
+                    new
+                    {
+                        title = e.Title,
+                        count = totalCount,
+                        income = totalIncome,
+                        tickets = ticketsData
+                    }
+                );
             }
             catch (Exception ex)
             {
@@ -233,25 +265,22 @@ namespace EventPlanner.Controllers
                 var participants = new List<object>();
                 foreach (var sale in sales)
                 {
-                    participants.Add(new {
-                        id = sale.UserId,
-                        name = sale.User.Name,
-                        surname = sale.User.Surname,
-                        email = sale.User.Email,
-                        answers = _context.Answers
-                            .Include(a => a.Question)
-                            .Where(a => a.SaleId == sale.Id)
-                            .Select(a => new {
-                                question = a.Question.Title,
-                                text = a.Text
-                            })
-                    });
+                    participants.Add(
+                        new
+                        {
+                            id = sale.UserId,
+                            name = sale.User.Name,
+                            surname = sale.User.Surname,
+                            email = sale.User.Email,
+                            answers = _context.Answers
+                                .Include(a => a.Question)
+                                .Where(a => a.SaleId == sale.Id)
+                                .Select(a => new { question = a.Question.Title, text = a.Text })
+                        }
+                    );
                 }
 
-                return new JsonResult(new {
-                    title = e.Title,
-                    participants = participants
-                });
+                return new JsonResult(new { title = e.Title, participants = participants });
             }
             catch (Exception ex)
             {
@@ -271,17 +300,24 @@ namespace EventPlanner.Controllers
                     return Forbid();
 
                 var chats = await _chatService.GetChatsByEventAsync(id);
-                return new JsonResult(new {
-                    title = e.Title,
-                    chats = chats
-                    .OrderBy(c => c.StatusId != ChatStatus.Waiting)
-                    .ThenBy(c => c.StatusId != ChatStatus.Waiting)
-                    .Select(c => new {
-                        id = c.Id,
-                        theme = c.Theme,
-                        status = c.Status.Name
-                    })
-                });
+                return new JsonResult(
+                    new
+                    {
+                        title = e.Title,
+                        chats = chats
+                            .OrderBy(c => c.StatusId != ChatStatus.Waiting)
+                            .ThenBy(c => c.StatusId != ChatStatus.Waiting)
+                            .Select(
+                                c =>
+                                    new
+                                    {
+                                        id = c.Id,
+                                        theme = c.Theme,
+                                        status = c.Status.Name
+                                    }
+                            )
+                    }
+                );
             }
             catch (Exception ex)
             {
@@ -300,18 +336,24 @@ namespace EventPlanner.Controllers
                 if (e.CreatorId == user.Id)
                     return Forbid();
 
-                var chat = await _chatService.CreateChatAsync(new Chat {
-                    EventId = e.Id,
-                    InitiatorId = user.Id,
-                    StatusId = ChatStatus.Waiting,
-                    Theme = model.Theme
-                });
+                var chat = await _chatService.CreateChatAsync(
+                    new Chat
+                    {
+                        EventId = e.Id,
+                        InitiatorId = user.Id,
+                        StatusId = ChatStatus.Waiting,
+                        Theme = model.Theme
+                    }
+                );
 
-                await _chatService.CreateAsync(new Message {
-                    ChatId = chat.Id,
-                    CreatorId = user.Id,
-                    Text = model.Text
-                });
+                await _chatService.CreateAsync(
+                    new Message
+                    {
+                        ChatId = chat.Id,
+                        CreatorId = user.Id,
+                        Text = model.Text
+                    }
+                );
             }
             catch (Exception ex)
             {
@@ -344,22 +386,23 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("{id}/fav")]
-        public async Task<IActionResult> ChangeFavAsync(int id, [FromBody] FavEventModel favEventInfo)
+        public async Task<IActionResult> ChangeFavAsync(
+            int id,
+            [FromBody] FavEventModel favEventInfo
+        )
         {
             try
             {
                 var user = await GetUserAsync();
                 var e = await _eventStorageService.GetByIdAsync(id);
 
-                var favEvent = _context.FavEvents.FirstOrDefault(f => f.EventId == e.Id && f.UserId == user.Id);
+                var favEvent = _context.FavEvents.FirstOrDefault(
+                    f => f.EventId == e.Id && f.UserId == user.Id
+                );
                 // Пользователь добавляет мероприятие в избранное
                 if (favEventInfo.IsFavorite && favEvent == null)
                 {
-                    var newFavEvent = new FavEvent
-                    {
-                        UserId = user.Id,
-                        EventId = e.Id
-                    };
+                    var newFavEvent = new FavEvent { UserId = user.Id, EventId = e.Id };
                     await _context.AddAsync(newFavEvent);
                 }
                 else if (!favEventInfo.IsFavorite && favEvent != null)
@@ -385,8 +428,11 @@ namespace EventPlanner.Controllers
 
             var events = await _eventStorageService.GetAvailableAsync();
             events = events
-                .Where(e => e.Title.ToLower().Contains(search) ||
-                    e.Description.ToLower().Contains(search))
+                .Where(
+                    e =>
+                        e.Title.ToLower().Contains(search)
+                        || e.Description.ToLower().Contains(search)
+                )
                 .ToList();
 
             return new JsonResult(await PrepareEventsAsync(events));
@@ -408,7 +454,8 @@ namespace EventPlanner.Controllers
             if (eventId != null)
             {
                 var e = await _eventStorageService.GetAsync((int)eventId);
-                if (e?.Address != null) {
+                if (e?.Address != null)
+                {
                     newAddress = e.Address;
                     await _eventStorageService.UpdateAsync(newAddress);
                     return newAddress.Id;
@@ -422,9 +469,15 @@ namespace EventPlanner.Controllers
         private async Task<Event> MakeNewEventAsync(int userId, EventModel eventInfo)
         {
             if (DateTime.Now > eventInfo.StartDate)
-                throw new ActionException<BadRequestObjectResult>("Некорректная дата") { PropertyName = "StartDate"};
+                throw new ActionException<BadRequestObjectResult>("Некорректная дата")
+                {
+                    PropertyName = "StartDate"
+                };
             if (eventInfo.StartDate > eventInfo.EndDate)
-                throw new ActionException<BadRequestObjectResult>("Некорректная дата") { PropertyName = "EndDate"};
+                throw new ActionException<BadRequestObjectResult>("Некорректная дата")
+                {
+                    PropertyName = "EndDate"
+                };
 
             int? addressId = null;
             Console.WriteLine($"address is: {eventInfo.Address} {eventInfo.Address?.Full}");
@@ -432,7 +485,8 @@ namespace EventPlanner.Controllers
                 addressId = await ProcessAddressAsync(eventInfo.Address, null);
 
             var cover = await UploadImageAsync(eventInfo.Cover);
-            var newEvent = new Event() {
+            var newEvent = new Event()
+            {
                 Title = eventInfo.Title,
                 Description = eventInfo.Description,
                 FullDescription = eventInfo.FullDescription,
@@ -447,7 +501,10 @@ namespace EventPlanner.Controllers
             };
 
             if (newEvent.TypeId == EventType.Offline && newEvent.AddressId == null)
-                throw new ActionException<BadRequestObjectResult>("Некорректный адрес") { PropertyName = "Address"};
+                throw new ActionException<BadRequestObjectResult>("Некорректный адрес")
+                {
+                    PropertyName = "Address"
+                };
 
             return newEvent;
         }
@@ -471,7 +528,9 @@ namespace EventPlanner.Controllers
             try
             {
                 var user = await GetUserAsync();
-                var created = await _eventStorageService.CreateAsync(await MakeNewEventAsync(user.Id, newEventInfo));
+                var created = await _eventStorageService.CreateAsync(
+                    await MakeNewEventAsync(user.Id, newEventInfo)
+                );
                 await CreateDefaultQuestionAsync(created.Id, "Email");
                 await CreateDefaultQuestionAsync(created.Id, "Ваше Имя");
                 await CreateDefaultQuestionAsync(created.Id, "Ваша Фамилия");
@@ -533,7 +592,10 @@ namespace EventPlanner.Controllers
 
         [Authorize(Roles = "Organizer,Administrator")]
         [HttpPost("{id}/questions")]
-        public async Task<IActionResult> ProcessQuestionsAsync(int id, [FromBody] QuestionModel model)
+        public async Task<IActionResult> ProcessQuestionsAsync(
+            int id,
+            [FromBody] QuestionModel model
+        )
         {
             var questions = model.Questions;
 
@@ -561,7 +623,9 @@ namespace EventPlanner.Controllers
 
                     if (question.Id > 0)
                     {
-                        var originalQuestion = await _eventStorageService.GetQuestionAsync(question.Id);
+                        var originalQuestion = await _eventStorageService.GetQuestionAsync(
+                            question.Id
+                        );
                         if (originalQuestion != null)
                         {
                             _context.Entry(originalQuestion).CurrentValues.SetValues(question);
@@ -653,7 +717,10 @@ namespace EventPlanner.Controllers
 
         [Authorize]
         [HttpPost("{id}/participate")]
-        public async Task<IActionResult> ParticipateAsync(int id, [FromBody] ParticipationModel patricipation)
+        public async Task<IActionResult> ParticipateAsync(
+            int id,
+            [FromBody] ParticipationModel patricipation
+        )
         {
             try
             {
@@ -661,18 +728,18 @@ namespace EventPlanner.Controllers
                 var e = await _eventStorageService.GetByIdAsync(id);
 
                 if (await _eventOrganizationService.GetAsync(user.Id, e.Id) != null)
-                    throw new ActionException<BadRequestObjectResult>("Участник уже принимает участие в данном мероприятии");
+                    throw new ActionException<BadRequestObjectResult>(
+                        "Участник уже принимает участие в данном мероприятии"
+                    );
 
                 var newSale = new Sale
                 {
                     TicketId = patricipation.TicketId,
                     UserId = user.Id,
                     SaleDate = DateTime.Now,
-                    Answers = patricipation.Answers.Select(a => new Answer
-                    {
-                        QuestionId = a.QuestionId,
-                        Text = a.Text
-                    }).ToList()
+                    Answers = patricipation.Answers
+                        .Select(a => new Answer { QuestionId = a.QuestionId, Text = a.Text })
+                        .ToList()
                 };
                 await _eventOrganizationService.CreateAsync(newSale);
             }
@@ -696,13 +763,11 @@ namespace EventPlanner.Controllers
                     return Forbid();
 
                 if (await _eventOrganizationService.GetReviewBySaleAsync(sale.Id) != null)
-                    throw new ActionException<BadRequestObjectResult>("Мероприятие уже имеет отзыв");
+                    throw new ActionException<BadRequestObjectResult>(
+                        "Мероприятие уже имеет отзыв"
+                    );
 
-                var newReview = new Review
-                {
-                    SaleId = sale.Id,
-                    Rating = review.Rating
-                };
+                var newReview = new Review { SaleId = sale.Id, Rating = review.Rating };
 
                 await _eventOrganizationService.CreateAsync(newReview);
             }

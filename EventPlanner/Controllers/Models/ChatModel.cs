@@ -4,7 +4,6 @@ namespace EventPlanner.Controllers.Models;
 
 public class ChatModel
 {
-
     [MinLength(10, ErrorMessage = "Используйте не менее 10 символов")]
     [StringLength(150, ErrorMessage = "Используйте менее 150 символов")]
     public string Theme { get; set; } = null!;

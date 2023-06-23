@@ -13,30 +13,39 @@ public class EventOrganizationService : CommonQueries<int, Sale>, IEventOrganiza
     private IEventStorageService _eventStorageService;
     private ReviewService _reviewService;
 
-    public EventOrganizationService(Context context, IEventStorageService eventStorageService) : base(context)
+    public EventOrganizationService(Context context, IEventStorageService eventStorageService)
+        : base(context)
     {
         _context = context;
         _eventStorageService = eventStorageService;
         _reviewService = new ReviewService(_context);
     }
 
-    public async Task<Sale?> GetAsync(int id) =>
-        await base.GetAsync(id, _context.Sales);
+    public async Task<Sale?> GetAsync(int id) => await base.GetAsync(id, _context.Sales);
 
     public async Task<Sale?> GetAsync(int userId, int eventId) =>
-        await _context.Sales.Include(s => s.Ticket).FirstOrDefaultAsync(e => e.UserId == userId && e.Ticket.EventId == eventId);
+        await _context.Sales
+            .Include(s => s.Ticket)
+            .FirstOrDefaultAsync(e => e.UserId == userId && e.Ticket.EventId == eventId);
 
-    public async Task<List<Sale>> GetAllAsync() =>
-        await base.GetAllAsync(_context.Sales);
+    public async Task<List<Sale>> GetAllAsync() => await base.GetAllAsync(_context.Sales);
 
     public async Task<List<Sale>> GetAllAsync(int userId) =>
-        await _context.Sales.Include(s => s.Ticket).ThenInclude(t => t.Event).Where(e => e.UserId == userId).ToListAsync();
+        await _context.Sales
+            .Include(s => s.Ticket)
+            .ThenInclude(t => t.Event)
+            .Where(e => e.UserId == userId)
+            .ToListAsync();
 
     public async Task<List<Sale>> GetAllByTicketAsync(int ticketId) =>
         await _context.Sales.Where(s => s.TicketId == ticketId).ToListAsync();
 
     public async Task<List<Sale>> GetAllByEventAsync(int eventId) =>
-        await _context.Sales.Include(s => s.Ticket).Include(s => s.User).Where(s => s.Ticket.EventId == eventId).ToListAsync();
+        await _context.Sales
+            .Include(s => s.Ticket)
+            .Include(s => s.User)
+            .Where(s => s.Ticket.EventId == eventId)
+            .ToListAsync();
 
     public async Task<List<Sale>> GetAllByUserAsync(int userId) =>
         await _context.Sales.Include(s => s.Ticket).Where(s => s.UserId == userId).ToListAsync();
@@ -56,6 +65,9 @@ public class EventOrganizationService : CommonQueries<int, Sale>, IEventOrganiza
         return await _reviewService.GetAverageRatingAsync(events);
     }
 
-    public async Task<Review?> GetReviewBySaleAsync(int saleId) => await _reviewService.GetBySaleAsync(saleId);
-    public async Task<Review> CreateAsync(Review entity) => await _reviewService.CreateAsync(entity);
+    public async Task<Review?> GetReviewBySaleAsync(int saleId) =>
+        await _reviewService.GetBySaleAsync(saleId);
+
+    public async Task<Review> CreateAsync(Review entity) =>
+        await _reviewService.CreateAsync(entity);
 }

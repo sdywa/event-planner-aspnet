@@ -13,7 +13,10 @@ namespace EventPlanner.Controllers
     [ApiController]
     public class Controller : ControllerBase
     {
-        protected string UploadFolder { get => $"{_appEnvironment.WebRootPath}/Uploads/"; }
+        protected string UploadFolder
+        {
+            get => $"{_appEnvironment.WebRootPath}/Uploads/";
+        }
         protected IWebHostEnvironment _appEnvironment;
 
         protected IEventStorageService _eventStorageService;
@@ -26,7 +29,8 @@ namespace EventPlanner.Controllers
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
             IChatService chatService,
-            IUserService userService)
+            IUserService userService
+        )
         {
             _appEnvironment = appEnvironment;
             _eventStorageService = eventStorageService;
@@ -73,7 +77,11 @@ namespace EventPlanner.Controllers
                 Directory.CreateDirectory(UploadFolder);
         }
 
-        protected Dictionary<string, object?> PrepareEvent(Event e, User? user, HashSet<string> fields)
+        protected Dictionary<string, object?> PrepareEvent(
+            Event e,
+            User? user,
+            HashSet<string> fields
+        )
         {
             var type = typeof(Event);
             var prepared = new Dictionary<string, object?>();
@@ -89,7 +97,8 @@ namespace EventPlanner.Controllers
                 prepared["Cover"] = LoadImage(e.Cover ?? "");
 
             if (fields.Contains("IsFavorite"))
-                prepared["IsFavorite"] = user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null;
+                prepared["IsFavorite"] =
+                    user?.FavEvents.FirstOrDefault(f => f.EventId == e.Id) != null;
 
             return prepared;
         }
@@ -97,18 +106,23 @@ namespace EventPlanner.Controllers
         protected async Task<Dictionary<string, object?>> PrepareEventAsync(Event e)
         {
             var user = await TryGetUserAsync();
-            return PrepareEvent(e, user, new HashSet<string> {
-                nameof(e.Id),
-                nameof(e.Title),
-                nameof(e.Cover),
-                nameof(e.Description),
-                nameof(e.Category),
-                nameof(e.Type),
-                nameof(e.StartDate),
-                nameof(e.EndDate),
-                nameof(e.Address),
-                "IsFavorite"
-            });
+            return PrepareEvent(
+                e,
+                user,
+                new HashSet<string>
+                {
+                    nameof(e.Id),
+                    nameof(e.Title),
+                    nameof(e.Cover),
+                    nameof(e.Description),
+                    nameof(e.Category),
+                    nameof(e.Type),
+                    nameof(e.StartDate),
+                    nameof(e.EndDate),
+                    nameof(e.Address),
+                    "IsFavorite"
+                }
+            );
         }
 
         protected async Task<Dictionary<string, object?>> PrepareExtendedEventAsync(Event e)
@@ -128,23 +142,25 @@ namespace EventPlanner.Controllers
             var sales = await _eventOrganizationService.GetAllByEventAsync(e.Id);
             prepared["Tickets"] = e.Tickets
                 .Where(t => t.Until > DateTime.Now && t.Limit > sales.Count)
-                .Select(t => new
-                {
-                    Id = t.Id,
-                    Title = t.Title,
-                    Limit = t.Limit,
-                    Price = t.Price,
-                    Until = t.Until
-                });
+                .Select(
+                    t =>
+                        new
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Limit = t.Limit,
+                            Price = t.Price,
+                            Until = t.Until
+                        }
+                );
 
-            prepared["Questions"] = e.Questions.Select(q => new
-            {
-                Id = q.Id,
-                Title = q.Title
-            });
+            prepared["Questions"] = e.Questions.Select(q => new { Id = q.Id, Title = q.Title });
 
             var user = await TryGetUserAsync();
-            prepared["IsParticipated"] = user != null ? await _eventOrganizationService.GetAsync(user.Id, e.Id) != null : false;
+            prepared["IsParticipated"] =
+                user != null
+                    ? await _eventOrganizationService.GetAsync(user.Id, e.Id) != null
+                    : false;
 
             return prepared;
         }

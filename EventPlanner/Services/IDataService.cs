@@ -2,7 +2,7 @@ using EventPlanner.Models;
 
 namespace EventPlanner.Services;
 
-public interface IDataService<TId,T>
+public interface IDataService<TId, T>
     where TId : IEquatable<TId>
     where T : CommonModel<TId>
 {

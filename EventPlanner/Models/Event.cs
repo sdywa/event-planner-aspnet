@@ -6,6 +6,7 @@ public class Event : CommonModel<int>
 {
     [StringLength(70)]
     public string Title { get; set; } = null!;
+
     [StringLength(250)]
     public string Description { get; set; } = null!;
     public string FullDescription { get; set; } = null!;
