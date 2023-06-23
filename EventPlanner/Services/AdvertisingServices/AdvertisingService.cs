@@ -1,4 +1,3 @@
-using System.Linq;
 using EventPlanner.Models;
 using EventPlanner.Services.EventOrganizationServices;
 using EventPlanner.Services.EventStorageServices;
@@ -27,7 +26,8 @@ public class AdvertisingService : IAdvertisingService
         Context context,
         IEventOrganizationService eventOrganizationService,
         IEventStorageService eventStorageService,
-        IUserService userService)
+        IUserService userService
+    )
     {
         _context = context;
         _eventOrganizationService = eventOrganizationService;
@@ -37,7 +37,8 @@ public class AdvertisingService : IAdvertisingService
 
     private List<(int, double)> NormalizeAndSum(
         Dictionary<int, CriteriaValues> criteriaValues,
-        CriteriaValues maxCriteriaValues)
+        CriteriaValues maxCriteriaValues
+    )
     {
         var type = typeof(CriteriaValues);
         var normalized = new List<(int, double)>();
@@ -47,7 +48,8 @@ public class AdvertisingService : IAdvertisingService
             foreach (var pi in type.GetProperties())
             {
                 var value = (double?)type.GetProperty(pi.Name)?.GetValue(e.Value, null);
-                var maxValue = (double?)type.GetProperty(pi.Name)?.GetValue(maxCriteriaValues, null);
+                var maxValue = (double?)
+                    type.GetProperty(pi.Name)?.GetValue(maxCriteriaValues, null);
                 var result = value / maxValue;
                 if (result != null)
                     sum += (double)result;
@@ -57,7 +59,10 @@ public class AdvertisingService : IAdvertisingService
         return normalized;
     }
 
-    private async Task<List<(int, double)>> CalculateAsync(List<Event> events, CriteriaValues? customValues = null)
+    private async Task<List<(int, double)>> CalculateAsync(
+        List<Event> events,
+        CriteriaValues? customValues = null
+    )
     {
         var criteriaValues = new Dictionary<int, CriteriaValues>();
         var maxCriteriaValues = new CriteriaValues();
@@ -69,16 +74,24 @@ public class AdvertisingService : IAdvertisingService
             criteriaValues[e.Id] = await GetCriteriaValuesAsync(e);
             foreach (var pi in type.GetProperties())
             {
-                var value = (double?)type.GetProperty(pi.Name)?.GetValue(criteriaValues[e.Id], null);
-                var currentValue = (double?)type.GetProperty(pi.Name)?.GetValue(maxCriteriaValues, null);
+                var value = (double?)
+                    type.GetProperty(pi.Name)?.GetValue(criteriaValues[e.Id], null);
+                var currentValue = (double?)
+                    type.GetProperty(pi.Name)?.GetValue(maxCriteriaValues, null);
                 // Ищем максимальное значение
                 if (value > currentValue)
                     type.GetProperty(pi.Name)?.SetValue(maxCriteriaValues, value);
 
-                var multiplier = (double?)type.GetProperty(pi.Name)?.GetValue(CriteriaWeights, null);
-                var customMultiplier = (double?)type.GetProperty(pi.Name)?.GetValue(customValues, null);
+                var multiplier = (double?)
+                    type.GetProperty(pi.Name)?.GetValue(CriteriaWeights, null);
+                var customMultiplier = (double?)
+                    type.GetProperty(pi.Name)?.GetValue(customValues, null);
                 if (multiplier != null)
-                    type.GetProperty(pi.Name)?.SetValue(criteriaValues[e.Id], value * GetWeight((double)multiplier, customMultiplier));
+                    type.GetProperty(pi.Name)
+                        ?.SetValue(
+                            criteriaValues[e.Id],
+                            value * GetWeight((double)multiplier, customMultiplier)
+                        );
             }
         }
 
@@ -102,7 +115,9 @@ public class AdvertisingService : IAdvertisingService
         var creatorRating = await _eventOrganizationService.GetAverageRatingAsync(e.CreatorId);
         var daysFromLastSale = 0;
         if (sales.Count != 0)
-            daysFromLastSale = (DateTime.Now - sales.OrderByDescending(s => s.SaleDate).First().SaleDate).Days;
+            daysFromLastSale = (
+                DateTime.Now - sales.OrderByDescending(s => s.SaleDate).First().SaleDate
+            ).Days;
 
         return new CriteriaValues
         {
@@ -133,7 +148,11 @@ public class AdvertisingService : IAdvertisingService
         return 0.00018 * averagePrice - 0.2;
     }
 
-    public async Task<List<Event>> GetAdvertisingFromAsync(List<Event> events, int limit, int? userId)
+    public async Task<List<Event>> GetAdvertisingFromAsync(
+        List<Event> events,
+        int limit,
+        int? userId
+    )
     {
         var averagePrice = 0;
         if (userId != null)
@@ -146,11 +165,10 @@ public class AdvertisingService : IAdvertisingService
 
         var minPriceMultiplier = GetMinPriceMultiplier(averagePrice);
         var maxPriceMultiplier = GetMaxPriceMultiplier(averagePrice);
-        var results = await CalculateAsync(events, new CriteriaValues
-        {
-            MinPrice = minPriceMultiplier,
-            MaxPrice = maxPriceMultiplier
-        });
+        var results = await CalculateAsync(
+            events,
+            new CriteriaValues { MinPrice = minPriceMultiplier, MaxPrice = maxPriceMultiplier }
+        );
         var sortedResults = results.OrderByDescending(r => r.Item2).Take(limit);
         var resultEvents = new List<Event>();
         foreach (var result in sortedResults)

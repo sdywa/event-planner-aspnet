@@ -14,7 +14,8 @@ public class AuthorizationService : IAuthorizationService
     private Context _context;
     private IUserService _userService;
 
-    public AuthorizationService(Context context, IUserService userService) {
+    public AuthorizationService(Context context, IUserService userService)
+    {
         _context = context;
         _userService = userService;
     }
@@ -33,11 +34,13 @@ public class AuthorizationService : IAuthorizationService
             claims,
             "Token",
             ClaimsIdentity.DefaultNameClaimType,
-            ClaimsIdentity.DefaultRoleClaimType);
+            ClaimsIdentity.DefaultRoleClaimType
+        );
         return identity;
     }
 
-    public Object GetAccessToken(User user) {
+    public Object GetAccessToken(User user)
+    {
         var identity = GetIdentity(user);
         var now = DateTime.UtcNow;
         var expires = now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME));
@@ -47,7 +50,10 @@ public class AuthorizationService : IAuthorizationService
             notBefore: now,
             claims: identity.Claims,
             expires: expires,
-            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
+            signingCredentials: new SigningCredentials(
+                AuthOptions.GetSymmetricSecurityKey(),
+                SecurityAlgorithms.HmacSha256
+            )
         );
         var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
         return new
@@ -58,7 +64,8 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task<Object> GetRefreshTokenAsync(User user) {
+    public async Task<Object> GetRefreshTokenAsync(User user)
+    {
         var refreshToken = new RefreshToken
         {
             Id = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
@@ -77,25 +84,27 @@ public class AuthorizationService : IAuthorizationService
         };
     }
 
-    public async Task<Object> RefreshTokensAsync(User user, string refreshToken) {
+    public async Task<Object> RefreshTokensAsync(User user, string refreshToken)
+    {
         var foundUser = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)
             .FirstOrDefaultAsync(u => u.Id == user.Id && u.RefreshTokenId == refreshToken);
 
-        if (foundUser == null || foundUser.RefreshToken == null || foundUser.RefreshToken.Expires < DateTime.Now)
+        if (
+            foundUser == null
+            || foundUser.RefreshToken == null
+            || foundUser.RefreshToken.Expires < DateTime.Now
+        )
             throw new InvalidRefreshToken();
 
         var jwt = GetAccessToken(foundUser);
         var newRefreshToken = await GetRefreshTokenAsync(foundUser);
-        return new
-        {
-            accessToken = jwt,
-            refreshToken = newRefreshToken
-        };
+        return new { accessToken = jwt, refreshToken = newRefreshToken };
     }
 
-    public async Task RemoveRefreshTokenAsync(User user, string refreshToken) {
+    public async Task RemoveRefreshTokenAsync(User user, string refreshToken)
+    {
         var foundUser = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)

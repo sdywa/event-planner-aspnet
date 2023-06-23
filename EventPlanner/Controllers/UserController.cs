@@ -29,7 +29,15 @@ namespace EventPlanner.Controllers
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
             IChatService chatService,
-            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, chatService, userService)
+            IUserService userService
+        )
+            : base(
+                appEnvironment,
+                eventStorageService,
+                eventOrganizationService,
+                chatService,
+                userService
+            )
         {
             _authenticationService = authenticationService;
             _authorizationService = authorizationService;
@@ -39,14 +47,15 @@ namespace EventPlanner.Controllers
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenModel? model)
         {
-            try {
+            try
+            {
                 if (model?.Token == null)
                     throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
 
                 var user = await _context.Users
-                .Include(u => u.Role)
-                .Include(u => u.RefreshToken)
-                .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
+                    .Include(u => u.Role)
+                    .Include(u => u.RefreshToken)
+                    .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
 
                 if (user == null)
                     throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
@@ -71,10 +80,12 @@ namespace EventPlanner.Controllers
                 var refreshToken = await _authorizationService.GetRefreshTokenAsync(user);
 
                 return new JsonResult(
-                    new {
+                    new
+                    {
                         accessToken = accessToken,
                         refreshToken = refreshToken,
-                        user = new {
+                        user = new
+                        {
                             id = user.Id,
                             email = user.Email,
                             name = user.Name,
@@ -97,9 +108,18 @@ namespace EventPlanner.Controllers
         public async Task<IActionResult> SignupAsync([FromBody] SignupModel model)
         {
             if (await IsEmailUsedAsync(model.Email))
-                return new ActionException<BadRequestObjectResult>("Данная почта уже используется") { PropertyName = "Email" }.FormResponse();
+                return new ActionException<BadRequestObjectResult>("Данная почта уже используется")
+                {
+                    PropertyName = "Email"
+                }.FormResponse();
 
-            await _authenticationService.RegisterAsync(model.Name, model.Surname, model.Email, model.Password, UserRole.Participant);
+            await _authenticationService.RegisterAsync(
+                model.Name,
+                model.Surname,
+                model.Email,
+                model.Password,
+                UserRole.Participant
+            );
             return Ok();
         }
 
@@ -107,14 +127,15 @@ namespace EventPlanner.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> LogoutAsync([FromBody] TokenModel? model)
         {
-            try {
+            try
+            {
                 if (model?.Token == null)
                     throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
 
                 var user = await _context.Users
-                .Include(u => u.Role)
-                .Include(u => u.RefreshToken)
-                .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
+                    .Include(u => u.Role)
+                    .Include(u => u.RefreshToken)
+                    .FirstOrDefaultAsync(u => u.RefreshTokenId == model.Token);
 
                 if (user == null)
                     throw new ActionException<BadRequestObjectResult>("Непредвиденная ошибка");
@@ -147,15 +168,30 @@ namespace EventPlanner.Controllers
                 return Ok();
             }
 
-            return new ActionException<BadRequestObjectResult>("Непредвиденная ошибка").FormResponse();
+            return new ActionException<BadRequestObjectResult>(
+                "Непредвиденная ошибка"
+            ).FormResponse();
         }
 
         [Authorize]
         [HttpPatch]
         public async Task<IActionResult> UpdateUserAsync([FromBody] UserModel model)
         {
-            if (model.Password != null && model.Password != string.Empty && model.Password.Length < 8)
-                return BadRequest(new { Errors = new { Password = "Используйте не менее 8 символов", PasswordConfirm = "Используйте не менее 8 символов" } });
+            if (
+                model.Password != null
+                && model.Password != string.Empty
+                && model.Password.Length < 8
+            )
+                return BadRequest(
+                    new
+                    {
+                        Errors = new
+                        {
+                            Password = "Используйте не менее 8 символов",
+                            PasswordConfirm = "Используйте не менее 8 символов"
+                        }
+                    }
+                );
 
             var rowId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (rowId == null)
@@ -194,13 +230,13 @@ namespace EventPlanner.Controllers
                 List<object> participated = new List<object>();
                 var tickets = await _eventOrganizationService.GetAllByUserAsync(user.Id);
                 foreach (var ticket in tickets.OrderByDescending(t => t.SaleDate))
-                    participated.Add(await PrepareEventAsync(await _eventStorageService.GetByIdAsync(ticket.Ticket.EventId)));
+                    participated.Add(
+                        await PrepareEventAsync(
+                            await _eventStorageService.GetByIdAsync(ticket.Ticket.EventId)
+                        )
+                    );
 
-                return new JsonResult(new
-                {
-                    Created = created,
-                    Participated = participated
-                });
+                return new JsonResult(new { Created = created, Participated = participated });
             }
             catch (Exception ex)
             {
@@ -216,16 +252,23 @@ namespace EventPlanner.Controllers
             {
                 var user = await GetUserAsync();
                 var chats = await _chatService.GetChatsByCreatorAsync(user.Id);
-                return new JsonResult(new {
-                    chats = chats
-                    .OrderBy(c => c.StatusId != ChatStatus.Waiting)
-                    .ThenBy(c => c.StatusId != ChatStatus.Waiting)
-                    .Select(c => new {
-                        id = c.Id,
-                        theme = c.Theme,
-                        status = c.Status.Name
-                    })
-                });
+                return new JsonResult(
+                    new
+                    {
+                        chats = chats
+                            .OrderBy(c => c.StatusId != ChatStatus.Waiting)
+                            .ThenBy(c => c.StatusId != ChatStatus.Waiting)
+                            .Select(
+                                c =>
+                                    new
+                                    {
+                                        id = c.Id,
+                                        theme = c.Theme,
+                                        status = c.Status.Name
+                                    }
+                            )
+                    }
+                );
             }
             catch (Exception ex)
             {

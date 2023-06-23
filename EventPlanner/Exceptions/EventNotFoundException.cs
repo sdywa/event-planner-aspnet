@@ -4,5 +4,6 @@ namespace EventPlanner.Exceptions;
 
 public class EventNotFoundException : ActionException<NotFoundObjectResult>
 {
-    public EventNotFoundException(string message = "Мероприятие не найдено") : base(message) { }
+    public EventNotFoundException(string message = "Мероприятие не найдено")
+        : base(message) { }
 }

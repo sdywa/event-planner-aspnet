@@ -13,12 +13,12 @@ public interface IEventStorageService : IDataService<int, Event>
     Task<Address> CreateAsync(Address entity);
     Task UpdateAsync(Address entity);
     Task<Question?> GetQuestionAsync(int id);
-    Task<List<Question>> GetQuestionsByEventAsync (int eventId);
+    Task<List<Question>> GetQuestionsByEventAsync(int eventId);
     Task<Question> CreateAsync(Question entity);
     Task UpdateAsync(Question entity);
     Task DeleteQuestionAsync(int id);
     Task<Ticket?> GetTicketAsync(int id);
-    Task<List<Ticket>> GetTicketsByEventAcyns (int eventId);
+    Task<List<Ticket>> GetTicketsByEventAcyns(int eventId);
     Task<Ticket> CreateAsync(Ticket entity);
     Task UpdateAsync(Ticket entity);
     Task DeleteTicketAsync(int id);

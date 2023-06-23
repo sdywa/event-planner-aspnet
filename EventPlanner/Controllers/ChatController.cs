@@ -19,8 +19,15 @@ namespace EventPlanner.Controllers
             IEventStorageService eventStorageService,
             IEventOrganizationService eventOrganizationService,
             IChatService chatService,
-            IUserService userService) : base(appEnvironment, eventStorageService, eventOrganizationService, chatService, userService)
-        { }
+            IUserService userService
+        )
+            : base(
+                appEnvironment,
+                eventStorageService,
+                eventOrganizationService,
+                chatService,
+                userService
+            ) { }
 
         [Authorize]
         [HttpGet("{id}")]
@@ -37,19 +44,25 @@ namespace EventPlanner.Controllers
                     return Forbid();
 
                 return new JsonResult(
-                    new {
+                    new
+                    {
                         id = chat.Id,
                         theme = chat.Theme,
                         status = chat.Status.Name,
                         creatorId = chat.InitiatorId,
                         creator = $"{chat.Initiator.Name} {chat.Initiator.Surname}",
                         creationTime = chat.CreationTime,
-                        messages = chat.Messages.Select(m => new {
-                            creator = m.Creator.Name,
-                            creationTime = m.CreationTime,
-                            text = m.Text
-                        })
-                    });
+                        messages = chat.Messages.Select(
+                            m =>
+                                new
+                                {
+                                    creator = m.Creator.Name,
+                                    creationTime = m.CreationTime,
+                                    text = m.Text
+                                }
+                        )
+                    }
+                );
             }
             catch (Exception ex)
             {
@@ -71,7 +84,8 @@ namespace EventPlanner.Controllers
                 if (chat.InitiatorId != user.Id && chat.Event.CreatorId != user.Id)
                     return Forbid();
 
-                var message = new Message {
+                var message = new Message
+                {
                     ChatId = chat.Id,
                     CreatorId = user.Id,
                     Text = model.Text
